@@ -10,6 +10,7 @@ public final class Grammer : Decodable, CopyInitializable {
         case name
         case scopeName
         case patterns
+        case repository
     }
     
     public convenience init(contentsOf url: URL) throws {
@@ -29,8 +30,10 @@ public final class Grammer : Decodable, CopyInitializable {
         self.name = try c.decode(String.self, forKey: .name)
         self.scopeName = try c.decode(ScopeName.self, forKey: .scopeName)
         
-        let patterns: [Rule] = try c.decode([Rule].self, forKey: .patterns)
-        
-        self.rule = ScopeRule(patterns: patterns)
+        let patterns = try c.decodeIfPresent([Rule].self, forKey: .patterns) ?? []
+        let repository = try c.decodeIfPresent(RuleRepository.self, forKey: .repository)
+
+        self.rule = ScopeRule(patterns: patterns,
+                              repository: repository)        
     }
 }
