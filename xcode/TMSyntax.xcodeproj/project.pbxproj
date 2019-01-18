@@ -25,6 +25,12 @@
 		D64F5DD921F219F400CA06B7 /* IncludeTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DD821F219F400CA06B7 /* IncludeTarget.swift */; };
 		D64F5DDB21F21B3900CA06B7 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DDA21F21B3900CA06B7 /* Errors.swift */; };
 		D64F5DDD21F21CBC00CA06B7 /* RuleRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DDC21F21CBC00CA06B7 /* RuleRepository.swift */; };
+		D64F5DDF21F22E5700CA06B7 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DDE21F22E5700CA06B7 /* Parser.swift */; };
+		D64F5DE121F2359C00CA06B7 /* RuleStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DE021F2359C00CA06B7 /* RuleStack.swift */; };
+		D64F5DE321F239E500CA06B7 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DE221F239E500CA06B7 /* Regex.swift */; };
+		D64F5DE521F239FC00CA06B7 /* Onigmo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5DE421F239FC00CA06B7 /* Onigmo.framework */; };
+		D64F5DE721F23B9600CA06B7 /* OnigmoAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DE621F23B9600CA06B7 /* OnigmoAPI.swift */; };
+		D64F5DE921F2448900CA06B7 /* OnigmoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DE821F2448900CA06B7 /* OnigmoTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +65,12 @@
 		D64F5DD821F219F400CA06B7 /* IncludeTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncludeTarget.swift; sourceTree = "<group>"; };
 		D64F5DDA21F21B3900CA06B7 /* Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
 		D64F5DDC21F21CBC00CA06B7 /* RuleRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleRepository.swift; sourceTree = "<group>"; };
+		D64F5DDE21F22E5700CA06B7 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
+		D64F5DE021F2359C00CA06B7 /* RuleStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleStack.swift; sourceTree = "<group>"; };
+		D64F5DE221F239E500CA06B7 /* Regex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
+		D64F5DE421F239FC00CA06B7 /* Onigmo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Onigmo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D64F5DE621F23B9600CA06B7 /* OnigmoAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnigmoAPI.swift; sourceTree = "<group>"; };
+		D64F5DE821F2448900CA06B7 /* OnigmoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnigmoTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D64F5DE521F239FC00CA06B7 /* Onigmo.framework in Frameworks */,
 				D64F5DBE21F2036200CA06B7 /* FineJSON.framework in Frameworks */,
 				D64F5DC021F2036200CA06B7 /* OrderedDictionary.framework in Frameworks */,
 				D64F5DC221F2036200CA06B7 /* RichJSONParser.framework in Frameworks */,
@@ -125,6 +138,10 @@
 				D64F5DD821F219F400CA06B7 /* IncludeTarget.swift */,
 				D64F5DDA21F21B3900CA06B7 /* Errors.swift */,
 				D64F5DDC21F21CBC00CA06B7 /* RuleRepository.swift */,
+				D64F5DDE21F22E5700CA06B7 /* Parser.swift */,
+				D64F5DE021F2359C00CA06B7 /* RuleStack.swift */,
+				D64F5DE221F239E500CA06B7 /* Regex.swift */,
+				D64F5DE621F23B9600CA06B7 /* OnigmoAPI.swift */,
 			);
 			name = Sources;
 			path = ../../Sources/TMSyntax;
@@ -145,6 +162,7 @@
 				D64F5DD421F211D700CA06B7 /* Resources */,
 				D64F5DB621F2003500CA06B7 /* TMSyntaxTests.swift */,
 				D64F5DD621F212D400CA06B7 /* Resources.swift */,
+				D64F5DE821F2448900CA06B7 /* OnigmoTests.swift */,
 			);
 			name = Sources;
 			path = ../../Tests/TMSyntaxTests;
@@ -153,6 +171,7 @@
 		D64F5DBC21F2036200CA06B7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D64F5DE421F239FC00CA06B7 /* Onigmo.framework */,
 				D64F5DBD21F2036200CA06B7 /* FineJSON.framework */,
 				D64F5DBF21F2036200CA06B7 /* OrderedDictionary.framework */,
 				D64F5DC121F2036200CA06B7 /* RichJSONParser.framework */,
@@ -273,13 +292,17 @@
 				D64F5DD021F20D5C00CA06B7 /* IncludeRule.swift in Sources */,
 				D64F5DDD21F21CBC00CA06B7 /* RuleRepository.swift in Sources */,
 				D64F5DC821F2064700CA06B7 /* HasCodingType.swift in Sources */,
+				D64F5DE321F239E500CA06B7 /* Regex.swift in Sources */,
 				D64F5DCA21F2085F00CA06B7 /* Rule.swift in Sources */,
 				D64F5DCC21F20D2E00CA06B7 /* ScopeRule.swift in Sources */,
 				D64F5DC421F2041400CA06B7 /* CopyInitializable.swift in Sources */,
 				D64F5DBB21F200CE00CA06B7 /* Grammar.swift in Sources */,
 				D64F5DD921F219F400CA06B7 /* IncludeTarget.swift in Sources */,
+				D64F5DDF21F22E5700CA06B7 /* Parser.swift in Sources */,
 				D64F5DC621F2049200CA06B7 /* ScopeName.swift in Sources */,
 				D64F5DDB21F21B3900CA06B7 /* Errors.swift in Sources */,
+				D64F5DE721F23B9600CA06B7 /* OnigmoAPI.swift in Sources */,
+				D64F5DE121F2359C00CA06B7 /* RuleStack.swift in Sources */,
 				D64F5DCE21F20D3C00CA06B7 /* MatchRule.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -289,6 +312,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D64F5DB821F2003500CA06B7 /* TMSyntaxTests.swift in Sources */,
+				D64F5DE921F2448900CA06B7 /* OnigmoTests.swift in Sources */,
 				D64F5DD721F212D400CA06B7 /* Resources.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

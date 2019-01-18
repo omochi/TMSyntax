@@ -7,3 +7,6 @@
 [submodule "Carthage/Checkouts/FineJSON"]
 	path = Carthage/Checkouts/FineJSON
 	url = https://github.com/omochi/FineJSON.git
+[submodule "Carthage/Checkouts/Onigmo-swift-build"]
+	path = Carthage/Checkouts/Onigmo-swift-build
+	url = https://github.com/omochi/Onigmo-swift-build.git

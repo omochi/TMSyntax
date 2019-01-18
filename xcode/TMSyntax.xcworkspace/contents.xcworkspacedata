@@ -11,6 +11,9 @@
       location = "group:../Carthage/Checkouts/FineJSON/xcode/FineJSON.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:../Carthage/Checkouts/Onigmo-swift-build/xcode/Onigmo.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:TMSyntax.xcodeproj">
    </FileRef>
 </Workspace>
