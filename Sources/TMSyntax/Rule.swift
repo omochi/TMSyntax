@@ -1,4 +1,5 @@
 import Foundation
+import RichJSONParser
 
 public class Rule : CopyInitializable, Decodable {
     public enum Switcher {
@@ -22,7 +23,11 @@ public class Rule : CopyInitializable, Decodable {
         return nil
     }
 
-    public init() {}
+    public let sourceLocation: SourceLocation?
+    
+    public init(sourceLocation: SourceLocation?) {
+        self.sourceLocation = sourceLocation
+    }
     
     public enum CodingKeys : String, CodingKey {
         case include
@@ -30,6 +35,8 @@ public class Rule : CopyInitializable, Decodable {
         case name
         case patterns
         case repository
+        case begin
+        case end
     }
     
     public required convenience init(from decoder: Decoder) throws {
@@ -40,21 +47,39 @@ public class Rule : CopyInitializable, Decodable {
                 throw DecodingError(location: decoder.sourceLocation!,
                                     message: "invalid include (\(includeStr))")
             }
-            self.init(copy: IncludeRule(include: include))
+            self.init(copy: IncludeRule(sourceLocation: decoder.sourceLocation,
+                                        include: include))
             return
         }
         
         if let matchStr = try c.decodeIfPresent(String.self, forKey: .match) {
             let scopeName = try c.decode(ScopeName.self, forKey: .name)
             
-            self.init(copy: MatchRule(match: matchStr, scopeName: scopeName))
+            self.init(copy: MatchRule(sourceLocation: decoder.sourceLocation,
+                                      match: matchStr, scopeName: scopeName))
             return
         }
         
         let patterns = try c.decodeIfPresent([Rule].self, forKey: .patterns) ?? []
         let repository = try c.decodeIfPresent(RuleRepository.self, forKey: .repository)
-
-        self.init(copy: ScopeRule(patterns: patterns,
+        
+        if let beginStr = try c.decodeIfPresent(String.self, forKey: .begin) {
+            guard let endStr = try c.decodeIfPresent(String.self, forKey: .end) else {
+                throw DecodingError(location: decoder.sourceLocation!,
+                                    message: "end key not found")
+            }
+            
+            self.init(copy: ScopeRule(sourceLocation: decoder.sourceLocation,
+                                      condition: .beginEnd(BeginEndCondition(begin: beginStr,
+                                                                             end: endStr)),
+                                      patterns: patterns,
+                                      repository: repository))
+            return
+        }
+        
+        self.init(copy: ScopeRule(sourceLocation: decoder.sourceLocation,
+                                  condition: .none,
+                                  patterns: patterns,
                                   repository: repository))
     }
     
@@ -67,6 +92,46 @@ public class Rule : CopyInitializable, Decodable {
             ruleOrNone = rule.parent
         }
         return nil
+    }
+    
+    // TODO: end match
+    public func collectMatchPlans() -> [MatchPlan] {
+        switch switcher {
+        case .include(let rule):
+            guard let target = rule.target else {
+                return []
+            }
+            return target.collectMatchPlans()
+        case .match(let rule):
+            return [MatchPlan.matchRule(rule)]
+        case .scope(let rule):
+            switch rule.condition {
+            case .beginEnd(let cond):
+                return [MatchPlan.beginRule(rule, cond)]
+            case .none:
+                var result = [MatchPlan]()
+                for e in rule.patterns {
+                    result += e.collectMatchPlans()
+                }
+                return result
+            }
+        }
+    }
+    
+    internal func _compileRegex(pattern: String) throws -> Regex {
+        do {
+            return try Regex(pattern: pattern)
+        } catch {
+            throw RegexCompileError(location: sourceLocation, error: error)
+        }
+    }
+    
+    internal var locationForDescription: String {
+        if let loc = sourceLocation {
+            return " at \(loc)"
+        } else {
+            return ""
+        }
     }
 }
 

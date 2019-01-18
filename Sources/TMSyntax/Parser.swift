@@ -26,26 +26,56 @@ public class Parser {
     }
     private var ruleStack: RuleStack
     
-    public func parseLine() {
-
-        
-        process(rule: currentRule)
+    public func parseLine() throws {
+        try _parseLine()
+        currentLine += 1
     }
     
-    private func process(rule: Rule) {
-        switch rule.switcher {
-        case .include(let rule):
-            if let target = rule.target {
-                process(rule: target)
+    private func _parseLine() throws {
+        let line = lines[currentLine]
+        
+        var pos = line.startIndex
+        while true {
+            let matchPlans = currentRule.collectMatchPlans()
+            
+            guard let ret = try search(line: line, start: pos, plans: matchPlans) else {
+                return
             }
-        case .match(let rule):
-            break
-        case .scope(let rule):
-            //
-            for e in rule.patterns {
-                process(rule: e)
+            
+            pos = ret.1[0].upperBound
+        }
+    }
+    
+    private func search(line: String, start: String.Index, plans: [MatchPlan]) throws -> (MatchPlan, Regex.Match)? {
+        var matchResults: [(Int, MatchPlan, Regex.Match)] = []
+        
+        for (index, plan) in plans.enumerated() {
+            let regex = try plan.compile()
+            if let match = regex.search(string: line, range: start..<line.endIndex) {
+                matchResults.append((index, plan, match))
             }
         }
+        
+        matchResults.sort { (a, b) -> Bool in
+            let (ai, _, am) = a
+            let (bi, _, bm) = b
+            
+            if am[0].lowerBound != bm[0].lowerBound {
+                return am[0].lowerBound < bm[0].lowerBound
+            }
+            
+            return ai < bi
+        }
+        
+        guard let best = matchResults.first else {
+            return nil
+        }
+        
+        return (best.1, best.2)
+    }
+    
+    private func processMatchRule(_ rule: MatchRule) {
+        
     }
     
     

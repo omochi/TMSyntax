@@ -1,19 +1,24 @@
 import Foundation
+import RichJSONParser
 
 public final class ScopeRule : Rule {
+    public let condition: ScopeCondition
+    
     public var patterns: [Rule] = []
     public override var repository: RuleRepository? {
         return _repository
     }
     private let _repository: RuleRepository?
     
-    public init(
-        patterns: [Rule],
-        repository: RuleRepository?)
+    public init(sourceLocation: SourceLocation?,
+                condition: ScopeCondition,
+                patterns: [Rule],
+                repository: RuleRepository?)
     {
+        self.condition = condition
         self.patterns = patterns
         self._repository = repository
-        super.init()
+        super.init(sourceLocation: sourceLocation)
         
         for rule in patterns {
             rule.parent = self

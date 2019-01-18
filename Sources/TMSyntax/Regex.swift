@@ -67,9 +67,9 @@ public struct Regex {
         let region = _Region()
         
         guard let _ = Onigmo.search(regex: object.onig,
-                                        string: string,
-                                        range: range,
-                                        region: region.region) else
+                                    string: string,
+                                    range: range,
+                                    region: region.region) else
         {
             return nil
         }

@@ -33,7 +33,9 @@ public final class Grammer : Decodable, CopyInitializable {
         let patterns = try c.decodeIfPresent([Rule].self, forKey: .patterns) ?? []
         let repository = try c.decodeIfPresent(RuleRepository.self, forKey: .repository)
 
-        self.rule = ScopeRule(patterns: patterns,
+        self.rule = ScopeRule(sourceLocation: decoder.sourceLocation,
+                              condition: .none,
+                              patterns: patterns,
                               repository: repository)        
     }
 }
