@@ -1,0 +1,34 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "FineJSON",
+        "repositoryURL": "https://github.com/omochi/FineJSON",
+        "state": {
+          "branch": null,
+          "revision": "58090f28dfc054fa1a6e073dde9021a13347090d",
+          "version": "1.2.1"
+        }
+      },
+      {
+        "package": "OrderedDictionary",
+        "repositoryURL": "https://github.com/omochi/OrderedDictionary.git",
+        "state": {
+          "branch": null,
+          "revision": "ff5ad8a027588a8432638fc577ccc6517a887537",
+          "version": "1.6.0"
+        }
+      },
+      {
+        "package": "RichJSONParser",
+        "repositoryURL": "https://github.com/omochi/RichJSONParser.git",
+        "state": {
+          "branch": null,
+          "revision": "1539b2a09fad1243e4ba5d1b3ed825add125f07b",
+          "version": "1.2.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
