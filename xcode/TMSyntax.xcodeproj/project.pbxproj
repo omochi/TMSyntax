@@ -8,14 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		D64F5DAF21F2001900CA06B7 /* TMSyntax.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5D9821F1FF7A00CA06B7 /* TMSyntax.framework */; };
-		D64F5DB821F2003500CA06B7 /* TMSyntaxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DB621F2003500CA06B7 /* TMSyntaxTests.swift */; };
+		D64F5DB821F2003500CA06B7 /* ParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DB621F2003500CA06B7 /* ParserTests.swift */; };
 		D64F5DBB21F200CE00CA06B7 /* Grammar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DBA21F200CE00CA06B7 /* Grammar.swift */; };
 		D64F5DBE21F2036200CA06B7 /* FineJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5DBD21F2036200CA06B7 /* FineJSON.framework */; };
 		D64F5DC021F2036200CA06B7 /* OrderedDictionary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5DBF21F2036200CA06B7 /* OrderedDictionary.framework */; };
 		D64F5DC221F2036200CA06B7 /* RichJSONParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5DC121F2036200CA06B7 /* RichJSONParser.framework */; };
 		D64F5DC421F2041400CA06B7 /* CopyInitializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DC321F2041400CA06B7 /* CopyInitializable.swift */; };
 		D64F5DC621F2049200CA06B7 /* ScopeName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DC521F2049200CA06B7 /* ScopeName.swift */; };
-		D64F5DC821F2064700CA06B7 /* HasCodingType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DC721F2064700CA06B7 /* HasCodingType.swift */; };
 		D64F5DCA21F2085F00CA06B7 /* Rule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DC921F2085F00CA06B7 /* Rule.swift */; };
 		D64F5DCC21F20D2E00CA06B7 /* ScopeRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DCB21F20D2E00CA06B7 /* ScopeRule.swift */; };
 		D64F5DCE21F20D3C00CA06B7 /* MatchRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DCD21F20D3C00CA06B7 /* MatchRule.swift */; };
@@ -44,6 +43,7 @@
 		D64F5DFF21F3360700CA06B7 /* TokenSplitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DFE21F3360700CA06B7 /* TokenSplitterTests.swift */; };
 		D64F5E0321F3367400CA06B7 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E0221F3367400CA06B7 /* Utils.swift */; };
 		D64F5E0521F3386000CA06B7 /* NaiveToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E0421F3386000CA06B7 /* NaiveToken.swift */; };
+		D64F5E0721F35A6200CA06B7 /* BeginEndCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E0621F35A6200CA06B7 /* BeginEndCondition.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,14 +61,13 @@
 		D64F5D9C21F1FF7A00CA06B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D64F5DAA21F2001900CA06B7 /* TMSyntaxTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TMSyntaxTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D64F5DAE21F2001900CA06B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D64F5DB621F2003500CA06B7 /* TMSyntaxTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TMSyntaxTests.swift; sourceTree = "<group>"; };
+		D64F5DB621F2003500CA06B7 /* ParserTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParserTests.swift; sourceTree = "<group>"; };
 		D64F5DBA21F200CE00CA06B7 /* Grammar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Grammar.swift; sourceTree = "<group>"; };
 		D64F5DBD21F2036200CA06B7 /* FineJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FineJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D64F5DBF21F2036200CA06B7 /* OrderedDictionary.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = OrderedDictionary.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D64F5DC121F2036200CA06B7 /* RichJSONParser.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RichJSONParser.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D64F5DC321F2041400CA06B7 /* CopyInitializable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyInitializable.swift; sourceTree = "<group>"; };
 		D64F5DC521F2049200CA06B7 /* ScopeName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeName.swift; sourceTree = "<group>"; };
-		D64F5DC721F2064700CA06B7 /* HasCodingType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HasCodingType.swift; sourceTree = "<group>"; };
 		D64F5DC921F2085F00CA06B7 /* Rule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rule.swift; sourceTree = "<group>"; };
 		D64F5DCB21F20D2E00CA06B7 /* ScopeRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeRule.swift; sourceTree = "<group>"; };
 		D64F5DCD21F20D3C00CA06B7 /* MatchRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchRule.swift; sourceTree = "<group>"; };
@@ -97,6 +96,7 @@
 		D64F5DFE21F3360700CA06B7 /* TokenSplitterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenSplitterTests.swift; sourceTree = "<group>"; };
 		D64F5E0221F3367400CA06B7 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		D64F5E0421F3386000CA06B7 /* NaiveToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NaiveToken.swift; sourceTree = "<group>"; };
+		D64F5E0621F35A6200CA06B7 /* BeginEndCondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeginEndCondition.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,7 +154,6 @@
 			isa = PBXGroup;
 			children = (
 				D64F5DC321F2041400CA06B7 /* CopyInitializable.swift */,
-				D64F5DC721F2064700CA06B7 /* HasCodingType.swift */,
 				D64F5DBA21F200CE00CA06B7 /* Grammar.swift */,
 				D64F5DC521F2049200CA06B7 /* ScopeName.swift */,
 				D64F5DC921F2085F00CA06B7 /* Rule.swift */,
@@ -177,6 +176,7 @@
 				D64F5DF621F2E28300CA06B7 /* RegexPattern.swift */,
 				D64F5DF821F32D9800CA06B7 /* TokenSplitter.swift */,
 				D64F5DFA21F32EFD00CA06B7 /* BinarySearch.swift */,
+				D64F5E0621F35A6200CA06B7 /* BeginEndCondition.swift */,
 			);
 			name = Sources;
 			path = ../../Sources/TMSyntax;
@@ -198,7 +198,7 @@
 				D64F5E0221F3367400CA06B7 /* Utils.swift */,
 				D64F5DD621F212D400CA06B7 /* Resources.swift */,
 				D64F5E0421F3386000CA06B7 /* NaiveToken.swift */,
-				D64F5DB621F2003500CA06B7 /* TMSyntaxTests.swift */,
+				D64F5DB621F2003500CA06B7 /* ParserTests.swift */,
 				D64F5DE821F2448900CA06B7 /* OnigmoTests.swift */,
 				D64F5DFC21F3316300CA06B7 /* BinarySearchTests.swift */,
 				D64F5DFE21F3360700CA06B7 /* TokenSplitterTests.swift */,
@@ -335,7 +335,6 @@
 				D64F5DF721F2E28300CA06B7 /* RegexPattern.swift in Sources */,
 				D64F5DED21F25F2F00CA06B7 /* MatchPlan.swift in Sources */,
 				D64F5DF321F2CE7800CA06B7 /* MatchResult.swift in Sources */,
-				D64F5DC821F2064700CA06B7 /* HasCodingType.swift in Sources */,
 				D64F5DFB21F32EFD00CA06B7 /* BinarySearch.swift in Sources */,
 				D64F5DE321F239E500CA06B7 /* Regex.swift in Sources */,
 				D64F5DCA21F2085F00CA06B7 /* Rule.swift in Sources */,
@@ -350,6 +349,7 @@
 				D64F5DDB21F21B3900CA06B7 /* Errors.swift in Sources */,
 				D64F5DF121F2CA3700CA06B7 /* Token.swift in Sources */,
 				D64F5DE721F23B9600CA06B7 /* OnigmoAPI.swift in Sources */,
+				D64F5E0721F35A6200CA06B7 /* BeginEndCondition.swift in Sources */,
 				D64F5DE121F2359C00CA06B7 /* MatchStateStack.swift in Sources */,
 				D64F5DCE21F20D3C00CA06B7 /* MatchRule.swift in Sources */,
 			);
@@ -360,7 +360,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D64F5DFD21F3316300CA06B7 /* BinarySearchTests.swift in Sources */,
-				D64F5DB821F2003500CA06B7 /* TMSyntaxTests.swift in Sources */,
+				D64F5DB821F2003500CA06B7 /* ParserTests.swift in Sources */,
 				D64F5DE921F2448900CA06B7 /* OnigmoTests.swift in Sources */,
 				D64F5DD721F212D400CA06B7 /* Resources.swift in Sources */,
 				D64F5DFF21F3360700CA06B7 /* TokenSplitterTests.swift in Sources */,

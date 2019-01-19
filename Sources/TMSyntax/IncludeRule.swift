@@ -2,12 +2,12 @@ import Foundation
 import RichJSONParser
 
 public final class IncludeRule : Rule {
-    public let include: IncludeTarget
+    public let target: IncludeTarget
     
     public init(sourceLocation: SourceLocation?,
-                include: IncludeTarget)
+                target: IncludeTarget)
     {
-        self.include = include
+        self.target = target
         super.init(sourceLocation: sourceLocation)
     }
     
@@ -15,8 +15,8 @@ public final class IncludeRule : Rule {
         fatalError()
     }
     
-    public var target: Rule? {
-        switch include {
+    public var targetRule: Rule? {
+        switch target {
         case .repository(let name):
             return self.rule(with: name)
         case .self:

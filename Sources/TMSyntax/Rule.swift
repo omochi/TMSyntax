@@ -1,7 +1,7 @@
 import Foundation
 import RichJSONParser
 
-public class Rule : CopyInitializable, Decodable {
+public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
     public enum Switcher {
         case scope(ScopeRule)
         case match(MatchRule)
@@ -17,16 +17,46 @@ public class Rule : CopyInitializable, Decodable {
         }
     }
     
+    public var name: String?
     public weak var parent: Rule?
     
-    public var repository: RuleRepository? {
-        return nil
-    }
+    public var repository: RuleRepository? { return nil }
+    public var scopeName: ScopeName? { return nil }
 
     public let sourceLocation: SourceLocation?
     
     public init(sourceLocation: SourceLocation?) {
         self.sourceLocation = sourceLocation
+    }
+    
+    public var description: String {
+        var d = ""
+        
+        if let name = name {
+            d += "[\(name)] "
+        } else {
+            d += "[--] "
+        }
+        
+        switch switcher {
+        case .include(let rule):
+            d += "include rule (\(rule.target))"
+        case .match(let rule):
+            d += "match rule \(rule.pattern)"
+        case .scope(let rule):
+            switch rule.condition {
+            case .beginEnd(let cond):
+                d += "begin end rule \(cond.begin)"
+            case .none:
+                d += "scope rule"
+            }
+        }
+        
+        if let loc = sourceLocation {
+            d += " at \(loc)"
+        }
+        
+        return d
     }
     
     public enum CodingKeys : String, CodingKey {
@@ -43,12 +73,9 @@ public class Rule : CopyInitializable, Decodable {
         let loc = decoder.sourceLocation!
         let c = try decoder.container(keyedBy: CodingKeys.self)
         
-        if let includeStr = try c.decodeIfPresent(String.self, forKey: .include) {
-            guard let include = IncludeTarget(includeStr) else {
-                throw DecodingError(location: loc, "invalid include (\(includeStr))")
-            }
+        if let target = try c.decodeIfPresent(IncludeTarget.self, forKey: .include) {
             self.init(copy: IncludeRule(sourceLocation: decoder.sourceLocation,
-                                        include: include))
+                                        target: target))
             return
         }
         
@@ -105,7 +132,7 @@ public class Rule : CopyInitializable, Decodable {
     public func collectEnterMatchPlans() -> [MatchPlan] {
         switch switcher {
         case .include(let rule):
-            guard let target = rule.target else {
+            guard let target = rule.targetRule else {
                 return []
             }
             return target.collectEnterMatchPlans()

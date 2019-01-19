@@ -4,8 +4,8 @@ import Foundation
  適切なデータ構造が欲しい
  */
 public class TokenSplitter {
-    public init(rootToken: Token) {
-        self._tokens = [rootToken]
+    public init() {
+        self._tokens = []
     }
 
     public var tokens: [Token] {

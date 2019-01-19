@@ -31,22 +31,25 @@ public class Parser {
         return ruleStack.items.compactMap { $0.scopeName }
     }
     private var ruleStack: MatchStateStack
-    private var tokenSplitter: TokenSplitter!
+//    private var tokenSplitter: TokenSplitter!
+    private var tokens: [Token]!
     private var line: String!
     private var position: String.Index!
     
     public func parseLine() throws -> [Token] {
         line = lines[currentLine]
         position = line.startIndex
-        tokenSplitter = TokenSplitter(rootToken: Token(range: line.startIndex..<line.endIndex,
-                                                       scopes: currentScopes))
+        tokens = []
+//        tokenSplitter = TokenSplitter()
 
         while true {
             let matchPlans = collectMatchPlans()
            
-            trace("--- match plans ---")
+            let positionInByte = line.utf8.distance(from: line.startIndex, to: position)
+            
+            trace("--- match plans \(matchPlans.count), position \(positionInByte) ---")
             for plan in matchPlans {
-                trace(plan.description)
+                trace("\(plan)")
             }
             trace("------")
             
@@ -54,8 +57,13 @@ public class Parser {
                                           start: position,
                                           plans: matchPlans) else
             {
+                trace("no match, end line")
+                
+                extendOuterScope(end: line.endIndex)
+                
                 currentLine += 1
-                return tokenSplitter.tokens
+                return tokens
+//                return tokenSplitter.tokens
             }
             
             processMatchResult(result)
@@ -115,26 +123,58 @@ public class Parser {
     }
     
     private func processMatchResult(_ result: MatchResult) {
+        trace("match!: \(result.plan)")
+        
+        let newPosition = result.match[0].upperBound
+        
+        extendOuterScope(end: result.match[0].lowerBound)
+        
         switch result.plan {
         case .matchRule(let rule):
-            trace("match \(result.plan.regexPattern)")
             
-            tokenSplitter.add(range: result.match[0], scopeName: rule.scopeName)
+            let token = Token(range: result.match[0],
+                              scopes: currentScopes + [rule.scopeName])
+            addToken(token)
             
-            position = result.match[0].upperBound
+            
+//            tokenSplitter.add(range: result.match[0], scopeName: rule.scopeName)
         case .beginRule(let rule, let cond):
-            trace("begin \(result.plan.regexPattern)")
             let newState = MatchState(rule: rule, scopeName: rule.scopeName)
             ruleStack.push(newState)
-            position = result.match[0].upperBound
-            if let scope = rule.scopeName {
-                tokenSplitter.add(range: result.match[0], scopeName: scope)
-            }
+            
+            let token = Token(range: result.match[0], scopes: currentScopes)
+            addToken(token)
+            
+            
+
         case .endRule(let rule, let cond):
-            trace("end \(result.plan.regexPattern)")
-            position = result.match[0].upperBound
-            // TODO
+            let token = Token(range: result.match[0], scopes: currentScopes)
+            addToken(token)
+            
+            ruleStack.pop()
         }
+        
+        position = newPosition
+    }
+    
+    private func extendOuterScope(end: String.Index) {
+        guard position < end else {
+            return
+        }
+        
+        let token = Token(range: position..<end,
+                          scopes: currentScopes)
+        addToken(token)
+        
+//        if let scope = currentRule.scopeName {
+//            
+//            
+//            tokenSplitter.add(range: position..<end, scopeName: scope)
+//        }
+    }
+    
+    private func addToken(_ token: Token) {
+        tokens.append(token)
     }
     
     public static func splitLines(_ string: String) -> [String] {

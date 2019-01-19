@@ -1,6 +1,6 @@
 import Foundation
 
-public enum IncludeTarget : CustomStringConvertible {
+public enum IncludeTarget : CustomStringConvertible, Decodable, CopyInitializable {
     case repository(String)
     case `self`
     
@@ -26,6 +26,16 @@ public enum IncludeTarget : CustomStringConvertible {
         } else {
             return nil
         }
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.singleValueContainer()
+        let str = try c.decode(String.self)
+        guard let cp = IncludeTarget(str) else {
+            throw DecodingError(location: decoder.sourceLocation,
+                                "invalid target (\(str))")
+        }
+        self.init(copy: cp)
     }
 }
 

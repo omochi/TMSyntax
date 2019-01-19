@@ -10,7 +10,10 @@ public final class ScopeRule : Rule {
     }
     private let _repository: RuleRepository?
     
-    public let scopeName: ScopeName?
+    public override var scopeName: ScopeName? {
+        return _scopeName
+    }
+    private let _scopeName: ScopeName?
     
     public init(sourceLocation: SourceLocation?,
                 condition: ScopeCondition,
@@ -21,7 +24,7 @@ public final class ScopeRule : Rule {
         self.condition = condition
         self.patterns = patterns
         self._repository = repository
-        self.scopeName = scopeName
+        self._scopeName = scopeName
         super.init(sourceLocation: sourceLocation)
         
         for rule in patterns {
@@ -29,8 +32,9 @@ public final class ScopeRule : Rule {
         }
         
         if let repository = repository {            
-            for (_, rule) in repository.dict {
+            for (name, rule) in repository.dict {
                 rule.parent = self
+                rule.name = name
             }
         }
     }

@@ -19,11 +19,11 @@ public enum MatchPlan : CustomStringConvertible {
     public var description: String {
         switch self {
         case .matchRule(let rule):
-            return "match rule (\(rule.pattern))\(rule.locationForDescription)"
-        case .beginRule(let rule, let cond):
-            return "begin rule (\(cond.begin))\(rule.locationForDescription)"
-        case .endRule(let rule, let cond):
-            return "end rule (\(cond.end))\(rule.locationForDescription)"
+            return "test: \(rule)"
+        case .beginRule(let rule, _):
+            return "begin test: \(rule)"
+        case .endRule(let rule, _):
+            return "end test: \(rule)"
         }
     }
 }

@@ -30,10 +30,12 @@ public final class RegexPattern : Decodable, CustomStringConvertible {
     }
     
     public var description: String {
-        var d = "\(value.debugDescription)"
-        if let loc = location {
-            d += " at \(loc)"
+        var pat = value
+        if pat.count > 40 {
+            pat = String(pat[..<pat.index(pat.startIndex, offsetBy: 40)])
+            pat += "..."
         }
-        return d        
+        
+        return "\(pat.debugDescription)"
     }
 }

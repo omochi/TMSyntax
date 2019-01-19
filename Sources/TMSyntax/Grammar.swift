@@ -37,5 +37,6 @@ public final class Grammer : Decodable, CopyInitializable {
                               patterns: patterns,
                               repository: repository,
                               scopeName: scopeName)
+        rule.name = "root"
     }
 }

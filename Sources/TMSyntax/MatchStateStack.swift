@@ -14,6 +14,9 @@ public struct MatchStateStack {
     }
     
     public mutating func pop() {
+        if items.isEmpty {
+            preconditionFailure("stack underflow")
+        }
         items.removeLast()
     }
 }

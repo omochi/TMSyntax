@@ -2,7 +2,8 @@ import Foundation
 
 public struct ScopeName :
     Equatable,
-    CustomStringConvertible
+    CustomStringConvertible,
+    Decodable
 {
     public var parts: [String]
     
@@ -26,17 +27,11 @@ public struct ScopeName :
     public var description: String {
         return stringValue
     }
-}
-
-extension ScopeName : HasCodingType {
-    public typealias CodingType = String
     
-    public init(from codingType: String) {
-        self.init(codingType)
-    }
-    
-    public func encodeToCodingType() -> String {
-        return stringValue
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.singleValueContainer()
+        let str = try c.decode(String.self)
+        self.init(str)
     }
 }
 

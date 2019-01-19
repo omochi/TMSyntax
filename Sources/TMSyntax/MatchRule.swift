@@ -3,14 +3,18 @@ import RichJSONParser
 
 public final class MatchRule : Rule {
     public let pattern: RegexPattern
-    public let scopeName: ScopeName
+   
+    public override var scopeName: ScopeName {
+        return _scopeName
+    }
+    public let _scopeName: ScopeName
     
     public init(sourceLocation: SourceLocation?,
                 pattern: RegexPattern,
                 scopeName: ScopeName)
     {
         self.pattern = pattern
-        self.scopeName = scopeName
+        self._scopeName = scopeName
         super.init(sourceLocation: sourceLocation)
     }
     
