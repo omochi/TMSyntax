@@ -6,18 +6,11 @@ public enum ScopeCondition {
 }
 
 public final class BeginEndCondition {
-    public var begin: String
-    public var end: String
+    public let begin: RegexPattern
+    public let end: RegexPattern
     
-    private var _beginRegex: Regex?
-    public func beginRegex(rule: Rule) throws -> Regex {
-        return try _beginRegex.ensure {
-            try rule._compileRegex(pattern: begin)
-        }
-    }
-    
-    public init(begin: String,
-                end: String)
+    public init(begin: RegexPattern,
+                end: RegexPattern)
     {
         self.begin = begin
         self.end = end

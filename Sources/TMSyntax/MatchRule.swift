@@ -2,21 +2,14 @@ import Foundation
 import RichJSONParser
 
 public final class MatchRule : Rule {
-    public let match: String
+    public let pattern: RegexPattern
     public let scopeName: ScopeName
     
-    private var _matchRegex: Regex?
-    public func matchRegex() throws -> Regex {
-        return try _matchRegex.ensure {
-            try _compileRegex(pattern: match)
-        }
-    }
-    
     public init(sourceLocation: SourceLocation?,
-                match: String,
+                pattern: RegexPattern,
                 scopeName: ScopeName)
     {
-        self.match = match
+        self.pattern = pattern
         self.scopeName = scopeName
         super.init(sourceLocation: sourceLocation)
     }

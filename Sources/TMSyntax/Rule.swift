@@ -54,27 +54,30 @@ public class Rule : CopyInitializable, Decodable {
         
         let scopeName = try c.decodeIfPresent(ScopeName.self, forKey: .name)
         
-        if let matchStr = try c.decodeIfPresent(String.self, forKey: .match) {
+        if let matchPattern = try c.decodeIfPresent(RegexPattern.self, forKey: .match) {
             guard let scopeName = scopeName else {
                 throw DecodingError(location: loc, "name not found in match rule")
             }
             
             self.init(copy: MatchRule(sourceLocation: decoder.sourceLocation,
-                                      match: matchStr, scopeName: scopeName))
+                                      pattern: matchPattern,
+                                      scopeName: scopeName))
             return
         }
         
         let patterns = try c.decodeIfPresent([Rule].self, forKey: .patterns) ?? []
         let repository = try c.decodeIfPresent(RuleRepository.self, forKey: .repository)
         
-        if let beginStr = try c.decodeIfPresent(String.self, forKey: .begin) {
-            guard let endStr = try c.decodeIfPresent(String.self, forKey: .end) else {
+        if let beginPattern = try c.decodeIfPresent(RegexPattern.self, forKey: .begin) {
+            guard let endPattern = try c.decodeIfPresent(RegexPattern.self, forKey: .end) else {
                 throw DecodingError(location: loc, "end not found in begin rule")
             }
             
+            let cond = BeginEndCondition(begin: beginPattern,
+                                         end: endPattern)
+            
             self.init(copy: ScopeRule(sourceLocation: decoder.sourceLocation,
-                                      condition: .beginEnd(BeginEndCondition(begin: beginStr,
-                                                                             end: endStr)),
+                                      condition: .beginEnd(cond),
                                       patterns: patterns,
                                       repository: repository,
                                       scopeName: scopeName))
@@ -99,14 +102,13 @@ public class Rule : CopyInitializable, Decodable {
         return nil
     }
     
-    // TODO: end match
-    public func collectMatchPlans() -> [MatchPlan] {
+    public func collectEnterMatchPlans() -> [MatchPlan] {
         switch switcher {
         case .include(let rule):
             guard let target = rule.target else {
                 return []
             }
-            return target.collectMatchPlans()
+            return target.collectEnterMatchPlans()
         case .match(let rule):
             return [MatchPlan.matchRule(rule)]
         case .scope(let rule):
@@ -114,11 +116,11 @@ public class Rule : CopyInitializable, Decodable {
             case .beginEnd(let cond):
                 return [MatchPlan.beginRule(rule, cond)]
             case .none:
-                var result = [MatchPlan]()
+                var plans: [MatchPlan] = []
                 for e in rule.patterns {
-                    result += e.collectMatchPlans()
+                    plans += e.collectEnterMatchPlans()
                 }
-                return result
+                return plans
             }
         }
     }

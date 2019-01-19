@@ -11,10 +11,10 @@ public class Parser {
         self.lines = Parser.splitLines(string)
         self.currentLine = 0
         self.grammer = grammer
-        self.ruleStack = MatchRuleStack()
+        self.ruleStack = MatchStateStack()
         
-        ruleStack.push(MatchRuleStack.Item(rule: grammer.rule,
-                                           scopeName: grammer.rule.scopeName))
+        ruleStack.push(MatchState(rule: grammer.rule,
+                                  scopeName: grammer.rule.scopeName))
     }
     
     public let lines: [String]
@@ -27,9 +27,10 @@ public class Parser {
     private var currentRule: Rule {
         return ruleStack.top!.rule
     }
-    private var ruleStack: MatchRuleStack
-    
+    private var ruleStack: MatchStateStack
     private var tokens: [Token] = []
+    private var line: String!
+    private var position: String.Index!
     
     public func parseLine() throws -> [Token] {
         tokens = []
@@ -40,27 +41,57 @@ public class Parser {
     }
     
     private func _parseLine() throws {
-        let line = lines[currentLine]
-        
-        var pos = line.startIndex
+        line = lines[currentLine]
+        position = line.startIndex
         while true {
-            let matchPlans = currentRule.collectMatchPlans()
+            let matchPlans = collectMatchPlans()
+           
+            trace("--- match plans ---")
+            for plan in matchPlans {
+                trace(plan.description)
+            }
+            trace("------")
             
-            guard let result = try search(line: line, start: pos, plans: matchPlans) else {
+            guard let result = try search(line: line,
+                                          start: position,
+                                          plans: matchPlans) else
+            {
                 return
             }
             
             processMatchResult(result)
-            
-            pos = result.match[0].upperBound
         }
+    }
+    
+    private func collectMatchPlans() -> [MatchPlan] {
+        var plans: [MatchPlan] = []
+        
+        switch currentRule.switcher {
+        case .include,
+             .match:
+            break
+        case .scope(let rule):
+            switch rule.condition {
+            case .beginEnd(let cond):
+                let endPlan = MatchPlan.endRule(rule, cond)
+                plans.append(endPlan)
+            case .none:
+                break
+            }
+            
+            for e in rule.patterns {
+                plans += e.collectEnterMatchPlans()
+            }
+        }
+
+        return plans
     }
     
     private func search(line: String, start: String.Index, plans: [MatchPlan]) throws -> MatchResult? {
         var matchResults: [(Int, MatchResult)] = []
         
         for (index, plan) in plans.enumerated() {
-            let regex = try plan.compile()
+            let regex = try plan.regexPattern.compile()
             if let match = regex.search(string: line, range: start..<line.endIndex) {
                 matchResults.append((index, MatchResult(plan: plan, match: match)))
             }
@@ -87,10 +118,18 @@ public class Parser {
     private func processMatchResult(_ result: MatchResult) {
         switch result.plan {
         case .matchRule(let rule):
+            trace("match \(result.plan.regexPattern)")
             buildToken(range: result.match[0], scopeName: rule.scopeName)
+            position = result.match[0].upperBound
         case .beginRule(let rule, let cond):
+            trace("begin \(result.plan.regexPattern)")
+            let newState = MatchState(rule: rule, scopeName: rule.scopeName)
+            ruleStack.push(newState)
+            position = result.match[0].upperBound
+        case .endRule(let rule, let cond):
+            trace("end \(result.plan.regexPattern)")
+            position = result.match[0].upperBound
             // TODO
-            break
         }
     }
     
@@ -155,5 +194,9 @@ public class Parser {
         }
         
         return result
+    }
+    
+    private func trace(_ string: String) {
+        print("[Parser trace] \(string)")
     }
 }
