@@ -1,19 +1,21 @@
 import Foundation
 
 internal final class LineParser {
-    public init(matchStack: MatchStateStack,
-                line: String)
+    public init(line: String,
+                matchStack: MatchStateStack)
     {
+        self.line = line
+        self.lineEndPosition = line.lineEndIndex
+        self.position = line.startIndex
         self.matchStack = matchStack
         self.tokens = []
-        self.line = line
-        self.position = line.startIndex
     }
-    
+
+    private let line: String
+    private let lineEndPosition: String.Index
+    private var position: String.Index
     private var matchStack: MatchStateStack
     private var tokens: [Token]
-    private var line: String!
-    private var position: String.Index!
     
     private var currentRule: Rule {
         return matchStack.top!.rule
@@ -22,7 +24,7 @@ internal final class LineParser {
         return matchStack.items.compactMap { $0.scopeName }
     }
 
-    public func parse() throws -> [Token] {        
+    public func parse() throws -> Parser.Result {
         while true {
             let matchPlans = collectMatchPlans()
             
@@ -40,13 +42,15 @@ internal final class LineParser {
             {
                 trace("no match, end line")
                 
-                extendOuterScope(end: line.endIndex)
+                extendOuterScope(end: lineEndPosition)
                 
-                return tokens
+                break
             }
             
             processMatchResult(result)
         }
+        
+        return Parser.Result(matchStack: matchStack, tokens: tokens)
     }
     
     private func collectMatchPlans() -> [MatchPlan] {
@@ -78,7 +82,7 @@ internal final class LineParser {
         
         for (index, plan) in plans.enumerated() {
             let regex = try plan.regexPattern.compile()
-            if let match = regex.search(string: line, range: start..<line.endIndex) {
+            if let match = regex.search(string: line, range: start..<lineEndPosition) {
                 matchResults.append((index, MatchResult(plan: plan, match: match)))
             }
         }
@@ -176,4 +180,5 @@ internal final class LineParser {
     private func trace(_ string: String) {
         print("[Parser trace] \(string)")
     }
+
 }

@@ -2,10 +2,13 @@ import XCTest
 import TMSyntax
 import OrderedDictionary
 
+let jsonSyntaxPath = Resources.shared.path("Syntaxes/JSON.tmLanguage.json")
+let xmlSyntaxPath = Resources.shared.path("Syntaxes/xml.tmLanguage.json")
+
 class ParserTests: XCTestCase {
+    
     func test1() throws {
-        let path = Resources.shared.path("Syntaxes/JSON.tmLanguage.json")
-        let grammer = try Grammer(contentsOf: path)
+        let grammer = try Grammer(contentsOf: jsonSyntaxPath)
 
         let string = "123 456 789"
         let parser = Parser(string: string, grammer: grammer)
@@ -20,8 +23,7 @@ class ParserTests: XCTestCase {
     }
     
     func test2() throws {
-        let path = Resources.shared.path("Syntaxes/JSON.tmLanguage.json")
-        let grammer = try Grammer(contentsOf: path)
+        let grammer = try Grammer(contentsOf: jsonSyntaxPath)
         
         let string = "[ 123 ]"
         let parser = Parser(string: string, grammer: grammer)
@@ -36,8 +38,7 @@ class ParserTests: XCTestCase {
     }
     
     func testNest() throws {
-        let path = Resources.shared.path("Syntaxes/JSON.tmLanguage.json")
-        let grammer = try Grammer(contentsOf: path)
+        let grammer = try Grammer(contentsOf: jsonSyntaxPath)
         
         let string = " [ [ 123 ] ] "
         let parser = Parser(string: string, grammer: grammer)
@@ -63,8 +64,7 @@ class ParserTests: XCTestCase {
     }
     
     func testMatchRuleCapture() throws {
-        let path = Resources.shared.path("Syntaxes/xml.tmLanguage.json")
-        let grammer = try Grammer(contentsOf: path)
+        let grammer = try Grammer(contentsOf: xmlSyntaxPath)
         
         let string = "&nbsp;"
         let parser = Parser(string: string, grammer: grammer)
@@ -78,26 +78,67 @@ class ParserTests: XCTestCase {
             ])
     }
     
-    func testSplitLines() throws {
-        XCTAssertEqual(Parser.splitLines(""), [])
-        XCTAssertEqual(Parser.splitLines("a"), ["a"])
-        XCTAssertEqual(Parser.splitLines("""
-abc
+    func testNestMultiline() throws {
+        let grammer = try Grammer(contentsOf: jsonSyntaxPath)
 
-"""),
-                       ["abc\n"])
-        XCTAssertEqual(Parser.splitLines("""
-abc
-def
-"""),
-                       ["abc\n", "def"])
         
-        XCTAssertEqual(Parser.splitLines("""
-abc
-
-def
-"""),
-                       ["abc\n", "\n", "def"])
-
+        let string = """
+[
+  [
+    1,
+    2
+  ]
+]
+"""
+        let lang = "source.json"
+        let array = "meta.structure.array.json"
+        let arrayBegin = "punctuation.definition.array.begin.json"
+        let arrayEnd = "punctuation.definition.array.end.json"
+        let numeric = "constant.numeric.json"
+        let comma = "punctuation.separator.array.json"
+        
+        let parser = Parser(string: string, grammer: grammer)
+        var tokens = try parseLine(parser)
+        XCTAssertEqual(tokens, [
+            NaiveToken(range: 0..<1, scopes: [lang, array, arrayBegin])
+            ])
+        
+        tokens = try parseLine(parser)
+        XCTAssertEqual(tokens, [
+            NaiveToken(range: 0..<2, scopes: [lang, array]),
+            NaiveToken(range: 2..<3, scopes: [lang, array, array, arrayBegin])
+            ])
+        
+        tokens = try parseLine(parser)
+        XCTAssertEqual(tokens, [
+            NaiveToken(range: 0..<4, scopes: [lang, array, array]),
+            NaiveToken(range: 4..<5, scopes: [lang, array, array, numeric]),
+            NaiveToken(range: 5..<6, scopes: [lang, array, array, comma]),
+            ])
+        
+        tokens = try parseLine(parser)
+        XCTAssertEqual(tokens, [
+            NaiveToken(range: 0..<4, scopes: [lang, array, array]),
+            NaiveToken(range: 4..<5, scopes: [lang, array, array, numeric])
+            ])
+        
+        tokens = try parseLine(parser)
+        XCTAssertEqual(tokens, [
+            NaiveToken(range: 0..<2, scopes: [lang, array, array]),
+            NaiveToken(range: 2..<3, scopes: [lang, array, array, arrayEnd]),
+            ])
+        
+        tokens = try parseLine(parser)
+        XCTAssertEqual(tokens, [
+            NaiveToken(range: 0..<1, scopes: [lang, array, arrayEnd]),
+            ])
+        
+        XCTAssertTrue(parser.isAtEnd)
     }
+    
+    private func parseLine(_ parser: Parser) throws -> [NaiveToken] {
+        let line = parser.currentLine!
+        return try parser.parseLine().map { $0.toNaive(string: line) }
+    }
+
 }

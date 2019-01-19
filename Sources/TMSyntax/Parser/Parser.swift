@@ -6,10 +6,22 @@ internal extension Unicode.Scalar {
 }
 
 public final class Parser {
+    public struct Result {
+        public var matchStack: MatchStateStack
+        public var tokens: [Token]
+        
+        public init(matchStack: MatchStateStack,
+                    tokens: [Token])
+        {
+            self.matchStack = matchStack
+            self.tokens = tokens
+        }
+    }
+    
     public convenience init(string: String,
                             grammer: Grammer)
     {
-        self.init(lines: Parser.splitLines(string),
+        self.init(lines: string.splitLines(),
                   grammer: grammer)
     }
     
@@ -17,7 +29,7 @@ public final class Parser {
                 grammer: Grammer)
     {
         self.lines = lines
-        self.currentLine = 0
+        self.currentLineIndex = 0
         self.grammer = grammer
         self.matchStack = MatchStateStack()
         
@@ -26,67 +38,27 @@ public final class Parser {
     }
     
     public let lines: [String]
-    public private(set) var currentLine: Int
+    public private(set) var currentLineIndex: Int
+    public var currentLine: String? {
+        guard currentLineIndex < lines.count else {
+            return nil
+        }
+        return lines[currentLineIndex]
+    }
     public var isAtEnd: Bool {
-        return currentLine == lines.count
+        return currentLineIndex == lines.count
     }
     
     private let grammer: Grammer
     private var matchStack: MatchStateStack
     
     public func parseLine() throws -> [Token] {
-        let line = lines[currentLine]
-        let parser = LineParser(matchStack: matchStack, line: line)
-        let tokens = try parser.parse()
-        currentLine += 1
-        return tokens
+        let parser = LineParser(line: currentLine!,
+                                matchStack: matchStack)
+        let result = try parser.parse()
+        self.matchStack = result.matchStack
+        currentLineIndex += 1
+        return result.tokens
     }
     
-    public static func splitLines(_ string: String) -> [String] {
-        var result = [String]()
-        
-        let string = string.unicodeScalars
-        
-        var pos = string.startIndex
-        var lineStart = pos
-        while true {
-            if pos == string.endIndex {
-                if lineStart != pos {
-                    result.append(String(string[lineStart..<pos]))
-                    lineStart = pos
-                }
-                break
-            }
-            
-            let c0 = string[pos]
-            
-            if c0 == .cr {
-                pos = string.index(after: pos)
-                if pos == string.endIndex {
-                    result.append(String(string[lineStart..<pos]))
-                    lineStart = pos
-                    break
-                }
-                
-                let c1 = string[pos]
-                if c1 == .lf {
-                    pos = string.index(after: pos)
-                    result.append(String(string[lineStart..<pos]))
-                    lineStart = pos
-                } else {
-                    result.append(String(string[lineStart..<pos]))
-                    lineStart = pos
-                }
-            } else if c0 == .lf {
-                pos = string.index(after: pos)
-                result.append(String(string[lineStart..<pos]))
-                lineStart = pos
-            } else {
-                pos = string.index(after: pos)
-            }
-        }
-        
-        return result
-    }
-
 }
