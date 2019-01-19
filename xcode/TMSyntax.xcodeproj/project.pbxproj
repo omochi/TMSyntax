@@ -17,14 +17,12 @@
 		D64F5DE521F239FC00CA06B7 /* Onigmo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5DE421F239FC00CA06B7 /* Onigmo.framework */; };
 		D64F5DE921F2448900CA06B7 /* OnigmoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DE821F2448900CA06B7 /* OnigmoTests.swift */; };
 		D64F5DFD21F3316300CA06B7 /* BinarySearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DFC21F3316300CA06B7 /* BinarySearchTests.swift */; };
-		D64F5DFF21F3360700CA06B7 /* TokenSplitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DFE21F3360700CA06B7 /* TokenSplitterTests.swift */; };
 		D64F5E0321F3367400CA06B7 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E0221F3367400CA06B7 /* Utils.swift */; };
 		D64F5E0521F3386000CA06B7 /* NaiveToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E0421F3386000CA06B7 /* NaiveToken.swift */; };
 		D64F5E7221F35D3900CA06B7 /* OnigmoAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5521F35D3900CA06B7 /* OnigmoAPI.swift */; };
 		D64F5E7321F35D3900CA06B7 /* RegexCompileError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5621F35D3900CA06B7 /* RegexCompileError.swift */; };
 		D64F5E7421F35D3900CA06B7 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5721F35D3900CA06B7 /* Regex.swift */; };
 		D64F5E7521F35D3900CA06B7 /* RegexPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5821F35D3900CA06B7 /* RegexPattern.swift */; };
-		D64F5E7621F35D3900CA06B7 /* TokenSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5A21F35D3900CA06B7 /* TokenSplitter.swift */; };
 		D64F5E7721F35D3900CA06B7 /* Grammar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5C21F35D3900CA06B7 /* Grammar.swift */; };
 		D64F5E7821F35D3900CA06B7 /* MatchStateStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5E21F35D3900CA06B7 /* MatchStateStack.swift */; };
 		D64F5E7921F35D3900CA06B7 /* MatchPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5F21F35D3900CA06B7 /* MatchPlan.swift */; };
@@ -45,6 +43,11 @@
 		D64F5E9C21F35D7400CA06B7 /* ScopeRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9621F35D7400CA06B7 /* ScopeRule.swift */; };
 		D64F5E9D21F35D7400CA06B7 /* Rule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9721F35D7400CA06B7 /* Rule.swift */; };
 		D64F5E9E21F35D7400CA06B7 /* ScopeCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9821F35D7400CA06B7 /* ScopeCondition.swift */; };
+		D64F5EA021F35F8100CA06B7 /* CaptureAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9F21F35F8100CA06B7 /* CaptureAttributes.swift */; };
+		D64F5EA221F360D500CA06B7 /* RuleDecode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EA121F360D500CA06B7 /* RuleDecode.swift */; };
+		D64F5EA421F364CB00CA06B7 /* ScopeAccumulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EA321F364CB00CA06B7 /* ScopeAccumulator.swift */; };
+		D64F5EA621F3688800CA06B7 /* ScopeAccumulatorScriptTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EA521F3688800CA06B7 /* ScopeAccumulatorScriptTests.swift */; };
+		D64F5EA821F36E9500CA06B7 /* ScopeAccumulatorTokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EA721F36E9500CA06B7 /* ScopeAccumulatorTokenTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,14 +74,12 @@
 		D64F5DE421F239FC00CA06B7 /* Onigmo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Onigmo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D64F5DE821F2448900CA06B7 /* OnigmoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnigmoTests.swift; sourceTree = "<group>"; };
 		D64F5DFC21F3316300CA06B7 /* BinarySearchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinarySearchTests.swift; sourceTree = "<group>"; };
-		D64F5DFE21F3360700CA06B7 /* TokenSplitterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenSplitterTests.swift; sourceTree = "<group>"; };
 		D64F5E0221F3367400CA06B7 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		D64F5E0421F3386000CA06B7 /* NaiveToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NaiveToken.swift; sourceTree = "<group>"; };
 		D64F5E5521F35D3900CA06B7 /* OnigmoAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnigmoAPI.swift; sourceTree = "<group>"; };
 		D64F5E5621F35D3900CA06B7 /* RegexCompileError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegexCompileError.swift; sourceTree = "<group>"; };
 		D64F5E5721F35D3900CA06B7 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
 		D64F5E5821F35D3900CA06B7 /* RegexPattern.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegexPattern.swift; sourceTree = "<group>"; };
-		D64F5E5A21F35D3900CA06B7 /* TokenSplitter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokenSplitter.swift; sourceTree = "<group>"; };
 		D64F5E5C21F35D3900CA06B7 /* Grammar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Grammar.swift; sourceTree = "<group>"; };
 		D64F5E5E21F35D3900CA06B7 /* MatchStateStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MatchStateStack.swift; sourceTree = "<group>"; };
 		D64F5E5F21F35D3900CA06B7 /* MatchPlan.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MatchPlan.swift; sourceTree = "<group>"; };
@@ -99,6 +100,11 @@
 		D64F5E9621F35D7400CA06B7 /* ScopeRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopeRule.swift; sourceTree = "<group>"; };
 		D64F5E9721F35D7400CA06B7 /* Rule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rule.swift; sourceTree = "<group>"; };
 		D64F5E9821F35D7400CA06B7 /* ScopeCondition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopeCondition.swift; sourceTree = "<group>"; };
+		D64F5E9F21F35F8100CA06B7 /* CaptureAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureAttributes.swift; sourceTree = "<group>"; };
+		D64F5EA121F360D500CA06B7 /* RuleDecode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleDecode.swift; sourceTree = "<group>"; };
+		D64F5EA321F364CB00CA06B7 /* ScopeAccumulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeAccumulator.swift; sourceTree = "<group>"; };
+		D64F5EA521F3688800CA06B7 /* ScopeAccumulatorScriptTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeAccumulatorScriptTests.swift; sourceTree = "<group>"; };
+		D64F5EA721F36E9500CA06B7 /* ScopeAccumulatorTokenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeAccumulatorTokenTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -185,7 +191,8 @@
 				D64F5DB621F2003500CA06B7 /* ParserTests.swift */,
 				D64F5DE821F2448900CA06B7 /* OnigmoTests.swift */,
 				D64F5DFC21F3316300CA06B7 /* BinarySearchTests.swift */,
-				D64F5DFE21F3360700CA06B7 /* TokenSplitterTests.swift */,
+				D64F5EA521F3688800CA06B7 /* ScopeAccumulatorScriptTests.swift */,
+				D64F5EA721F36E9500CA06B7 /* ScopeAccumulatorTokenTests.swift */,
 			);
 			name = Sources;
 			path = ../../Tests/TMSyntaxTests;
@@ -216,6 +223,7 @@
 		D64F5E4F21F35D3900CA06B7 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				D64F5E9F21F35F8100CA06B7 /* CaptureAttributes.swift */,
 				D64F5E8E21F35D6600CA06B7 /* IncludeTarget.swift */,
 				D64F5E8D21F35D6600CA06B7 /* RuleRepository.swift */,
 				D64F5E8C21F35D6600CA06B7 /* ScopeName.swift */,
@@ -239,7 +247,7 @@
 			isa = PBXGroup;
 			children = (
 				D64F5E5C21F35D3900CA06B7 /* Grammar.swift */,
-				D64F5E5A21F35D3900CA06B7 /* TokenSplitter.swift */,
+				D64F5EA321F364CB00CA06B7 /* ScopeAccumulator.swift */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -263,6 +271,7 @@
 				D64F5E9321F35D7400CA06B7 /* IncludeRule.swift */,
 				D64F5E9521F35D7400CA06B7 /* MatchRule.swift */,
 				D64F5E9721F35D7400CA06B7 /* Rule.swift */,
+				D64F5EA121F360D500CA06B7 /* RuleDecode.swift */,
 				D64F5E9821F35D7400CA06B7 /* ScopeCondition.swift */,
 				D64F5E9621F35D7400CA06B7 /* ScopeRule.swift */,
 			);
@@ -382,14 +391,16 @@
 				D64F5E7221F35D3900CA06B7 /* OnigmoAPI.swift in Sources */,
 				D64F5E9E21F35D7400CA06B7 /* ScopeCondition.swift in Sources */,
 				D64F5E9B21F35D7400CA06B7 /* MatchRule.swift in Sources */,
+				D64F5EA421F364CB00CA06B7 /* ScopeAccumulator.swift in Sources */,
 				D64F5E7921F35D3900CA06B7 /* MatchPlan.swift in Sources */,
+				D64F5EA221F360D500CA06B7 /* RuleDecode.swift in Sources */,
 				D64F5E8721F35D4A00CA06B7 /* OptionalExtension.swift in Sources */,
+				D64F5EA021F35F8100CA06B7 /* CaptureAttributes.swift in Sources */,
 				D64F5E7721F35D3900CA06B7 /* Grammar.swift in Sources */,
 				D64F5E9921F35D7400CA06B7 /* IncludeRule.swift in Sources */,
 				D64F5E8F21F35D6600CA06B7 /* Token.swift in Sources */,
 				D64F5E7321F35D3900CA06B7 /* RegexCompileError.swift in Sources */,
 				D64F5E7821F35D3900CA06B7 /* MatchStateStack.swift in Sources */,
-				D64F5E7621F35D3900CA06B7 /* TokenSplitter.swift in Sources */,
 				D64F5E8821F35D4A00CA06B7 /* BinarySearch.swift in Sources */,
 				D64F5E7B21F35D3900CA06B7 /* MatchState.swift in Sources */,
 				D64F5E7A21F35D3900CA06B7 /* MatchResult.swift in Sources */,
@@ -413,9 +424,10 @@
 			files = (
 				D64F5DFD21F3316300CA06B7 /* BinarySearchTests.swift in Sources */,
 				D64F5DB821F2003500CA06B7 /* ParserTests.swift in Sources */,
+				D64F5EA821F36E9500CA06B7 /* ScopeAccumulatorTokenTests.swift in Sources */,
 				D64F5DE921F2448900CA06B7 /* OnigmoTests.swift in Sources */,
+				D64F5EA621F3688800CA06B7 /* ScopeAccumulatorScriptTests.swift in Sources */,
 				D64F5DD721F212D400CA06B7 /* Resources.swift in Sources */,
-				D64F5DFF21F3360700CA06B7 /* TokenSplitterTests.swift in Sources */,
 				D64F5E0321F3367400CA06B7 /* Utils.swift in Sources */,
 				D64F5E0521F3386000CA06B7 /* NaiveToken.swift in Sources */,
 			);

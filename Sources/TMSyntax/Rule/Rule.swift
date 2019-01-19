@@ -66,62 +66,21 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
         case patterns
         case repository
         case begin
+        case beginCaptures
         case end
+        case endCaptures
+        case captures
     }
     
     public required convenience init(from decoder: Decoder) throws {
-        let loc = decoder.sourceLocation!
-        let c = try decoder.container(keyedBy: CodingKeys.self)
-        
-        if let target = try c.decodeIfPresent(IncludeTarget.self, forKey: .include) {
-            self.init(copy: IncludeRule(sourceLocation: decoder.sourceLocation,
-                                        target: target))
-            return
-        }
-        
-        let scopeName = try c.decodeIfPresent(ScopeName.self, forKey: .name)
-        
-        if let matchPattern = try c.decodeIfPresent(RegexPattern.self, forKey: .match) {
-            guard let scopeName = scopeName else {
-                throw DecodingError(location: loc, "name not found in match rule")
-            }
-            
-            self.init(copy: MatchRule(sourceLocation: decoder.sourceLocation,
-                                      pattern: matchPattern,
-                                      scopeName: scopeName))
-            return
-        }
-        
-        let patterns = try c.decodeIfPresent([Rule].self, forKey: .patterns) ?? []
-        let repository = try c.decodeIfPresent(RuleRepository.self, forKey: .repository)
-        
-        if let beginPattern = try c.decodeIfPresent(RegexPattern.self, forKey: .begin) {
-            guard let endPattern = try c.decodeIfPresent(RegexPattern.self, forKey: .end) else {
-                throw DecodingError(location: loc, "end not found in begin rule")
-            }
-            
-            let cond = BeginEndCondition(begin: beginPattern,
-                                         end: endPattern)
-            
-            self.init(copy: ScopeRule(sourceLocation: decoder.sourceLocation,
-                                      condition: .beginEnd(cond),
-                                      patterns: patterns,
-                                      repository: repository,
-                                      scopeName: scopeName))
-            return
-        }
-        
-        self.init(copy: ScopeRule(sourceLocation: decoder.sourceLocation,
-                                  condition: .none,
-                                  patterns: patterns,
-                                  repository: repository,
-                                  scopeName: nil))
+        let rule = try Rule.decode(from: decoder)
+        self.init(copy: rule)
     }
     
     public func rule(with name: String) -> Rule? {
         var ruleOrNone: Rule? = self
         while let rule = ruleOrNone {
-            if let hit = rule.repository?.dict[name] {
+            if let hit = rule.repository?.dictionary[name] {
                 return hit
             }
             ruleOrNone = rule.parent

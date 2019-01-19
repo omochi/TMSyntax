@@ -5,7 +5,7 @@ internal extension Unicode.Scalar {
     static let lf = Unicode.Scalar(UInt8(0x0A))
 }
 
-public class Parser {
+public final class Parser {
     public init(string: String,
                 grammer: Grammer) {
         self.lines = Parser.splitLines(string)
@@ -141,6 +141,8 @@ public class Parser {
         case .beginRule(let rule, let cond):
             let newState = MatchState(rule: rule, scopeName: rule.scopeName)
             ruleStack.push(newState)
+            
+            var start = result.match[0].lowerBound
             
             let token = Token(range: result.match[0], scopes: currentScopes)
             addToken(token)

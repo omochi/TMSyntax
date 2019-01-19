@@ -32,7 +32,7 @@ public final class ScopeRule : Rule {
         }
         
         if let repository = repository {            
-            for (name, rule) in repository.dict {
+            for (name, rule) in repository.dictionary {
                 rule.parent = self
                 rule.name = name
             }
