@@ -2,12 +2,6 @@ import XCTest
 import TMSyntax
 import OrderedDictionary
 
-internal extension String {
-    // inefficient
-    func index(at offset: Int) -> String.Index {
-        return self.index(self.startIndex, offsetBy: offset)
-    }
-}
 
 class TMSyntaxTests: XCTestCase {
     func test1() throws {
