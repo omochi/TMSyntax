@@ -20,31 +20,31 @@
 		D64F5DFF21F3360700CA06B7 /* TokenSplitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DFE21F3360700CA06B7 /* TokenSplitterTests.swift */; };
 		D64F5E0321F3367400CA06B7 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E0221F3367400CA06B7 /* Utils.swift */; };
 		D64F5E0521F3386000CA06B7 /* NaiveToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E0421F3386000CA06B7 /* NaiveToken.swift */; };
-		D64F5E2F21F35CB600CA06B7 /* OptionalExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E1121F35CB600CA06B7 /* OptionalExtension.swift */; };
-		D64F5E3021F35CB600CA06B7 /* DecodingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E1221F35CB600CA06B7 /* DecodingError.swift */; };
-		D64F5E3121F35CB600CA06B7 /* BinarySearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E1321F35CB600CA06B7 /* BinarySearch.swift */; };
-		D64F5E3221F35CB600CA06B7 /* CopyInitializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E1421F35CB600CA06B7 /* CopyInitializable.swift */; };
-		D64F5E3321F35CB600CA06B7 /* MatchStateStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E1621F35CB600CA06B7 /* MatchStateStack.swift */; };
-		D64F5E3421F35CB600CA06B7 /* ScopeName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E1721F35CB600CA06B7 /* ScopeName.swift */; };
-		D64F5E3521F35CB600CA06B7 /* IncludeTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E1821F35CB600CA06B7 /* IncludeTarget.swift */; };
-		D64F5E3621F35CB600CA06B7 /* MatchPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E1921F35CB600CA06B7 /* MatchPlan.swift */; };
-		D64F5E3721F35CB600CA06B7 /* RuleRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E1A21F35CB600CA06B7 /* RuleRepository.swift */; };
-		D64F5E3821F35CB600CA06B7 /* MatchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E1B21F35CB600CA06B7 /* MatchResult.swift */; };
-		D64F5E3921F35CB600CA06B7 /* MatchState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E1C21F35CB600CA06B7 /* MatchState.swift */; };
-		D64F5E3A21F35CB600CA06B7 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E1D21F35CB600CA06B7 /* Token.swift */; };
-		D64F5E3B21F35CB600CA06B7 /* OnigmoAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E1F21F35CB600CA06B7 /* OnigmoAPI.swift */; };
-		D64F5E3C21F35CB600CA06B7 /* RegexCompileError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E2021F35CB600CA06B7 /* RegexCompileError.swift */; };
-		D64F5E3D21F35CB600CA06B7 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E2121F35CB600CA06B7 /* Regex.swift */; };
-		D64F5E3E21F35CB600CA06B7 /* RegexPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E2221F35CB600CA06B7 /* RegexPattern.swift */; };
-		D64F5E3F21F35CB600CA06B7 /* TokenSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E2421F35CB600CA06B7 /* TokenSplitter.swift */; };
-		D64F5E4021F35CB600CA06B7 /* ScopeRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E2621F35CB600CA06B7 /* ScopeRule.swift */; };
-		D64F5E4121F35CB600CA06B7 /* IncludeRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E2721F35CB600CA06B7 /* IncludeRule.swift */; };
-		D64F5E4221F35CB600CA06B7 /* BeginEndCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E2821F35CB600CA06B7 /* BeginEndCondition.swift */; };
-		D64F5E4321F35CB600CA06B7 /* ScopeCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E2A21F35CB600CA06B7 /* ScopeCondition.swift */; };
-		D64F5E4421F35CB600CA06B7 /* Rule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E2B21F35CB600CA06B7 /* Rule.swift */; };
-		D64F5E4521F35CB600CA06B7 /* MatchRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E2C21F35CB600CA06B7 /* MatchRule.swift */; };
-		D64F5E4621F35CB600CA06B7 /* Grammar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E2D21F35CB600CA06B7 /* Grammar.swift */; };
-		D64F5E4721F35CB600CA06B7 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E2E21F35CB600CA06B7 /* Parser.swift */; };
+		D64F5E7221F35D3900CA06B7 /* OnigmoAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5521F35D3900CA06B7 /* OnigmoAPI.swift */; };
+		D64F5E7321F35D3900CA06B7 /* RegexCompileError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5621F35D3900CA06B7 /* RegexCompileError.swift */; };
+		D64F5E7421F35D3900CA06B7 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5721F35D3900CA06B7 /* Regex.swift */; };
+		D64F5E7521F35D3900CA06B7 /* RegexPattern.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5821F35D3900CA06B7 /* RegexPattern.swift */; };
+		D64F5E7621F35D3900CA06B7 /* TokenSplitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5A21F35D3900CA06B7 /* TokenSplitter.swift */; };
+		D64F5E7721F35D3900CA06B7 /* Grammar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5C21F35D3900CA06B7 /* Grammar.swift */; };
+		D64F5E7821F35D3900CA06B7 /* MatchStateStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5E21F35D3900CA06B7 /* MatchStateStack.swift */; };
+		D64F5E7921F35D3900CA06B7 /* MatchPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E5F21F35D3900CA06B7 /* MatchPlan.swift */; };
+		D64F5E7A21F35D3900CA06B7 /* MatchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E6021F35D3900CA06B7 /* MatchResult.swift */; };
+		D64F5E7B21F35D3900CA06B7 /* MatchState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E6121F35D3900CA06B7 /* MatchState.swift */; };
+		D64F5E7C21F35D3900CA06B7 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E6221F35D3900CA06B7 /* Parser.swift */; };
+		D64F5E8721F35D4A00CA06B7 /* OptionalExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8321F35D4A00CA06B7 /* OptionalExtension.swift */; };
+		D64F5E8821F35D4A00CA06B7 /* BinarySearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8421F35D4A00CA06B7 /* BinarySearch.swift */; };
+		D64F5E8921F35D4A00CA06B7 /* DecodingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8521F35D4A00CA06B7 /* DecodingError.swift */; };
+		D64F5E8A21F35D4A00CA06B7 /* CopyInitializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8621F35D4A00CA06B7 /* CopyInitializable.swift */; };
+		D64F5E8F21F35D6600CA06B7 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8B21F35D6600CA06B7 /* Token.swift */; };
+		D64F5E9021F35D6600CA06B7 /* ScopeName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8C21F35D6600CA06B7 /* ScopeName.swift */; };
+		D64F5E9121F35D6600CA06B7 /* RuleRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8D21F35D6600CA06B7 /* RuleRepository.swift */; };
+		D64F5E9221F35D6600CA06B7 /* IncludeTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8E21F35D6600CA06B7 /* IncludeTarget.swift */; };
+		D64F5E9921F35D7400CA06B7 /* IncludeRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9321F35D7400CA06B7 /* IncludeRule.swift */; };
+		D64F5E9A21F35D7400CA06B7 /* BeginEndCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9421F35D7400CA06B7 /* BeginEndCondition.swift */; };
+		D64F5E9B21F35D7400CA06B7 /* MatchRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9521F35D7400CA06B7 /* MatchRule.swift */; };
+		D64F5E9C21F35D7400CA06B7 /* ScopeRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9621F35D7400CA06B7 /* ScopeRule.swift */; };
+		D64F5E9D21F35D7400CA06B7 /* Rule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9721F35D7400CA06B7 /* Rule.swift */; };
+		D64F5E9E21F35D7400CA06B7 /* ScopeCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9821F35D7400CA06B7 /* ScopeCondition.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,31 +74,31 @@
 		D64F5DFE21F3360700CA06B7 /* TokenSplitterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenSplitterTests.swift; sourceTree = "<group>"; };
 		D64F5E0221F3367400CA06B7 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		D64F5E0421F3386000CA06B7 /* NaiveToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NaiveToken.swift; sourceTree = "<group>"; };
-		D64F5E1121F35CB600CA06B7 /* OptionalExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionalExtension.swift; sourceTree = "<group>"; };
-		D64F5E1221F35CB600CA06B7 /* DecodingError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecodingError.swift; sourceTree = "<group>"; };
-		D64F5E1321F35CB600CA06B7 /* BinarySearch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinarySearch.swift; sourceTree = "<group>"; };
-		D64F5E1421F35CB600CA06B7 /* CopyInitializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CopyInitializable.swift; sourceTree = "<group>"; };
-		D64F5E1621F35CB600CA06B7 /* MatchStateStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MatchStateStack.swift; sourceTree = "<group>"; };
-		D64F5E1721F35CB600CA06B7 /* ScopeName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopeName.swift; sourceTree = "<group>"; };
-		D64F5E1821F35CB600CA06B7 /* IncludeTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncludeTarget.swift; sourceTree = "<group>"; };
-		D64F5E1921F35CB600CA06B7 /* MatchPlan.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MatchPlan.swift; sourceTree = "<group>"; };
-		D64F5E1A21F35CB600CA06B7 /* RuleRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuleRepository.swift; sourceTree = "<group>"; };
-		D64F5E1B21F35CB600CA06B7 /* MatchResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MatchResult.swift; sourceTree = "<group>"; };
-		D64F5E1C21F35CB600CA06B7 /* MatchState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MatchState.swift; sourceTree = "<group>"; };
-		D64F5E1D21F35CB600CA06B7 /* Token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
-		D64F5E1F21F35CB600CA06B7 /* OnigmoAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnigmoAPI.swift; sourceTree = "<group>"; };
-		D64F5E2021F35CB600CA06B7 /* RegexCompileError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegexCompileError.swift; sourceTree = "<group>"; };
-		D64F5E2121F35CB600CA06B7 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
-		D64F5E2221F35CB600CA06B7 /* RegexPattern.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegexPattern.swift; sourceTree = "<group>"; };
-		D64F5E2421F35CB600CA06B7 /* TokenSplitter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokenSplitter.swift; sourceTree = "<group>"; };
-		D64F5E2621F35CB600CA06B7 /* ScopeRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopeRule.swift; sourceTree = "<group>"; };
-		D64F5E2721F35CB600CA06B7 /* IncludeRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncludeRule.swift; sourceTree = "<group>"; };
-		D64F5E2821F35CB600CA06B7 /* BeginEndCondition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeginEndCondition.swift; sourceTree = "<group>"; };
-		D64F5E2A21F35CB600CA06B7 /* ScopeCondition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopeCondition.swift; sourceTree = "<group>"; };
-		D64F5E2B21F35CB600CA06B7 /* Rule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rule.swift; sourceTree = "<group>"; };
-		D64F5E2C21F35CB600CA06B7 /* MatchRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MatchRule.swift; sourceTree = "<group>"; };
-		D64F5E2D21F35CB600CA06B7 /* Grammar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Grammar.swift; sourceTree = "<group>"; };
-		D64F5E2E21F35CB600CA06B7 /* Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
+		D64F5E5521F35D3900CA06B7 /* OnigmoAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnigmoAPI.swift; sourceTree = "<group>"; };
+		D64F5E5621F35D3900CA06B7 /* RegexCompileError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegexCompileError.swift; sourceTree = "<group>"; };
+		D64F5E5721F35D3900CA06B7 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Regex.swift; sourceTree = "<group>"; };
+		D64F5E5821F35D3900CA06B7 /* RegexPattern.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegexPattern.swift; sourceTree = "<group>"; };
+		D64F5E5A21F35D3900CA06B7 /* TokenSplitter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokenSplitter.swift; sourceTree = "<group>"; };
+		D64F5E5C21F35D3900CA06B7 /* Grammar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Grammar.swift; sourceTree = "<group>"; };
+		D64F5E5E21F35D3900CA06B7 /* MatchStateStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MatchStateStack.swift; sourceTree = "<group>"; };
+		D64F5E5F21F35D3900CA06B7 /* MatchPlan.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MatchPlan.swift; sourceTree = "<group>"; };
+		D64F5E6021F35D3900CA06B7 /* MatchResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MatchResult.swift; sourceTree = "<group>"; };
+		D64F5E6121F35D3900CA06B7 /* MatchState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MatchState.swift; sourceTree = "<group>"; };
+		D64F5E6221F35D3900CA06B7 /* Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
+		D64F5E8321F35D4A00CA06B7 /* OptionalExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionalExtension.swift; sourceTree = "<group>"; };
+		D64F5E8421F35D4A00CA06B7 /* BinarySearch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinarySearch.swift; sourceTree = "<group>"; };
+		D64F5E8521F35D4A00CA06B7 /* DecodingError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecodingError.swift; sourceTree = "<group>"; };
+		D64F5E8621F35D4A00CA06B7 /* CopyInitializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CopyInitializable.swift; sourceTree = "<group>"; };
+		D64F5E8B21F35D6600CA06B7 /* Token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
+		D64F5E8C21F35D6600CA06B7 /* ScopeName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopeName.swift; sourceTree = "<group>"; };
+		D64F5E8D21F35D6600CA06B7 /* RuleRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuleRepository.swift; sourceTree = "<group>"; };
+		D64F5E8E21F35D6600CA06B7 /* IncludeTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncludeTarget.swift; sourceTree = "<group>"; };
+		D64F5E9321F35D7400CA06B7 /* IncludeRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncludeRule.swift; sourceTree = "<group>"; };
+		D64F5E9421F35D7400CA06B7 /* BeginEndCondition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeginEndCondition.swift; sourceTree = "<group>"; };
+		D64F5E9521F35D7400CA06B7 /* MatchRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MatchRule.swift; sourceTree = "<group>"; };
+		D64F5E9621F35D7400CA06B7 /* ScopeRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopeRule.swift; sourceTree = "<group>"; };
+		D64F5E9721F35D7400CA06B7 /* Rule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rule.swift; sourceTree = "<group>"; };
+		D64F5E9821F35D7400CA06B7 /* ScopeCondition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopeCondition.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,10 +155,12 @@
 		D64F5DA321F1FFED00CA06B7 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				D64F5E1021F35CB600CA06B7 /* Basic */,
-				D64F5E2321F35CB600CA06B7 /* Component */,
-				D64F5E1521F35CB600CA06B7 /* Model */,
-				D64F5E1E21F35CB600CA06B7 /* Regex */,
+				D64F5E4A21F35D3900CA06B7 /* Basic */,
+				D64F5E5921F35D3900CA06B7 /* Component */,
+				D64F5E4F21F35D3900CA06B7 /* Model */,
+				D64F5E5D21F35D3900CA06B7 /* Parser */,
+				D64F5E5421F35D3900CA06B7 /* Regex */,
+				D64F5E6321F35D3900CA06B7 /* Rule */,
 			);
 			name = Sources;
 			path = ../../Sources/TMSyntax;
@@ -200,73 +202,71 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		D64F5E1021F35CB600CA06B7 /* Basic */ = {
+		D64F5E4A21F35D3900CA06B7 /* Basic */ = {
 			isa = PBXGroup;
 			children = (
-				D64F5E1121F35CB600CA06B7 /* OptionalExtension.swift */,
-				D64F5E1221F35CB600CA06B7 /* DecodingError.swift */,
-				D64F5E1321F35CB600CA06B7 /* BinarySearch.swift */,
-				D64F5E1421F35CB600CA06B7 /* CopyInitializable.swift */,
+				D64F5E8421F35D4A00CA06B7 /* BinarySearch.swift */,
+				D64F5E8621F35D4A00CA06B7 /* CopyInitializable.swift */,
+				D64F5E8521F35D4A00CA06B7 /* DecodingError.swift */,
+				D64F5E8321F35D4A00CA06B7 /* OptionalExtension.swift */,
 			);
 			path = Basic;
 			sourceTree = "<group>";
 		};
-		D64F5E1521F35CB600CA06B7 /* Model */ = {
+		D64F5E4F21F35D3900CA06B7 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				D64F5E1621F35CB600CA06B7 /* MatchStateStack.swift */,
-				D64F5E1721F35CB600CA06B7 /* ScopeName.swift */,
-				D64F5E1821F35CB600CA06B7 /* IncludeTarget.swift */,
-				D64F5E1921F35CB600CA06B7 /* MatchPlan.swift */,
-				D64F5E1A21F35CB600CA06B7 /* RuleRepository.swift */,
-				D64F5E1B21F35CB600CA06B7 /* MatchResult.swift */,
-				D64F5E1C21F35CB600CA06B7 /* MatchState.swift */,
-				D64F5E1D21F35CB600CA06B7 /* Token.swift */,
+				D64F5E8E21F35D6600CA06B7 /* IncludeTarget.swift */,
+				D64F5E8D21F35D6600CA06B7 /* RuleRepository.swift */,
+				D64F5E8C21F35D6600CA06B7 /* ScopeName.swift */,
+				D64F5E8B21F35D6600CA06B7 /* Token.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
 		};
-		D64F5E1E21F35CB600CA06B7 /* Regex */ = {
+		D64F5E5421F35D3900CA06B7 /* Regex */ = {
 			isa = PBXGroup;
 			children = (
-				D64F5E1F21F35CB600CA06B7 /* OnigmoAPI.swift */,
-				D64F5E2021F35CB600CA06B7 /* RegexCompileError.swift */,
-				D64F5E2121F35CB600CA06B7 /* Regex.swift */,
-				D64F5E2221F35CB600CA06B7 /* RegexPattern.swift */,
+				D64F5E5521F35D3900CA06B7 /* OnigmoAPI.swift */,
+				D64F5E5621F35D3900CA06B7 /* RegexCompileError.swift */,
+				D64F5E5721F35D3900CA06B7 /* Regex.swift */,
+				D64F5E5821F35D3900CA06B7 /* RegexPattern.swift */,
 			);
 			path = Regex;
 			sourceTree = "<group>";
 		};
-		D64F5E2321F35CB600CA06B7 /* Component */ = {
+		D64F5E5921F35D3900CA06B7 /* Component */ = {
 			isa = PBXGroup;
 			children = (
-				D64F5E2421F35CB600CA06B7 /* TokenSplitter.swift */,
-				D64F5E2521F35CB600CA06B7 /* Rule */,
-				D64F5E2D21F35CB600CA06B7 /* Grammar.swift */,
-				D64F5E2E21F35CB600CA06B7 /* Parser.swift */,
+				D64F5E5C21F35D3900CA06B7 /* Grammar.swift */,
+				D64F5E5A21F35D3900CA06B7 /* TokenSplitter.swift */,
 			);
 			path = Component;
 			sourceTree = "<group>";
 		};
-		D64F5E2521F35CB600CA06B7 /* Rule */ = {
+		D64F5E5D21F35D3900CA06B7 /* Parser */ = {
 			isa = PBXGroup;
 			children = (
-				D64F5E2621F35CB600CA06B7 /* ScopeRule.swift */,
-				D64F5E2721F35CB600CA06B7 /* IncludeRule.swift */,
-				D64F5E2821F35CB600CA06B7 /* BeginEndCondition.swift */,
-				D64F5E2921F35CB600CA06B7 /* ScopeRule */,
-				D64F5E2A21F35CB600CA06B7 /* ScopeCondition.swift */,
-				D64F5E2B21F35CB600CA06B7 /* Rule.swift */,
-				D64F5E2C21F35CB600CA06B7 /* MatchRule.swift */,
+				D64F5E5E21F35D3900CA06B7 /* MatchStateStack.swift */,
+				D64F5E5F21F35D3900CA06B7 /* MatchPlan.swift */,
+				D64F5E6021F35D3900CA06B7 /* MatchResult.swift */,
+				D64F5E6121F35D3900CA06B7 /* MatchState.swift */,
+				D64F5E6221F35D3900CA06B7 /* Parser.swift */,
 			);
-			path = Rule;
+			path = Parser;
 			sourceTree = "<group>";
 		};
-		D64F5E2921F35CB600CA06B7 /* ScopeRule */ = {
+		D64F5E6321F35D3900CA06B7 /* Rule */ = {
 			isa = PBXGroup;
 			children = (
+				D64F5E9421F35D7400CA06B7 /* BeginEndCondition.swift */,
+				D64F5E9321F35D7400CA06B7 /* IncludeRule.swift */,
+				D64F5E9521F35D7400CA06B7 /* MatchRule.swift */,
+				D64F5E9721F35D7400CA06B7 /* Rule.swift */,
+				D64F5E9821F35D7400CA06B7 /* ScopeCondition.swift */,
+				D64F5E9621F35D7400CA06B7 /* ScopeRule.swift */,
 			);
-			path = ScopeRule;
+			path = Rule;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -379,31 +379,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D64F5E4321F35CB600CA06B7 /* ScopeCondition.swift in Sources */,
-				D64F5E3F21F35CB600CA06B7 /* TokenSplitter.swift in Sources */,
-				D64F5E3C21F35CB600CA06B7 /* RegexCompileError.swift in Sources */,
-				D64F5E4521F35CB600CA06B7 /* MatchRule.swift in Sources */,
-				D64F5E4421F35CB600CA06B7 /* Rule.swift in Sources */,
-				D64F5E2F21F35CB600CA06B7 /* OptionalExtension.swift in Sources */,
-				D64F5E4121F35CB600CA06B7 /* IncludeRule.swift in Sources */,
-				D64F5E3021F35CB600CA06B7 /* DecodingError.swift in Sources */,
-				D64F5E3621F35CB600CA06B7 /* MatchPlan.swift in Sources */,
-				D64F5E3A21F35CB600CA06B7 /* Token.swift in Sources */,
-				D64F5E3921F35CB600CA06B7 /* MatchState.swift in Sources */,
-				D64F5E3E21F35CB600CA06B7 /* RegexPattern.swift in Sources */,
-				D64F5E3521F35CB600CA06B7 /* IncludeTarget.swift in Sources */,
-				D64F5E3B21F35CB600CA06B7 /* OnigmoAPI.swift in Sources */,
-				D64F5E3821F35CB600CA06B7 /* MatchResult.swift in Sources */,
-				D64F5E3221F35CB600CA06B7 /* CopyInitializable.swift in Sources */,
-				D64F5E3321F35CB600CA06B7 /* MatchStateStack.swift in Sources */,
-				D64F5E4721F35CB600CA06B7 /* Parser.swift in Sources */,
-				D64F5E3D21F35CB600CA06B7 /* Regex.swift in Sources */,
-				D64F5E4021F35CB600CA06B7 /* ScopeRule.swift in Sources */,
-				D64F5E3121F35CB600CA06B7 /* BinarySearch.swift in Sources */,
-				D64F5E4221F35CB600CA06B7 /* BeginEndCondition.swift in Sources */,
-				D64F5E3421F35CB600CA06B7 /* ScopeName.swift in Sources */,
-				D64F5E3721F35CB600CA06B7 /* RuleRepository.swift in Sources */,
-				D64F5E4621F35CB600CA06B7 /* Grammar.swift in Sources */,
+				D64F5E7221F35D3900CA06B7 /* OnigmoAPI.swift in Sources */,
+				D64F5E9E21F35D7400CA06B7 /* ScopeCondition.swift in Sources */,
+				D64F5E9B21F35D7400CA06B7 /* MatchRule.swift in Sources */,
+				D64F5E7921F35D3900CA06B7 /* MatchPlan.swift in Sources */,
+				D64F5E8721F35D4A00CA06B7 /* OptionalExtension.swift in Sources */,
+				D64F5E7721F35D3900CA06B7 /* Grammar.swift in Sources */,
+				D64F5E9921F35D7400CA06B7 /* IncludeRule.swift in Sources */,
+				D64F5E8F21F35D6600CA06B7 /* Token.swift in Sources */,
+				D64F5E7321F35D3900CA06B7 /* RegexCompileError.swift in Sources */,
+				D64F5E7821F35D3900CA06B7 /* MatchStateStack.swift in Sources */,
+				D64F5E7621F35D3900CA06B7 /* TokenSplitter.swift in Sources */,
+				D64F5E8821F35D4A00CA06B7 /* BinarySearch.swift in Sources */,
+				D64F5E7B21F35D3900CA06B7 /* MatchState.swift in Sources */,
+				D64F5E7A21F35D3900CA06B7 /* MatchResult.swift in Sources */,
+				D64F5E7C21F35D3900CA06B7 /* Parser.swift in Sources */,
+				D64F5E7521F35D3900CA06B7 /* RegexPattern.swift in Sources */,
+				D64F5E8A21F35D4A00CA06B7 /* CopyInitializable.swift in Sources */,
+				D64F5E9A21F35D7400CA06B7 /* BeginEndCondition.swift in Sources */,
+				D64F5E9221F35D6600CA06B7 /* IncludeTarget.swift in Sources */,
+				D64F5E9C21F35D7400CA06B7 /* ScopeRule.swift in Sources */,
+				D64F5E8921F35D4A00CA06B7 /* DecodingError.swift in Sources */,
+				D64F5E7421F35D3900CA06B7 /* Regex.swift in Sources */,
+				D64F5E9D21F35D7400CA06B7 /* Rule.swift in Sources */,
+				D64F5E9021F35D6600CA06B7 /* ScopeName.swift in Sources */,
+				D64F5E9121F35D6600CA06B7 /* RuleRepository.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
