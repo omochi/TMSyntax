@@ -1,5 +1,3 @@
-import Foundation
-
 public enum MatchPlan : CustomStringConvertible {
     case matchRule(MatchRule)
     case beginRule(ScopeRule, BeginEndCondition)

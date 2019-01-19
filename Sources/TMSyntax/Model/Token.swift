@@ -1,5 +1,3 @@
-import Foundation
-
 public struct Token : Equatable {
     public var range: Range<String.Index>
     public var scopes: [ScopeName]

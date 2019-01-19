@@ -1,4 +1,4 @@
-public final class MatchState {
+public struct MatchState {
     public var rule: Rule
     public var scopeName: ScopeName?
     

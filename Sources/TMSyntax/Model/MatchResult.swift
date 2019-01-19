@@ -1,5 +1,3 @@
-import Foundation
-
 public struct MatchResult {
     public var plan: MatchPlan
     public var match: Regex.Match
