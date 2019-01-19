@@ -10,11 +10,7 @@ extension Rule {
         
         let scopeName = try c.decodeIfPresent(ScopeName.self, forKey: .name)
         
-        if let matchPattern = try c.decodeIfPresent(RegexPattern.self, forKey: .match) {
-            guard let scopeName = scopeName else {
-                throw DecodingError(location: loc, "name not found in match rule")
-            }
-            
+        if let matchPattern = try c.decodeIfPresent(RegexPattern.self, forKey: .match) {           
             let captures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .captures)
             
             return MatchRule(sourceLocation: decoder.sourceLocation,
@@ -29,9 +25,7 @@ extension Rule {
         if let begin = try c.decodeIfPresent(RegexPattern.self, forKey: .begin) {
             var beginCaptures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .beginCaptures)
             
-            guard let end = try c.decodeIfPresent(RegexPattern.self, forKey: .end) else {
-                throw DecodingError(location: loc, "end not found in begin rule")
-            }
+            let end = try c.decode(RegexPattern.self, forKey: .end)
             var endCaptures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .endCaptures)
             
             if let captures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .captures) {

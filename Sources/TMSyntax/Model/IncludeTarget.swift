@@ -3,12 +3,14 @@ import Foundation
 public enum IncludeTarget : CustomStringConvertible, Decodable, CopyInitializable {
     case repository(String)
     case `self`
+    case language(ScopeName)
     
     public var stringValue: String {
         get {
             switch self {
             case .repository(let name): return "#\(name)"
             case .self: return "$self"
+            case .language(let name): return "\(name)"
             }
         }
     }
@@ -19,12 +21,21 @@ public enum IncludeTarget : CustomStringConvertible, Decodable, CopyInitializabl
     
     public init?(_ string: String) {
         if string.starts(with: "#") {
-            let s = string.index(after: string.startIndex)
-            self = .repository(String(string[s...]))
-        } else if string == "$self" {
-            self = .self
+            let start = string.index(after: string.startIndex)
+            self = .repository(String(string[start...]))
+        } else if string.starts(with: "$") {
+            let start = string.index(after: string.startIndex)
+            let str = String(string[start...])
+            
+            if str == "self" {
+                self = .self
+            } else {
+                return nil
+            }
+        
         } else {
-            return nil
+            let name = ScopeName(string)
+            self = .language(name)
         }
     }
     

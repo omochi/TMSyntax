@@ -117,8 +117,7 @@ internal final class LineParser {
         case .beginRule(let rule, let cond):
             let newState = MatchState(rule: rule, scopeName: rule.scopeName)
             matchStack.push(newState)
-            
-            buildCaptureTokens(result: result, captures: cond.beginCaptures)
+            buildCaptureTokens(result: result, captures: cond.beginCaptures)    
         case .endRule(let rule, let cond):
             _ = rule
             buildCaptureTokens(result: result, captures: cond.endCaptures)

@@ -35,7 +35,7 @@ class ParserTests: XCTestCase {
             ])
     }
     
-    func test3() throws {
+    func testNest() throws {
         let path = Resources.shared.path("Syntaxes/JSON.tmLanguage.json")
         let grammer = try Grammer(contentsOf: path)
         
@@ -59,6 +59,22 @@ class ParserTests: XCTestCase {
             NaiveToken(range: 10..<11, scopes: [lang, array]),
             NaiveToken(range: 11..<12, scopes: [lang, array, arrayEnd]),
             NaiveToken(range: 12..<13, scopes: [lang]),
+            ])
+    }
+    
+    func testMatchRuleCapture() throws {
+        let path = Resources.shared.path("Syntaxes/xml.tmLanguage.json")
+        let grammer = try Grammer(contentsOf: path)
+        
+        let string = "&nbsp;"
+        let parser = Parser(string: string, grammer: grammer)
+        let tokens = try parser.parseLine().map { $0.toNaive(string: string) }
+        
+        let lang = "text.xml"
+        XCTAssertEqual(tokens, [
+            NaiveToken(range: 0..<1, scopes: [lang, "constant.character.entity.xml", "punctuation.definition.constant.xml"]),
+            NaiveToken(range: 1..<5, scopes: [lang, "constant.character.entity.xml"]),
+            NaiveToken(range: 5..<6, scopes: [lang, "constant.character.entity.xml", "punctuation.definition.constant.xml"]),
             ])
     }
     

@@ -21,6 +21,9 @@ public final class IncludeRule : Rule {
             return self.rule(with: name)
         case .self:
             return self.parent
+        case .language(let _):
+            // TODO
+            return nil
         }
     }
 }
