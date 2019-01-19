@@ -15,9 +15,12 @@ extension Rule {
                 throw DecodingError(location: loc, "name not found in match rule")
             }
             
+            let captures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .captures)
+            
             return MatchRule(sourceLocation: decoder.sourceLocation,
                              pattern: matchPattern,
-                             scopeName: scopeName)
+                             scopeName: scopeName,
+                             captures: captures)
         }
         
         let patterns = try c.decodeIfPresent([Rule].self, forKey: .patterns) ?? []

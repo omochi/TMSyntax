@@ -110,37 +110,36 @@ internal final class LineParser {
         
         switch result.plan {
         case .matchRule(let rule):
-            
-            let token = Token(range: result.match[0],
-                              scopes: currentScopes + [rule.scopeName])
-            addToken(token)
-            
-        case .beginRule(let rule, let cond):
-            buildCaptureTokens(scopeName: rule.scopeName,
-                               result: result,
-                               captures: cond.beginCaptures)
             let newState = MatchState(rule: rule, scopeName: rule.scopeName)
             matchStack.push(newState)
+            buildCaptureTokens(result: result, captures: rule.captures)
+            matchStack.pop()
+        case .beginRule(let rule, let cond):
+            let newState = MatchState(rule: rule, scopeName: rule.scopeName)
+            matchStack.push(newState)
+            
+            buildCaptureTokens(result: result, captures: cond.beginCaptures)
         case .endRule(let rule, let cond):
             _ = rule
-            buildCaptureTokens(scopeName: nil,
-                               result: result,
-                               captures: cond.endCaptures)
+            buildCaptureTokens(result: result, captures: cond.endCaptures)
             matchStack.pop()
         }
         
         position = newPosition
     }
     
-    private func buildCaptureTokens(scopeName: ScopeName?,
-                                    result: MatchResult,
+    private func buildCaptureTokens(result: MatchResult,
                                     captures: CaptureAttributes?) {
         let accum = ScopeAccumulator()
         
-        if let scope = scopeName {
-            accum.items.append(ScopeAccumulator.Item(range: result.match[0],
-                                                     scope: scope))
-        }
+        var currentScopes = self.currentScopes
+    
+        let bottomScope = currentScopes.last!
+        currentScopes.removeLast()
+        
+        accum.items.append(ScopeAccumulator.Item(range: result.match[0],
+                                                 scope: bottomScope))
+        
         if let captures = captures {
             for (key, attr) in captures.dictionary {
                 guard let captureIndex = Int(key),

@@ -9,12 +9,16 @@ public final class MatchRule : Rule {
     }
     public let _scopeName: ScopeName
     
+    public var captures: CaptureAttributes?
+    
     public init(sourceLocation: SourceLocation?,
                 pattern: RegexPattern,
-                scopeName: ScopeName)
+                scopeName: ScopeName,
+                captures: CaptureAttributes?)
     {
         self.pattern = pattern
         self._scopeName = scopeName
+        self.captures = captures
         super.init(sourceLocation: sourceLocation)
     }
     
