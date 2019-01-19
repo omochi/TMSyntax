@@ -6,7 +6,7 @@ public struct DecodingError : Swift.Error, CustomStringConvertible {
     public var message: String
     
     public init(location: SourceLocation,
-                message: String)
+                _ message: String)
     {
         self.location = location
         self.message = message

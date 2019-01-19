@@ -11,7 +11,10 @@ public class Parser {
         self.lines = Parser.splitLines(string)
         self.currentLine = 0
         self.grammer = grammer
-        self.ruleStack = RuleStack([grammer.rule])
+        self.ruleStack = MatchRuleStack()
+        
+        ruleStack.push(MatchRuleStack.Item(rule: grammer.rule,
+                                           scopeName: grammer.rule.scopeName))
     }
     
     public let lines: [String]
@@ -22,13 +25,18 @@ public class Parser {
     
     private let grammer: Grammer
     private var currentRule: Rule {
-        return ruleStack.top!
+        return ruleStack.top!.rule
     }
-    private var ruleStack: RuleStack
+    private var ruleStack: MatchRuleStack
     
-    public func parseLine() throws {
+    private var tokens: [Token] = []
+    
+    public func parseLine() throws -> [Token] {
+        tokens = []
+        
         try _parseLine()
         currentLine += 1
+        return tokens
     }
     
     private func _parseLine() throws {
@@ -38,30 +46,32 @@ public class Parser {
         while true {
             let matchPlans = currentRule.collectMatchPlans()
             
-            guard let ret = try search(line: line, start: pos, plans: matchPlans) else {
+            guard let result = try search(line: line, start: pos, plans: matchPlans) else {
                 return
             }
             
-            pos = ret.1[0].upperBound
+            processMatchResult(result)
+            
+            pos = result.match[0].upperBound
         }
     }
     
-    private func search(line: String, start: String.Index, plans: [MatchPlan]) throws -> (MatchPlan, Regex.Match)? {
-        var matchResults: [(Int, MatchPlan, Regex.Match)] = []
+    private func search(line: String, start: String.Index, plans: [MatchPlan]) throws -> MatchResult? {
+        var matchResults: [(Int, MatchResult)] = []
         
         for (index, plan) in plans.enumerated() {
             let regex = try plan.compile()
             if let match = regex.search(string: line, range: start..<line.endIndex) {
-                matchResults.append((index, plan, match))
+                matchResults.append((index, MatchResult(plan: plan, match: match)))
             }
         }
         
         matchResults.sort { (a, b) -> Bool in
-            let (ai, _, am) = a
-            let (bi, _, bm) = b
+            let (ai, am) = a
+            let (bi, bm) = b
             
-            if am[0].lowerBound != bm[0].lowerBound {
-                return am[0].lowerBound < bm[0].lowerBound
+            if am.match[0].lowerBound != bm.match[0].lowerBound {
+                return am.match[0].lowerBound < bm.match[0].lowerBound
             }
             
             return ai < bi
@@ -71,13 +81,34 @@ public class Parser {
             return nil
         }
         
-        return (best.1, best.2)
+        return best.1
     }
     
-    private func processMatchRule(_ rule: MatchRule) {
+    private func processMatchResult(_ result: MatchResult) {
+        switch result.plan {
+        case .matchRule(let rule):
+            buildToken(range: result.match[0], scopeName: rule.scopeName)
+        case .beginRule(let rule, let cond):
+            // TODO
+            break
+        }
+    }
+    
+    private func buildToken(range: Range<String.Index>, scopeName: ScopeName?) {
+        var scopes: [ScopeName] = []
         
+        for item in ruleStack.items {
+            if let scope = item.scopeName {
+                scopes.append(scope)
+            }
+        }
+        if let scope = scopeName {
+            scopes.append(scope)
+        }
+        
+        let token = Token(range: range, scopes: scopes)
+        self.tokens.append(token)
     }
-    
     
     public static func splitLines(_ string: String) -> [String] {
         var result = [String]()

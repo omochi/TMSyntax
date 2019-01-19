@@ -40,20 +40,24 @@ public class Rule : CopyInitializable, Decodable {
     }
     
     public required convenience init(from decoder: Decoder) throws {
+        let loc = decoder.sourceLocation!
         let c = try decoder.container(keyedBy: CodingKeys.self)
         
         if let includeStr = try c.decodeIfPresent(String.self, forKey: .include) {
             guard let include = IncludeTarget(includeStr) else {
-                throw DecodingError(location: decoder.sourceLocation!,
-                                    message: "invalid include (\(includeStr))")
+                throw DecodingError(location: loc, "invalid include (\(includeStr))")
             }
             self.init(copy: IncludeRule(sourceLocation: decoder.sourceLocation,
                                         include: include))
             return
         }
         
+        let scopeName = try c.decodeIfPresent(ScopeName.self, forKey: .name)
+        
         if let matchStr = try c.decodeIfPresent(String.self, forKey: .match) {
-            let scopeName = try c.decode(ScopeName.self, forKey: .name)
+            guard let scopeName = scopeName else {
+                throw DecodingError(location: loc, "name not found in match rule")
+            }
             
             self.init(copy: MatchRule(sourceLocation: decoder.sourceLocation,
                                       match: matchStr, scopeName: scopeName))
@@ -65,22 +69,23 @@ public class Rule : CopyInitializable, Decodable {
         
         if let beginStr = try c.decodeIfPresent(String.self, forKey: .begin) {
             guard let endStr = try c.decodeIfPresent(String.self, forKey: .end) else {
-                throw DecodingError(location: decoder.sourceLocation!,
-                                    message: "end key not found")
+                throw DecodingError(location: loc, "end not found in begin rule")
             }
             
             self.init(copy: ScopeRule(sourceLocation: decoder.sourceLocation,
                                       condition: .beginEnd(BeginEndCondition(begin: beginStr,
                                                                              end: endStr)),
                                       patterns: patterns,
-                                      repository: repository))
+                                      repository: repository,
+                                      scopeName: scopeName))
             return
         }
         
         self.init(copy: ScopeRule(sourceLocation: decoder.sourceLocation,
                                   condition: .none,
                                   patterns: patterns,
-                                  repository: repository))
+                                  repository: repository,
+                                  scopeName: nil))
     }
     
     public func rule(with name: String) -> Rule? {

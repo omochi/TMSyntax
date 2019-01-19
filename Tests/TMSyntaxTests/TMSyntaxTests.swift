@@ -2,6 +2,13 @@ import XCTest
 import TMSyntax
 import OrderedDictionary
 
+internal extension String {
+    // inefficient
+    func index(at offset: Int) -> String.Index {
+        return self.index(self.startIndex, offsetBy: offset)
+    }
+}
+
 class TMSyntaxTests: XCTestCase {
     func test1() throws {
         let path = Resources.shared.path("JSON.tmLanguage.json")
@@ -10,9 +17,17 @@ class TMSyntaxTests: XCTestCase {
         XCTAssert((grammer.rule.patterns[0] as! IncludeRule).target ===
                 (grammer.rule.repository!.dict["value"]))
         
-        let string = "123 456"
+        let string = "123 456 789"
         let parser = Parser(string: string, grammer: grammer)
-        try parser.parseLine()
+        let tokens = try parser.parseLine()
+        XCTAssertEqual(tokens, [
+            Token(range: string.index(at: 0)..<string.index(at: 3),
+                  scopes: [ScopeName("source.json"), ScopeName("constant.numeric.json")]),
+            Token(range: string.index(at: 4)..<string.index(at: 7),
+                  scopes: [ScopeName("source.json"), ScopeName("constant.numeric.json")]),
+            Token(range: string.index(at: 8)..<string.index(at: 11),
+                  scopes: [ScopeName("source.json"), ScopeName("constant.numeric.json")]),
+            ])
     }
     
     func testSplitLines() throws {

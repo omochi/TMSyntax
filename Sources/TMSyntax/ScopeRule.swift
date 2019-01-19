@@ -10,14 +10,18 @@ public final class ScopeRule : Rule {
     }
     private let _repository: RuleRepository?
     
+    public let scopeName: ScopeName?
+    
     public init(sourceLocation: SourceLocation?,
                 condition: ScopeCondition,
                 patterns: [Rule],
-                repository: RuleRepository?)
+                repository: RuleRepository?,
+                scopeName: ScopeName?)
     {
         self.condition = condition
         self.patterns = patterns
         self._repository = repository
+        self.scopeName = scopeName
         super.init(sourceLocation: sourceLocation)
         
         for rule in patterns {
