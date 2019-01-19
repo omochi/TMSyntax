@@ -43,7 +43,6 @@ class ParserTests: XCTestCase {
         let parser = Parser(string: string, grammer: grammer)
         let tokens = try parser.parseLine().map { $0.toNaive(string: string) }
         
-        
         let lang = "source.json"
         let array = "meta.structure.array.json"
         let arrayBegin = "punctuation.definition.array.begin.json"
