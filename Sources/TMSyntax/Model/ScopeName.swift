@@ -3,7 +3,7 @@ import Foundation
 public struct ScopeName :
     Equatable,
     CustomStringConvertible,
-    Decodable
+    Decodable, Encodable
 {
     public var parts: [String]
     
@@ -32,6 +32,11 @@ public struct ScopeName :
         let c = try decoder.singleValueContainer()
         let str = try c.decode(String.self)
         self.init(str)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.singleValueContainer()
+        try c.encode(stringValue)
     }
 }
 

@@ -6,9 +6,17 @@ internal extension Unicode.Scalar {
 }
 
 public final class Parser {
-    public init(string: String,
-                grammer: Grammer) {
-        self.lines = Parser.splitLines(string)
+    public convenience init(string: String,
+                            grammer: Grammer)
+    {
+        self.init(lines: Parser.splitLines(string),
+                  grammer: grammer)
+    }
+    
+    public init(lines: [String],
+                grammer: Grammer)
+    {
+        self.lines = lines
         self.currentLine = 0
         self.grammer = grammer
         self.ruleStack = MatchStateStack()
@@ -31,7 +39,6 @@ public final class Parser {
         return ruleStack.items.compactMap { $0.scopeName }
     }
     private var ruleStack: MatchStateStack
-//    private var tokenSplitter: TokenSplitter!
     private var tokens: [Token]!
     private var line: String!
     private var position: String.Index!
@@ -40,7 +47,6 @@ public final class Parser {
         line = lines[currentLine]
         position = line.startIndex
         tokens = []
-//        tokenSplitter = TokenSplitter()
 
         while true {
             let matchPlans = collectMatchPlans()
@@ -63,7 +69,6 @@ public final class Parser {
                 
                 currentLine += 1
                 return tokens
-//                return tokenSplitter.tokens
             }
             
             processMatchResult(result)
@@ -136,27 +141,50 @@ public final class Parser {
                               scopes: currentScopes + [rule.scopeName])
             addToken(token)
             
-            
-//            tokenSplitter.add(range: result.match[0], scopeName: rule.scopeName)
         case .beginRule(let rule, let cond):
+            buildCaptureTokens(scopeName: rule.scopeName,
+                               result: result,
+                               captures: cond.beginCaptures)
             let newState = MatchState(rule: rule, scopeName: rule.scopeName)
             ruleStack.push(newState)
-            
-            var start = result.match[0].lowerBound
-            
-            let token = Token(range: result.match[0], scopes: currentScopes)
-            addToken(token)
-            
-            
-
         case .endRule(let rule, let cond):
-            let token = Token(range: result.match[0], scopes: currentScopes)
-            addToken(token)
-            
+            _ = rule
+            buildCaptureTokens(scopeName: nil,
+                               result: result,
+                               captures: cond.endCaptures)
             ruleStack.pop()
         }
         
         position = newPosition
+    }
+    
+    private func buildCaptureTokens(scopeName: ScopeName?,
+                                    result: MatchResult,
+                                    captures: CaptureAttributes?) {
+        let accum = ScopeAccumulator()
+        
+        if let scope = scopeName {
+            accum.items.append(ScopeAccumulator.Item(range: result.match[0],
+                                                     scope: scope))
+        }
+        if let captures = captures {
+            for (key, attr) in captures.dictionary {
+                guard let captureIndex = Int(key),
+                    captureIndex < result.match.ranges.count else
+                {
+                    continue
+                }
+                
+                accum.items.append(ScopeAccumulator.Item(range: result.match[captureIndex],
+                                                         scope: attr.name))
+            }
+        }
+        
+        let tokens = accum.buildTokens()
+        for var token in tokens {
+            token.scopes = currentScopes + token.scopes
+            addToken(token)
+        }
     }
     
     private func extendOuterScope(end: String.Index) {
@@ -167,12 +195,6 @@ public final class Parser {
         let token = Token(range: position..<end,
                           scopes: currentScopes)
         addToken(token)
-        
-//        if let scope = currentRule.scopeName {
-//            
-//            
-//            tokenSplitter.add(range: position..<end, scopeName: scope)
-//        }
     }
     
     private func addToken(_ token: Token) {
