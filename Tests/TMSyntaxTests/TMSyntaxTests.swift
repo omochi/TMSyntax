@@ -14,18 +14,15 @@ class TMSyntaxTests: XCTestCase {
         do {
             let string = "123 456 789"
             let parser = Parser(string: string, grammer: grammer)
-            let tokens = try parser.parseLine()
+            let tokens = try parser.parseLine().map { $0.toNaive(string: string) }
             XCTAssertEqual(tokens, [
-                Token(range: string.index(at: 0)..<string.index(at: 3),
-                      scopes: [ScopeName("source.json"), ScopeName("constant.numeric.json")]),
-                Token(range: string.index(at: 4)..<string.index(at: 7),
-                      scopes: [ScopeName("source.json"), ScopeName("constant.numeric.json")]),
-                Token(range: string.index(at: 8)..<string.index(at: 11),
-                      scopes: [ScopeName("source.json"), ScopeName("constant.numeric.json")]),
+                NaiveToken(range: 0..<3, scopes: ["source.json", "constant.numeric.json"]),
+                NaiveToken(range: 3..<4, scopes: ["source.json"]),
+                NaiveToken(range: 4..<7, scopes: ["source.json", "constant.numeric.json"]),
+                NaiveToken(range: 7..<8, scopes: ["source.json"]),
+                NaiveToken(range: 8..<11, scopes: ["source.json", "constant.numeric.json"]),
                 ])
         }
-        
-
     }
     
     func test2() throws {

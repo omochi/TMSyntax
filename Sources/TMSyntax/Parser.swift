@@ -27,22 +27,20 @@ public class Parser {
     private var currentRule: Rule {
         return ruleStack.top!.rule
     }
+    private var currentScopes: [ScopeName] {
+        return ruleStack.items.compactMap { $0.scopeName }
+    }
     private var ruleStack: MatchStateStack
-    private var tokens: [Token] = []
+    private var tokenSplitter: TokenSplitter!
     private var line: String!
     private var position: String.Index!
     
     public func parseLine() throws -> [Token] {
-        tokens = []
-        
-        try _parseLine()
-        currentLine += 1
-        return tokens
-    }
-    
-    private func _parseLine() throws {
         line = lines[currentLine]
         position = line.startIndex
+        tokenSplitter = TokenSplitter(rootToken: Token(range: line.startIndex..<line.endIndex,
+                                                       scopes: currentScopes))
+
         while true {
             let matchPlans = collectMatchPlans()
            
@@ -56,7 +54,8 @@ public class Parser {
                                           start: position,
                                           plans: matchPlans) else
             {
-                return
+                currentLine += 1
+                return tokenSplitter.tokens
             }
             
             processMatchResult(result)
@@ -119,34 +118,23 @@ public class Parser {
         switch result.plan {
         case .matchRule(let rule):
             trace("match \(result.plan.regexPattern)")
-            buildToken(range: result.match[0], scopeName: rule.scopeName)
+            
+            tokenSplitter.add(range: result.match[0], scopeName: rule.scopeName)
+            
             position = result.match[0].upperBound
         case .beginRule(let rule, let cond):
             trace("begin \(result.plan.regexPattern)")
             let newState = MatchState(rule: rule, scopeName: rule.scopeName)
             ruleStack.push(newState)
             position = result.match[0].upperBound
+            if let scope = rule.scopeName {
+                tokenSplitter.add(range: result.match[0], scopeName: scope)
+            }
         case .endRule(let rule, let cond):
             trace("end \(result.plan.regexPattern)")
             position = result.match[0].upperBound
             // TODO
         }
-    }
-    
-    private func buildToken(range: Range<String.Index>, scopeName: ScopeName?) {
-        var scopes: [ScopeName] = []
-        
-        for item in ruleStack.items {
-            if let scope = item.scopeName {
-                scopes.append(scope)
-            }
-        }
-        if let scope = scopeName {
-            scopes.append(scope)
-        }
-        
-        let token = Token(range: range, scopes: scopes)
-        self.tokens.append(token)
     }
     
     public static func splitLines(_ string: String) -> [String] {
