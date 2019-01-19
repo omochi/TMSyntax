@@ -85,32 +85,69 @@ internal enum Onigmo {
     
     static func search(regex: OnigRegex,
                        string: String,
-                       range: Range<String.Index>,
-                       region: UnsafeMutablePointer<OnigRegion>?) -> String.Index?
+                       range: Range<String.Index>) -> [Range<String.Index>?]?
     {
         let u8 = string.utf8
         
         let rangeStartOffset = u8.distance(from: u8.startIndex, to: range.lowerBound)
         let rangeEndOffset = u8.distance(from: u8.startIndex, to: range.upperBound)
         
-        let pos: OnigPosition = string.withOnigUCharString { (string: UnsafeBufferPointer<OnigUChar>) in
+        var region = onig_region_new()!
+        defer {
+            onig_region_free(region, 1)
+        }
+        
+        let ranges: [Range<String.Index>?]? = string.withOnigUCharString {
+            (string: UnsafeBufferPointer<OnigUChar>) in
             let stringStart = string.baseAddress!
             let stringEnd = stringStart.advanced(by: string.count - 1)
             let rangeStart = stringStart.advanced(by: rangeStartOffset)
             let rangeEnd = stringStart.advanced(by: rangeEndOffset)
-            return onig_search(regex,
-                               stringStart,
-                               stringEnd,
-                               rangeStart,
-                               rangeEnd,
-                               region,
-                               ONIG_OPTION_NONE)
-        }
-        if pos < 0 {
-            return nil
+            let pos: OnigPosition = onig_search(regex,
+                                                stringStart,
+                                                stringEnd,
+                                                rangeStart,
+                                                rangeEnd,
+                                                region,
+                                                ONIG_OPTION_NONE)
+            if pos < 0 {
+                return nil
+            }
+            
+            return regionToRange(region, utf8View: u8)
         }
         
-        return u8.index(u8.startIndex, offsetBy: pos)
+        return ranges
+    }
+    
+    static func regionToRange(_ region: UnsafePointer<OnigRegion>,
+                              utf8View: String.UTF8View) -> [Range<String.Index>?]
+    {
+        var ranges: [Range<String.Index>?] = []
+        
+        let num = Int(region.pointee.num_regs)
+        var startOffsetPointer = region.pointee.beg!
+        var endOffsetPointer = region.pointee.end!
+        
+        for _ in 0..<num {
+            let startOffset = Int(startOffsetPointer.pointee)
+            let endOffset = Int(endOffsetPointer.pointee)
+            if startOffset != ONIG_REGION_NOTPOS &&
+                endOffset != ONIG_REGION_NOTPOS
+            {
+                let start = utf8View.index(utf8View.startIndex, offsetBy: startOffset)
+                let end = utf8View.index(utf8View.startIndex, offsetBy: endOffset)
+                
+                ranges.append(start..<end)
+            } else {
+                ranges.append(nil)
+            }
+            
+            startOffsetPointer = startOffsetPointer.advanced(by: 1)
+            endOffsetPointer = endOffsetPointer.advanced(by: 1)
+        }
+        
+        return ranges
     }
     
     static func region_new() -> UnsafeMutablePointer<OnigRegion> {

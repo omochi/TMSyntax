@@ -8,12 +8,12 @@ class OnigmoTests: XCTestCase {
         let string = "abc123abc456"
         var index = string.startIndex
         var m = regex.search(string: string, range: index..<string.endIndex)!
-        XCTAssertEqual(string[m[0]], "123")
-        index = m[0].upperBound
+        XCTAssertEqual(string[m[]], "123")
+        index = m[].upperBound
 
         m = regex.search(string: string, range: index..<string.endIndex)!
-        XCTAssertEqual(string[m[0]], "456")
-        index = m[0].upperBound
+        XCTAssertEqual(string[m[]], "456")
+        index = m[].upperBound
         
         XCTAssertNil(regex.search(string: string, range: index..<string.endIndex))
     }
@@ -77,5 +77,17 @@ class OnigmoTests: XCTestCase {
             let s = "1.003e+8"
             XCTAssertNotNil(regex.search(string: s, range: s.startIndex..<s.endIndex))
         }
+    }
+    
+    func testReplace() throws {
+        let regex = try Regex(pattern: "a(\\d+)")
+        
+        let string = "bba1bba2a3"
+        let rep = regex.replace(string: string) { (match) in
+            let n = Int(string[match[1]!])!
+            return Array(repeating: "x", count: n).joined()
+        }
+        
+        XCTAssertEqual(rep, "bbxbbxxxxx")
     }
 }

@@ -34,7 +34,8 @@ public final class Parser {
         self.matchStack = MatchStateStack()
         
         matchStack.push(MatchState(rule: grammer.rule,
-                                  scopeName: grammer.rule.scopeName))
+                                   scopeName: grammer.rule.scopeName,
+                                   endPattern: nil))
     }
     
     public let lines: [String]

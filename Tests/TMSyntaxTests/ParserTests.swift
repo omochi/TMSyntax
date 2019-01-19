@@ -4,6 +4,7 @@ import OrderedDictionary
 
 let jsonSyntaxPath = Resources.shared.path("Syntaxes/JSON.tmLanguage.json")
 let xmlSyntaxPath = Resources.shared.path("Syntaxes/xml.tmLanguage.json")
+let pythonSyntaxPath = Resources.shared.path("Syntaxes/MagicPython.tmLanguage.json")
 
 class ParserTests: XCTestCase {
     
@@ -134,6 +135,36 @@ class ParserTests: XCTestCase {
             ])
         
         XCTAssertTrue(parser.isAtEnd)
+    }
+    
+    func testEndBackReference() throws {
+        let grammer = try Grammer(contentsOf: pythonSyntaxPath)
+        
+        
+        let string = """
+u"a'a"
+u'a"a'
+"""
+   
+        let lang = "source.python"
+        let qstr = "string.quoted.single.python"
+        
+        let parser = Parser(string: string, grammer: grammer)
+        var tokens = try parseLine(parser)
+        XCTAssertEqual(tokens, [
+            NaiveToken(range: 0..<1, scopes: [lang, qstr, "storage.type.string.python"]),
+            NaiveToken(range: 1..<2, scopes: [lang, qstr, "punctuation.definition.string.begin.python"]),
+            NaiveToken(range: 2..<5, scopes: [lang, qstr]),
+            NaiveToken(range: 5..<6, scopes: [lang, qstr, "punctuation.definition.string.end.python"]),
+            ])
+        
+        tokens = try parseLine(parser)
+        XCTAssertEqual(tokens, [
+            NaiveToken(range: 0..<1, scopes: [lang, qstr, "storage.type.string.python"]),
+            NaiveToken(range: 1..<2, scopes: [lang, qstr, "punctuation.definition.string.begin.python"]),
+            NaiveToken(range: 2..<5, scopes: [lang, qstr]),
+            NaiveToken(range: 5..<6, scopes: [lang, qstr, "punctuation.definition.string.end.python"]),
+            ])
     }
     
     private func parseLine(_ parser: Parser) throws -> [NaiveToken] {

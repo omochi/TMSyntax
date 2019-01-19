@@ -1,6 +1,10 @@
 import Foundation
 
 internal final class LineParser {
+    private static let backReferenceRegex: Regex = try! Regex(pattern: "\\\\(\\d+)")
+    private static let invalidUnicode: Unicode.Scalar = Unicode.Scalar(0xFFFF)!
+    private static let invalidString: String = String(String.UnicodeScalarView([invalidUnicode]))
+
     public init(line: String,
                 matchStack: MatchStateStack)
     {
@@ -17,8 +21,8 @@ internal final class LineParser {
     private var matchStack: MatchStateStack
     private var tokens: [Token]
     
-    private var currentRule: Rule {
-        return matchStack.top!.rule
+    private var lastState: MatchState {
+        return matchStack.top!
     }
     private var currentScopes: [ScopeName] {
         return matchStack.items.compactMap { $0.scopeName }
@@ -56,14 +60,17 @@ internal final class LineParser {
     private func collectMatchPlans() -> [MatchPlan] {
         var plans: [MatchPlan] = []
         
-        switch currentRule.switcher {
+        let lastState = self.lastState
+
+        switch lastState.rule.switcher {
         case .include,
              .match:
             break
         case .scope(let rule):
             switch rule.condition {
             case .beginEnd(let cond):
-                let endPlan = MatchPlan.endRule(rule, cond)
+                let endPattern = lastState.endPattern ?? cond.end
+                let endPlan = MatchPlan.endRule(rule, cond, endPattern)
                 plans.append(endPlan)
             case .none:
                 break
@@ -81,7 +88,7 @@ internal final class LineParser {
         var matchResults: [(Int, MatchResult)] = []
         
         for (index, plan) in plans.enumerated() {
-            let regex = try plan.regexPattern.compile()
+            let regex = try plan.pattern.compile()
             if let match = regex.search(string: line, range: start..<lineEndPosition) {
                 matchResults.append((index, MatchResult(plan: plan, match: match)))
             }
@@ -91,8 +98,8 @@ internal final class LineParser {
             let (ai, am) = a
             let (bi, bm) = b
             
-            if am.match[0].lowerBound != bm.match[0].lowerBound {
-                return am.match[0].lowerBound < bm.match[0].lowerBound
+            if am.match[].lowerBound != bm.match[].lowerBound {
+                return am.match[].lowerBound < bm.match[].lowerBound
             }
             
             return ai < bi
@@ -108,21 +115,27 @@ internal final class LineParser {
     private func processMatchResult(_ result: MatchResult) {
         trace("match!: \(result.plan)")
         
-        let newPosition = result.match[0].upperBound
+        let newPosition = result.match[].upperBound
         
-        extendOuterScope(end: result.match[0].lowerBound)
+        extendOuterScope(end: result.match[].lowerBound)
         
         switch result.plan {
         case .matchRule(let rule):
-            let newState = MatchState(rule: rule, scopeName: rule.scopeName)
+            let newState = MatchState(rule: rule,
+                                      scopeName: rule.scopeName,
+                                      endPattern: nil)
             matchStack.push(newState)
             buildCaptureTokens(result: result, captures: rule.captures)
             matchStack.pop()
         case .beginRule(let rule, let cond):
-            let newState = MatchState(rule: rule, scopeName: rule.scopeName)
+            let endPattern = resolveEndPatternBackReference(end: cond.end,
+                                                            beginMatchResult: result.match)
+            let newState = MatchState(rule: rule,
+                                      scopeName: rule.scopeName,
+                                      endPattern: endPattern)
             matchStack.push(newState)
             buildCaptureTokens(result: result, captures: cond.beginCaptures)    
-        case .endRule(let rule, let cond):
+        case .endRule(let rule, let cond, _):
             _ = rule
             buildCaptureTokens(result: result, captures: cond.endCaptures)
             matchStack.pop()
@@ -131,27 +144,51 @@ internal final class LineParser {
         position = newPosition
     }
     
+    private func resolveEndPatternBackReference(end: RegexPattern,
+                                                beginMatchResult: Regex.Match) -> RegexPattern
+    {
+        var num = 0
+        
+        let newPattern = LineParser.backReferenceRegex.replace(string: end.value) { (match) in
+            num += 1
+            
+            let captureIndex = Int(end.value[match[1]!])!
+            
+            guard let range = beginMatchResult[captureIndex] else {
+                return LineParser.invalidString
+            }
+            return String(line[range])
+        }
+
+        if num == 0 {
+            // return same object
+            return end
+        }
+        
+        return RegexPattern(newPattern, location: end.location)
+    }
+    
     private func buildCaptureTokens(result: MatchResult,
                                     captures: CaptureAttributes?) {
         let accum = ScopeAccumulator()
         
         var currentScopes = self.currentScopes
     
-        let bottomScope = currentScopes.last!
+        let lastScope = currentScopes.last!
         currentScopes.removeLast()
         
-        accum.items.append(ScopeAccumulator.Item(range: result.match[0],
-                                                 scope: bottomScope))
+        accum.items.append(ScopeAccumulator.Item(range: result.match[],
+                                                 scope: lastScope))
         
         if let captures = captures {
             for (key, attr) in captures.dictionary {
                 guard let captureIndex = Int(key),
-                    captureIndex < result.match.ranges.count else
+                    let range = result.match[captureIndex] else
                 {
                     continue
                 }
                 
-                accum.items.append(ScopeAccumulator.Item(range: result.match[captureIndex],
+                accum.items.append(ScopeAccumulator.Item(range: range,
                                                          scope: attr.name))
             }
         }
