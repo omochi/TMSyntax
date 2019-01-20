@@ -80,7 +80,7 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
     public func rule(with name: String) -> Rule? {
         var ruleOrNone: Rule? = self
         while let rule = ruleOrNone {
-            if let hit = rule.repository?.dictionary[name] {
+            if let hit = rule.repository?[name] {
                 return hit
             }
             ruleOrNone = rule.parent

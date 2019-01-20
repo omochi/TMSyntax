@@ -52,7 +52,7 @@
 		D64F5EAC21F39AB900CA06B7 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EAB21F39AB900CA06B7 /* StringExtension.swift */; };
 		D64F5EAE21F39C6100CA06B7 /* StringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EAD21F39C6100CA06B7 /* StringTests.swift */; };
 		D64F5EB221F4103B00CA06B7 /* FirstMateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EB121F4103B00CA06B7 /* FirstMateTests.swift */; };
-		D64F5EB621F416F300CA06B7 /* HookXCTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EB521F416F300CA06B7 /* HookXCTestCase.m */; };
+		D64F5EB821F444EA00CA06B7 /* GrammerRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EB721F444EA00CA06B7 /* GrammerRepository.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -114,9 +114,7 @@
 		D64F5EAB21F39AB900CA06B7 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		D64F5EAD21F39C6100CA06B7 /* StringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
 		D64F5EB121F4103B00CA06B7 /* FirstMateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstMateTests.swift; sourceTree = "<group>"; };
-		D64F5EB321F416F200CA06B7 /* TMSyntaxTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TMSyntaxTests-Bridging-Header.h"; sourceTree = "<group>"; };
-		D64F5EB421F416F300CA06B7 /* HookXCTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HookXCTestCase.h; sourceTree = "<group>"; };
-		D64F5EB521F416F300CA06B7 /* HookXCTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HookXCTestCase.m; sourceTree = "<group>"; };
+		D64F5EB721F444EA00CA06B7 /* GrammerRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrammerRepository.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -254,6 +252,7 @@
 			isa = PBXGroup;
 			children = (
 				D64F5E5C21F35D3900CA06B7 /* Grammar.swift */,
+				D64F5EB721F444EA00CA06B7 /* GrammerRepository.swift */,
 				D64F5EA321F364CB00CA06B7 /* ScopeAccumulator.swift */,
 			);
 			path = Component;
@@ -306,9 +305,6 @@
 				D64F5EA521F3688800CA06B7 /* ScopeAccumulatorScriptTests.swift */,
 				D64F5EA721F36E9500CA06B7 /* ScopeAccumulatorTokenTests.swift */,
 				D64F5EAD21F39C6100CA06B7 /* StringTests.swift */,
-				D64F5EB421F416F300CA06B7 /* HookXCTestCase.h */,
-				D64F5EB521F416F300CA06B7 /* HookXCTestCase.m */,
-				D64F5EB321F416F200CA06B7 /* TMSyntaxTests-Bridging-Header.h */,
 			);
 			path = TestCase;
 			sourceTree = "<group>";
@@ -426,6 +422,7 @@
 				D64F5E7221F35D3900CA06B7 /* OnigmoAPI.swift in Sources */,
 				D64F5E9E21F35D7400CA06B7 /* ScopeCondition.swift in Sources */,
 				D64F5E9B21F35D7400CA06B7 /* MatchRule.swift in Sources */,
+				D64F5EB821F444EA00CA06B7 /* GrammerRepository.swift in Sources */,
 				D64F5EA421F364CB00CA06B7 /* ScopeAccumulator.swift in Sources */,
 				D64F5EAA21F3793200CA06B7 /* LineParser.swift in Sources */,
 				D64F5E7921F35D3900CA06B7 /* MatchPlan.swift in Sources */,
@@ -464,7 +461,6 @@
 				D64F5EA821F36E9500CA06B7 /* ScopeAccumulatorTokenTests.swift in Sources */,
 				D64F5EB221F4103B00CA06B7 /* FirstMateTests.swift in Sources */,
 				D64F5DE921F2448900CA06B7 /* OnigmoTests.swift in Sources */,
-				D64F5EB621F416F300CA06B7 /* HookXCTestCase.m in Sources */,
 				D64F5EA621F3688800CA06B7 /* ScopeAccumulatorScriptTests.swift in Sources */,
 				D64F5DD721F212D400CA06B7 /* Resources.swift in Sources */,
 				D64F5E0321F3367400CA06B7 /* Utils.swift in Sources */,
@@ -678,7 +674,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_BUNDLE_IDENTIFIER = com.omochimetaru.TMSyntaxTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "../Tests/TMSyntaxTests/TestCase/TMSyntaxTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 			};
@@ -700,7 +695,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_BUNDLE_IDENTIFIER = com.omochimetaru.TMSyntaxTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "../Tests/TMSyntaxTests/TestCase/TMSyntaxTests-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 			};
 			name = Release;

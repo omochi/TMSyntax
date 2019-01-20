@@ -4,6 +4,9 @@ import FineJSON
 public final class Grammer : Decodable, CopyInitializable {
     public let name: String
     public let rule: ScopeRule
+    public var scopeName: ScopeName {
+        return rule.scopeName!
+    }
     
     public enum CodingKeys : String, CodingKey {
         case name

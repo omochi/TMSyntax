@@ -38,12 +38,23 @@ class FirstMateTests: XCTestCase {
     
     private func testEntry(dir: URL, _ def: TestDefinition) throws {
         print("test \(def.desc)")
-        guard let path = def.grammarPath else {
-            XCTFail("unsupported")
-            fatalError()
+        
+        let grammerRepository = GrammerRepository()
+        for path in def.grammars {
+            try grammerRepository.loadGrammer(path: dir.appendingPathComponent(path))
         }
         
-        let grammer = try Grammer(contentsOf: dir.appendingPathComponent(path))
+        func _grammer() throws -> Grammer {
+            if let name = def.grammarScopeName {
+                return grammerRepository[ScopeName(name)]!
+            }
+            if let path = def.grammarPath {
+                return try Grammer(contentsOf: dir.appendingPathComponent(path))
+            }
+            fatalError("unsupported")
+        }
+        
+        let grammer = try _grammer()
         
         let lines = def.lines.map { $0.line }
         

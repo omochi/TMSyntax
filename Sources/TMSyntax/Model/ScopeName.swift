@@ -1,7 +1,7 @@
 import Foundation
 
 public struct ScopeName :
-    Equatable,
+    Equatable, Hashable,
     CustomStringConvertible,
     Decodable, Encodable
 {
