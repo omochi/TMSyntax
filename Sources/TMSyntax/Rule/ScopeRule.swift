@@ -17,10 +17,7 @@ public final class ScopeRule : Rule {
     public let beginCaptures: CaptureAttributes?
     public let beginPosition: String.Index?
     public let end: RegexPattern?
-    public override var endCaptures: CaptureAttributes? {
-        return _endCaptures
-    }
-    private let _endCaptures: CaptureAttributes?
+    public let endCaptures: CaptureAttributes?
     public let endPosition: String.Index?
     
     public init(sourceLocation: SourceLocation?,
@@ -49,7 +46,7 @@ public final class ScopeRule : Rule {
         }
         
         self.end = end
-        self._endCaptures = endCaptures
+        self.endCaptures = endCaptures
         
         if let _ = endCaptures {
             precondition(end != nil)

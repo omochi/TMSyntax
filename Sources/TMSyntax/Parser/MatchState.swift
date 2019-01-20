@@ -16,6 +16,10 @@ public struct MatchState {
         self.scopeName = scopeName
         self.endPattern = endPattern
         self.endPosition = endPosition
+        
+        if let _ = endPattern {
+            precondition(rule is ScopeRule)
+        }
     }
     
     public static func createSimpleScope(rule: ScopeRule) -> MatchState {

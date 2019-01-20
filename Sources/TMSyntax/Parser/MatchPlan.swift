@@ -2,7 +2,7 @@ public enum MatchPlan : CustomStringConvertible {
     case matchRule(MatchRule)
     case beginRule(ScopeRule)
     case beginPositionRule(ScopeRule)
-    case endRule(Rule, RegexPattern)
+    case endRule(ScopeRule, RegexPattern)
     
     public var pattern: RegexPattern? {
         switch self {
@@ -55,7 +55,7 @@ public enum MatchPlan : CustomStringConvertible {
         return .beginPositionRule(rule)
     }
     
-    public static func createEnd(rule: Rule, pattern: RegexPattern) -> MatchPlan {
+    public static func createEnd(rule: ScopeRule, pattern: RegexPattern) -> MatchPlan {
         return .endRule(rule, pattern)
     }
 }

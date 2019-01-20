@@ -198,8 +198,9 @@ u'a"a'
             ])
     }
     
-    func _testMatchCapturePattern() throws {
-        let grammer = try! Grammer(contentsOf: phpSyntaxPath)
+    func testMatchCapturePattern() throws {
+        // key not found: key=end, path=[repository, support, patterns, 9(int=9), end], at 2698:5(79803)
+        let grammer = try Grammer(contentsOf: phpSyntaxPath)
     }
     
     private func parseLine(_ parser: Parser) throws -> [NaiveToken] {

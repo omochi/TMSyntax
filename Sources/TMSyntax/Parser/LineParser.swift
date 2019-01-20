@@ -1,4 +1,5 @@
 import Foundation
+import RichJSONParser
 
 internal final class LineParser {
     private static let backReferenceRegex: Regex = try! Regex(pattern: "\\\\(\\d+)")
@@ -96,7 +97,8 @@ internal final class LineParser {
         let lastState = self.lastState
         
         if let endPattern = lastState.endPattern {
-            let endPlan = MatchPlan.createEnd(rule: lastState.rule, pattern: endPattern)
+            let endPlan = MatchPlan.createEnd(rule: lastState.rule as! ScopeRule,
+                                              pattern: endPattern)
             plans.append(endPlan)
         }
 
@@ -195,13 +197,14 @@ internal final class LineParser {
                                       scopeName: rule.scopeName,
                                       endPattern: nil,
                                       endPosition: regexMatch[].upperBound)
-            matchStack.push(newState)
+            pushState(newState)
             
             let captureRule = buildCaptureScopeRule(captures: rule.captures,
+                                                    captureLocation: rule.pattern.location,
                                                     regexMatch: regexMatch)
             captureRule.parent = rule
             let captureState = MatchState.createSimpleScope(rule: captureRule)
-            matchStack.push(captureState)
+            pushState(captureState)
 
             position = regexMatch[].lowerBound
             
@@ -216,13 +219,14 @@ internal final class LineParser {
                                       scopeName: rule.scopeName,
                                       endPattern: endPattern,
                                       endPosition: nil)
-            matchStack.push(newState)
+            pushState(newState)
             
             let captureRule = buildCaptureScopeRule(captures: rule.beginCaptures,
+                                                    captureLocation: rule.begin?.location,
                                                     regexMatch: regexMatch)
             captureRule.parent = rule
             let captureState = MatchState.createSimpleScope(rule: captureRule)
-            matchStack.push(captureState)
+            pushState(captureState)
             
             position = regexMatch[].lowerBound
         case .beginPositionRule(let rule):
@@ -232,7 +236,7 @@ internal final class LineParser {
                                       scopeName: rule.scopeName,
                                       endPattern: rule.end,
                                       endPosition: rule.endPosition)
-            matchStack.push(newState)
+            pushState(newState)
             position = rule.beginPosition!
         case .endRule(let rule, _):
             let regexMatch = result.match!
@@ -244,19 +248,21 @@ internal final class LineParser {
                                                          scopeName: rule.scopeName)
             endScopeRule.parent = rule.parent
             let newState = MatchState.createSimpleScope(rule: endScopeRule)
-            matchStack.push(newState)
+            pushState(newState)
             
             let captureRule = buildCaptureScopeRule(captures: rule.endCaptures,
+                                                    captureLocation: rule.end?.location,
                                                     regexMatch: regexMatch)
             captureRule.parent = rule
             let captureState = MatchState.createSimpleScope(rule: captureRule)
-            matchStack.push(captureState)
+            pushState(captureState)
             
             position = regexMatch[].lowerBound
         }
     }
     
     private func buildCaptureScopeRule(captures: CaptureAttributes?,
+                                       captureLocation: SourceLocation?,
                                        regexMatch: Regex.Match) -> ScopeRule {
         var capturePatterns: [Rule] = []
         
@@ -269,11 +275,11 @@ internal final class LineParser {
                     continue
                 }
                 
-                // TODO: Loc
-                let captureRule = ScopeRule.createRangeRule(sourceLocation: nil,
+                let captureRule = ScopeRule.createRangeRule(sourceLocation: attr.sourceLocation,
                                                             range: range,
-                                                            patterns: [],
+                                                            patterns: attr.patterns,
                                                             scopeName: attr.name)
+                captureRule.name = "capture(\(captureIndex))"
                 capturePatterns.append(captureRule)
             }
         }
@@ -281,10 +287,11 @@ internal final class LineParser {
         let capture0Name = captures?.dictionary["0"]?.name
         
         // TODO: loc
-        let capture0Rule = ScopeRule.createRangeRule(sourceLocation: nil,
+        let capture0Rule = ScopeRule.createRangeRule(sourceLocation: captureLocation,
                                                      range: regexMatch[],
                                                      patterns: capturePatterns,
                                                      scopeName: capture0Name)
+        capture0Rule.name = "capture(0)"
         
         return capture0Rule
     }
@@ -321,6 +328,20 @@ internal final class LineParser {
         let token = Token(range: range,
                           scopes: currentScopes)
         addToken(token)
+    }
+    
+    private func pushState(_ state: MatchState) {
+        var state = state
+        
+        if let currentEndPosition = lastState.endPosition {
+            if let newEndPosition = state.endPosition {
+                precondition(newEndPosition <= currentEndPosition)
+            } else {
+                state.endPosition = currentEndPosition
+            }
+        }
+        
+        matchStack.push(state)
     }
     
     private func addToken(_ token: Token) {

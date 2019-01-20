@@ -23,8 +23,6 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
     public var repository: RuleRepository? { return nil }
     public var scopeName: ScopeName? { return nil }
     
-    public var endCaptures: CaptureAttributes? { return nil }
-
     public let sourceLocation: SourceLocation?
     
     public init(sourceLocation: SourceLocation?) {
