@@ -5,6 +5,7 @@ import OrderedDictionary
 let jsonSyntaxPath = Resources.shared.path("Syntaxes/JSON.tmLanguage.json")
 let xmlSyntaxPath = Resources.shared.path("Syntaxes/xml.tmLanguage.json")
 let pythonSyntaxPath = Resources.shared.path("Syntaxes/MagicPython.tmLanguage.json")
+let phpSyntaxPath = Resources.shared.path("Syntaxes/php.tmLanguage.json")
 
 class ParserTests: XCTestCase {
     
@@ -165,6 +166,10 @@ u'a"a'
             NaiveToken(range: 2..<5, scopes: [lang, qstr]),
             NaiveToken(range: 5..<6, scopes: [lang, qstr, "punctuation.definition.string.end.python"]),
             ])
+    }
+    
+    func testMatchCapturePattern() throws {
+        let grammer = try! Grammer(contentsOf: phpSyntaxPath)
     }
     
     private func parseLine(_ parser: Parser) throws -> [NaiveToken] {

@@ -1,4 +1,7 @@
 import Foundation
+import RichJSONParser
+import FineJSON
+import enum FineJSON.DecodingError
 
 public enum IncludeTarget : CustomStringConvertible, Decodable, CopyInitializable {
     case repository(String)
@@ -43,8 +46,10 @@ public enum IncludeTarget : CustomStringConvertible, Decodable, CopyInitializabl
         let c = try decoder.singleValueContainer()
         let str = try c.decode(String.self)
         guard let cp = IncludeTarget(str) else {
-            throw DecodingError(location: decoder.sourceLocation,
-                                "invalid target (\(str))")
+            let m = "invalid target (\(str))"
+            throw DecodingError.custom(message: m,
+                                       codingPath: decoder.codingPath,
+                                       location: decoder.sourceLocation)
         }
         self.init(copy: cp)
     }

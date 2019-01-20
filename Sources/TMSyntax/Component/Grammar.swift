@@ -1,5 +1,8 @@
 import Foundation
 import FineJSON
+import enum FineJSON.DecodingError
+
+private let pathKey = CodingUserInfoKey(rawValue: "path")!
 
 public final class Grammer : Decodable, CopyInitializable {
     public let name: String
@@ -17,11 +20,14 @@ public final class Grammer : Decodable, CopyInitializable {
     
     public convenience init(contentsOf url: URL) throws {
         let data = try Data(contentsOf: url)
-        try self.init(data: data)
+        try self.init(data: data, path: url)
     }
     
-    public convenience init(data: Data) throws {
+    public convenience init(data: Data, path: URL? = nil) throws {
         let decoder = FineJSONDecoder()
+        if let path = path {
+            decoder.userInfo[pathKey] = path
+        }
         let copy = try decoder.decode(Grammer.self, from: data)
         self.init(copy: copy)
     }
@@ -29,7 +35,23 @@ public final class Grammer : Decodable, CopyInitializable {
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         
-        self.name = try c.decode(String.self, forKey: .name)
+        func _name() throws -> String {
+            if let name = try c.decodeIfPresent(String.self, forKey: .name) {
+                return name
+            }
+            if let path = decoder.userInfo[pathKey] as? URL {
+                let fileName = path.lastPathComponent
+                if !fileName.isEmpty {
+                    let name = fileName.components(separatedBy: ".").first!
+                    return name
+                }
+            }
+            throw DecodingError.keyNotFound("name",
+                                            codingPath: decoder.codingPath,
+                                            location: decoder.sourceLocation)
+        }
+        
+        self.name = try _name()
         let scopeName = try c.decode(ScopeName.self, forKey: .scopeName)
         
         let patterns = try c.decodeIfPresent([Rule].self, forKey: .patterns) ?? []
