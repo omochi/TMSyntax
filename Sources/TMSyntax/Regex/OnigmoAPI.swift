@@ -43,6 +43,13 @@ internal enum Onigmo {
         _ = _initToken
     }
     
+    static var utf16Encoding: OnigEncodingType = {
+        if CFByteOrderGetCurrent() == CFByteOrderBigEndian.rawValue {
+            return OnigEncodingUTF_16BE
+        } else {
+            return OnigEncodingUTF_16LE
+        }
+    }()
     static var utf8Encoding = OnigEncodingUTF_8
     static var defaultSyntax = OnigDefaultSyntax
 
