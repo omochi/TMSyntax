@@ -313,39 +313,6 @@ internal final class LineParser {
         return RegexPattern(newPattern, location: end.location)
     }
     
-    private func buildCaptureTokens(result: MatchResult,
-                                    regexMatch: Regex.Match,
-                                    captures: CaptureAttributes?) {
-        let accum = ScopeAccumulator()
-        
-        var currentScopes = self.currentScopes
-    
-        let lastScope = currentScopes.last!
-        currentScopes.removeLast()
-        
-        accum.items.append(ScopeAccumulator.Item(range: regexMatch[],
-                                                 scope: lastScope))
-        
-        if let captures = captures {
-            for (key, attr) in captures.dictionary {
-                guard let captureIndex = Int(key),
-                    let range = regexMatch[captureIndex] else
-                {
-                    continue
-                }
-                
-                accum.items.append(ScopeAccumulator.Item(range: range,
-                                                         scope: attr.name))
-            }
-        }
-        
-        let tokens = accum.buildTokens()
-        for var token in tokens {
-            token.scopes = currentScopes + token.scopes
-            addToken(token)
-        }
-    }
-    
     private func extendOuterScope(range: Range<String.Index>) {
         guard !range.isEmpty else {
             return
