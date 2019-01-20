@@ -19,6 +19,7 @@ public final class ScopeRule : Rule {
     public let end: RegexPattern?
     public let endCaptures: CaptureAttributes?
     public let endPosition: String.Index?
+    public let contentName: ScopeName?
     
     public init(sourceLocation: SourceLocation?,
                 begin: RegexPattern?,
@@ -27,6 +28,7 @@ public final class ScopeRule : Rule {
                 end: RegexPattern?,
                 endCaptures: CaptureAttributes?,
                 endPosition: String.Index?,
+                contentName: ScopeName?,
                 patterns: [Rule],
                 repository: RuleRepository?,
                 scopeName: ScopeName?)
@@ -58,6 +60,8 @@ public final class ScopeRule : Rule {
             precondition(endCaptures == nil)
         }
         
+        self.contentName = contentName
+
         self.patterns = patterns
         self._repository = repository
         self._scopeName = scopeName
@@ -90,6 +94,7 @@ public final class ScopeRule : Rule {
                          end: nil,
                          endCaptures: nil,
                          endPosition: range.upperBound,
+                         contentName: nil,
                          patterns: patterns,
                          repository: nil,
                          scopeName: scopeName)

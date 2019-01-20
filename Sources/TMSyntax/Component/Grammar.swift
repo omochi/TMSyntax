@@ -64,6 +64,7 @@ public final class Grammer : Decodable, CopyInitializable {
                               end: nil,
                               endCaptures: nil,
                               endPosition: nil,
+                              contentName: nil,
                               patterns: patterns,
                               repository: repository,
                               scopeName: scopeName)

@@ -83,7 +83,7 @@ class ParserTests: XCTestCase {
     ]
 }
 """
-        let grammer = try! Grammer(data: syntax.data(using: .utf8)!)
+        let grammer = try Grammer(data: syntax.data(using: .utf8)!)
         
         let string = "bbaaabb"
         let parser = Parser(string: string, grammer: grammer)
@@ -92,6 +92,33 @@ class ParserTests: XCTestCase {
             NaiveToken(range: 0..<2, scopes: ["root"]),
             NaiveToken(range: 2..<5, scopes: ["root", "aaa", "aaa0"]),
             NaiveToken(range: 5..<7, scopes: ["root"]),
+            ])
+    }
+    
+    func testContentName() throws {
+        let syntax = """
+{
+    "name": "test",
+    "scopeName": "root",
+    "patterns": [
+        {
+            "begin": "a",
+            "end": "b",
+            "name": "outer",
+            "contentName": "inner"
+        }
+    ]
+}
+"""
+        let grammer = try Grammer(data: syntax.data(using: .utf8)!)
+        
+        let string = "axb"
+        let parser = Parser(string: string, grammer: grammer)
+        let tokens = try parser.parseLine().map { $0.toNaive(string: string) }
+        XCTAssertEqual(tokens, [
+            NaiveToken(range: 0..<1, scopes: ["root", "outer"]),
+            NaiveToken(range: 1..<2, scopes: ["root", "outer", "inner"]),
+            NaiveToken(range: 2..<3, scopes: ["root", "outer"])
             ])
     }
     
@@ -199,40 +226,32 @@ u'a"a'
     }
     
     func testMatchCaptureNestPattern() throws {
-        do {
         let grammer = try Grammer(contentsOf: phpSyntaxPath)
         
         let code = """
-<?php
 class BaseClass {
 public function __construct(){}
 }
-?>
 """
         let parser = Parser(string: code, grammer: grammer)
         var tokens = try parseLine(parser)
-        tokens = try parseLine(parser)
-        tokens = try parseLine(parser)
-            
-            // regex compile error (Onigmo error (too big wide-char value)) at 14:13(521)
         
-        XCTAssertEqual(Array(tokens[..<5]), [
+        tokens = try parseLine(parser)
+        tokens = Array(tokens[..<5])
+        
+        XCTAssertEqual(tokens, [
             NaiveToken(range: 0..<6, scopes: [
                 "storage.modifier.php",
                 "meta.function.php",
                 "meta.class.body.php",
                 "meta.class.php",
                 "source.php",
-                "meta.embedded.block.php",
-                "text.html.php"
                 ].reversed()),
             NaiveToken(range: 6..<7, scopes: [
                 "meta.function.php",
                 "meta.class.body.php",
                 "meta.class.php",
                 "source.php",
-                "meta.embedded.block.php",
-                "text.html.php",
                 ].reversed()),
             NaiveToken(range: 7..<15, scopes: [
                 "storage.type.function.php",
@@ -240,16 +259,12 @@ public function __construct(){}
                 "meta.class.body.php",
                 "meta.class.php",
                 "source.php",
-                "meta.embedded.block.php",
-                "text.html.php",
                 ].reversed()),
             NaiveToken(range: 15..<16, scopes: [
                 "meta.function.php",
                 "meta.class.body.php",
                 "meta.class.php",
                 "source.php",
-                "meta.embedded.block.php",
-                "text.html.php",
                 ].reversed()),
             NaiveToken(range: 16..<27, scopes: [
                 "support.function.magic.php",
@@ -257,14 +272,8 @@ public function __construct(){}
                 "meta.class.body.php",
                 "meta.class.php",
                 "source.php",
-                "meta.embedded.block.php",
-                "text.html.php",
                 ].reversed()),
             ])
-            
-        } catch {
-            print("\(error)")
-        }
     }
     
     private func parseLine(_ parser: Parser) throws -> [NaiveToken] {

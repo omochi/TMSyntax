@@ -2,9 +2,11 @@ import Foundation
 import Onigmo
 
 public struct OnigmoError : Swift.Error, CustomStringConvertible {
+    public var status: Int
     public var message: String
     
-    public init(message: String) {
+    public init(status: Int, message: String) {
+        self.status = status
         self.message = message
     }
     
@@ -25,7 +27,7 @@ public struct OnigmoError : Swift.Error, CustomStringConvertible {
             }
         }
         
-        self.init(message: message)
+        self.init(status: Int(status), message: message)
     }
     
     public var description: String {
@@ -63,7 +65,7 @@ internal enum Onigmo {
         throw OnigmoError(status: status, errorInfo: errorInfo)
     }
     
-    static func new(pattern: String) throws -> OnigRegex {
+    static func new(pattern: String, options: UInt32) throws -> OnigRegex {
         initOnce()
         
         var onig: OnigRegex?
@@ -76,7 +78,7 @@ internal enum Onigmo {
             let st = onig_new(&onig,
                               patternStart,
                               patternEnd,
-                              ONIG_OPTION_NONE,
+                              options,
                               &utf8Encoding,
                               defaultSyntax,
                               &errorInfo)

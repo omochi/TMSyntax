@@ -4,8 +4,9 @@ public struct Regex {
     internal class Object {
         public let onig: OnigRegex
         
-        public init(pattern: String) throws {
-            self.onig = try Onigmo.new(pattern: pattern)
+        public init(pattern: String, options: CompileOptions) throws {
+            self.onig = try Onigmo.new(pattern: pattern,
+                                       options: options.rawValue)
         }
         
         deinit {
@@ -22,6 +23,30 @@ public struct Regex {
         
         deinit {
             Onigmo.region_free(region: region)
+        }
+    }
+    
+    public struct CompileOptions : OptionSet {
+        public var rawValue: UInt32
+        
+        public init(rawValue: UInt32) {
+            self.rawValue = rawValue
+        }
+        
+        public static var singleLine: CompileOptions {
+            return CompileOptions(rawValue: ONIG_OPTION_SINGLELINE)
+        }
+        
+        public static var dotAll: CompileOptions {
+            return CompileOptions(rawValue: ONIG_OPTION_DOTALL)
+        }
+        
+        public static var ignoreCase: CompileOptions {
+            return CompileOptions(rawValue: ONIG_OPTION_IGNORECASE)
+        }
+        
+        public static var extend: CompileOptions {
+            return CompileOptions(rawValue: ONIG_OPTION_EXTEND)
         }
     }
     
@@ -44,8 +69,9 @@ public struct Regex {
         }        
     }
     
-    public init(pattern: String) throws {
-        self.object = try Object(pattern: pattern)
+    public init(pattern: String, options: CompileOptions) throws {
+        self.object = try Object(pattern: pattern,
+                                 options: options)
     }
     
     private let object: Object

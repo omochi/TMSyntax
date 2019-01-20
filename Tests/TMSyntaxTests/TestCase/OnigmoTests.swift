@@ -3,7 +3,7 @@ import TMSyntax
 
 class OnigmoTests: XCTestCase {
     func test1() throws {
-        let regex = try Regex(pattern: "[0-9]+")
+        let regex = try Regex(pattern: "[0-9]+", options: [])
         
         let string = "abc123abc456"
         var index = string.startIndex
@@ -19,7 +19,7 @@ class OnigmoTests: XCTestCase {
     }
     
     func test2() throws {
-        let regex = try Regex(pattern: "\\b(?:true|false|null)\\b")
+        let regex = try Regex(pattern: "\\b(?:true|false|null)\\b", options: [])
         
         do {
             let s = "false"
@@ -61,7 +61,7 @@ class OnigmoTests: XCTestCase {
      \\d+   # followed by one or more digits
     )?      # make exponent optional
   )?        # make decimal portion optional
-""")
+""", options: [])
         
         do {
             let s = "123"
@@ -80,7 +80,7 @@ class OnigmoTests: XCTestCase {
     }
     
     func testReplace() throws {
-        let regex = try Regex(pattern: "a(\\d+)")
+        let regex = try Regex(pattern: "a(\\d+)", options: [])
         
         let string = "bba1bba2a3"
         let rep = regex.replace(string: string) { (match) in
@@ -91,9 +91,27 @@ class OnigmoTests: XCTestCase {
         XCTAssertEqual(rep, "bbxbbxxxxx")
     }
     
-    func testBigChar() throws {
+    func testComplex1() throws {
+        let pattern = """
+(?x)
+((?:(?:final|abstract|public|private|protected|static)\\s+)*)
+(function)\\s+
+(?i:
+(__(?:call|construct|debugInfo|destruct|get|set|isset|unset|toString|
+clone|set_state|sleep|wakeup|autoload|invoke|callStatic))
+|([a-zA-Z_\\x{7f}-\\x{10ffff}][a-zA-Z0-9_\\x{7f}-\\x{10ffff}]*)
+)
+\\s*(\\()
+"""
+        let regex = try Regex(pattern: pattern, options: [])
+        let string = "public function __construct(){}"
+        let m = regex.search(string: string, range: string.startIndex..<string.endIndex)
+        XCTAssertNotNil(m)
+    }
+    
+    func _testBigChar() throws {
         do {
-            let regex = try Regex(pattern: "\\x{7FFFFFFF}")
+            let regex = try Regex(pattern: "\\x{7FFFFFFF}", options: [])
         } catch {
             XCTFail("\(error)")
         }

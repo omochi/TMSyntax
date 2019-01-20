@@ -2,17 +2,19 @@ import Foundation
 import RichJSONParser
 
 internal final class LineParser {
-    private static let backReferenceRegex: Regex = try! Regex(pattern: "\\\\(\\d+)")
+    private static let backReferenceRegex: Regex = try! Regex(pattern: "\\\\(\\d+)", options: [])
     private static let invalidUnicode: Unicode.Scalar = Unicode.Scalar(0xFFFF)!
     private static let invalidString: String = String(String.UnicodeScalarView([invalidUnicode]))
 
     public init(line: String,
-                matchStack: MatchStateStack)
+                matchStack: MatchStateStack,
+                grammer: Grammer)
     {
         self.line = line
         self.lineEndPosition = line.lineEndIndex
         self.position = line.startIndex
         self.matchStack = matchStack
+        self.grammer = grammer
         self.tokens = []
     }
 
@@ -20,13 +22,24 @@ internal final class LineParser {
     private let lineEndPosition: String.Index
     private var position: String.Index
     private var matchStack: MatchStateStack
+    private let grammer: Grammer
     private var tokens: [Token]
     
     private var lastState: MatchState {
         return matchStack.top!
     }
     private var currentScopes: [ScopeName] {
-        return matchStack.items.compactMap { $0.scopeName }
+        return matchStack.items
+            .flatMap { (item) -> [ScopeName] in
+                var ret: [ScopeName] = []
+                if let scope = item.rule.scopeName {
+                    ret.append(scope)
+                }
+                if let scope = item.contentName {
+                    ret.append(scope)
+                }
+                return ret
+        }
     }
 
     public func parse() throws -> Parser.Result {
@@ -71,7 +84,7 @@ internal final class LineParser {
                     
                     trace("end position rule pop: \(lastState.rule)")
                     
-                    matchStack.pop()
+                    popState()
                     isPoped = true
                 }
                 
@@ -112,7 +125,7 @@ internal final class LineParser {
     public func collectEnterMatchPlans(rule: Rule, position: String.Index) -> [MatchPlan] {
         switch rule.switcher {
         case .include(let rule):
-            guard let target = rule.targetRule else {
+            guard let target = rule.resolve(grammer: grammer) else {
                 return []
             }
             return collectEnterMatchPlans(rule: target, position: position)
@@ -194,9 +207,9 @@ internal final class LineParser {
 
             let newState = MatchState(rule: rule,
                                       patterns: [],
-                                      scopeName: rule.scopeName,
                                       endPattern: nil,
-                                      endPosition: regexMatch[].upperBound)
+                                      endPosition: regexMatch[].upperBound,
+                                      contentName: nil)
             pushState(newState)
             
             let captureRule = buildCaptureScopeRule(captures: rule.captures,
@@ -216,16 +229,17 @@ internal final class LineParser {
                                                             beginMatchResult: regexMatch)
             let newState = MatchState(rule: rule,
                                       patterns: rule.patterns,
-                                      scopeName: rule.scopeName,
                                       endPattern: endPattern,
-                                      endPosition: nil)
+                                      endPosition: nil,
+                                      contentName: nil)
             pushState(newState)
             
             let captureRule = buildCaptureScopeRule(captures: rule.beginCaptures,
                                                     captureLocation: rule.begin?.location,
                                                     regexMatch: regexMatch)
             captureRule.parent = rule
-            let captureState = MatchState.createSimpleScope(rule: captureRule)
+            var captureState = MatchState.createSimpleScope(rule: captureRule)
+            captureState.pushContentNameWhenPop = rule.contentName
             pushState(captureState)
             
             position = regexMatch[].lowerBound
@@ -233,19 +247,20 @@ internal final class LineParser {
             precondition(rule.beginPosition == result.position)
             let newState = MatchState(rule: rule,
                                       patterns: rule.patterns,
-                                      scopeName: rule.scopeName,
                                       endPattern: rule.end,
-                                      endPosition: rule.endPosition)
+                                      endPosition: rule.endPosition,
+                                      contentName: nil)
             pushState(newState)
             position = rule.beginPosition!
         case .endRule(let rule, _):
             let regexMatch = result.match!
-            matchStack.pop()
+            popState()
             
             let endScopeRule = ScopeRule.createRangeRule(sourceLocation: rule.sourceLocation,
                                                          range: regexMatch[],
                                                          patterns: [],
                                                          scopeName: rule.scopeName)
+            precondition(endScopeRule.contentName == nil)
             endScopeRule.parent = rule.parent
             let newState = MatchState.createSimpleScope(rule: endScopeRule)
             pushState(newState)
@@ -286,7 +301,6 @@ internal final class LineParser {
         
         let capture0Name = captures?.dictionary["0"]?.name
         
-        // TODO: loc
         let capture0Rule = ScopeRule.createRangeRule(sourceLocation: captureLocation,
                                                      range: regexMatch[],
                                                      patterns: capturePatterns,
@@ -332,7 +346,7 @@ internal final class LineParser {
     
     private func pushState(_ state: MatchState) {
         var state = state
-        
+ 
         if let currentEndPosition = lastState.endPosition {
             if let newEndPosition = state.endPosition {
                 precondition(newEndPosition <= currentEndPosition)
@@ -342,6 +356,14 @@ internal final class LineParser {
         }
         
         matchStack.push(state)
+    }
+    
+    private func popState() {
+        let lastState = self.lastState
+        matchStack.pop()
+        if let contentName = lastState.pushContentNameWhenPop {
+            matchStack.top!.contentName = contentName
+        }
     }
     
     private func addToken(_ token: Token) {

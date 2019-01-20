@@ -1,4 +1,18 @@
 extension Rule {
+    public enum CodingKeys : String, CodingKey {
+        case include
+        case match
+        case name
+        case patterns
+        case repository
+        case begin
+        case beginCaptures
+        case end
+        case endCaptures
+        case captures
+        case contentName
+    }
+    
     public static func decode(from decoder: Decoder) throws -> Rule {
         let loc = decoder.sourceLocation!
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -26,6 +40,7 @@ extension Rule {
         var beginCaptures: CaptureAttributes? = nil
         var end: RegexPattern? = nil
         var endCaptures: CaptureAttributes? = nil
+        let contentName: ScopeName? = try c.decodeIfPresent(ScopeName.self, forKey: .contentName)
         
         if let _ = begin {
             beginCaptures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .beginCaptures)
@@ -46,6 +61,7 @@ extension Rule {
                          end: end,
                          endCaptures: endCaptures,
                          endPosition: nil,
+                         contentName: contentName,
                          patterns: patterns,
                          repository: repository,
                          scopeName: scopeName)

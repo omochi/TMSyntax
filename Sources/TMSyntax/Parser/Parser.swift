@@ -35,9 +35,9 @@ public final class Parser {
         
         matchStack.push(MatchState(rule: grammer.rule,
                                    patterns: grammer.rule.patterns,
-                                   scopeName: grammer.rule.scopeName,
                                    endPattern: nil,
-                                   endPosition: nil))
+                                   endPosition: nil,
+                                   contentName: nil))
     }
     
     public let lines: [String]
@@ -57,7 +57,8 @@ public final class Parser {
     
     public func parseLine() throws -> [Token] {
         let parser = LineParser(line: currentLine!,
-                                matchStack: matchStack)
+                                matchStack: matchStack,
+                                grammer: grammer)
         let result = try parser.parse()
         self.matchStack = result.matchStack
         currentLineIndex += 1

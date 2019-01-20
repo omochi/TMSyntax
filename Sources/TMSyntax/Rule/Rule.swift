@@ -57,20 +57,7 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
         
         return d
     }
-    
-    public enum CodingKeys : String, CodingKey {
-        case include
-        case match
-        case name
-        case patterns
-        case repository
-        case begin
-        case beginCaptures
-        case end
-        case endCaptures
-        case captures
-    }
-    
+
     public required convenience init(from decoder: Decoder) throws {
         let rule = try Rule.decode(from: decoder)
         self.init(copy: rule)
@@ -89,7 +76,7 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
     
     internal func _compileRegex(pattern: String) throws -> Regex {
         do {
-            return try Regex(pattern: pattern)
+            return try Regex(pattern: pattern, options: [])
         } catch {
             throw RegexCompileError(location: sourceLocation, error: error)
         }

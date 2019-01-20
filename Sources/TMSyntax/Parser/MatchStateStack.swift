@@ -6,7 +6,12 @@ public struct MatchStateStack {
     public var items: [MatchState]
     
     public var top: MatchState? {
-        return items.last
+        get {
+            return items.last
+        }
+        set {
+            items[items.count - 1] = newValue!
+        }
     }
     
     public mutating func push(_ item: MatchState) {
