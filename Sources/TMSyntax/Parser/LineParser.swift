@@ -69,7 +69,7 @@ internal final class LineParser {
         case .scope(let rule):
             switch rule.condition {
             case .beginEnd(let cond):
-                let endPattern = lastState.endPattern ?? cond.end
+                let endPattern = lastState.endPattern!
                 let endPlan = MatchPlan.endRule(rule, cond, endPattern)
                 plans.append(endPlan)
             case .none:

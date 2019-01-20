@@ -168,7 +168,7 @@ u'a"a'
             ])
     }
     
-    func testMatchCapturePattern() throws {
+    func _testMatchCapturePattern() throws {
         let grammer = try! Grammer(contentsOf: phpSyntaxPath)
     }
     

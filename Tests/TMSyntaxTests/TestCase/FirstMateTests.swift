@@ -21,7 +21,7 @@ class FirstMateTests: XCTestCase {
         var lines: [Line]
     }
     
-    func test1() {
+    func _test1() {
         do {
             let resourceDir = Resources.shared.path("first-mate")
             let testsJSONData = try Data(contentsOf: resourceDir.appendingPathComponent("tests.json"))

@@ -262,10 +262,10 @@
 			isa = PBXGroup;
 			children = (
 				D64F5EA921F3793200CA06B7 /* LineParser.swift */,
-				D64F5E5E21F35D3900CA06B7 /* MatchStateStack.swift */,
 				D64F5E5F21F35D3900CA06B7 /* MatchPlan.swift */,
 				D64F5E6021F35D3900CA06B7 /* MatchResult.swift */,
 				D64F5E6121F35D3900CA06B7 /* MatchState.swift */,
+				D64F5E5E21F35D3900CA06B7 /* MatchStateStack.swift */,
 				D64F5E6221F35D3900CA06B7 /* Parser.swift */,
 			);
 			path = Parser;
