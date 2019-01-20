@@ -198,9 +198,73 @@ u'a"a'
             ])
     }
     
-    func testMatchCapturePattern() throws {
-        // key not found: key=end, path=[repository, support, patterns, 9(int=9), end], at 2698:5(79803)
+    func testMatchCaptureNestPattern() throws {
+        do {
         let grammer = try Grammer(contentsOf: phpSyntaxPath)
+        
+        let code = """
+<?php
+class BaseClass {
+public function __construct(){}
+}
+?>
+"""
+        let parser = Parser(string: code, grammer: grammer)
+        var tokens = try parseLine(parser)
+        tokens = try parseLine(parser)
+        tokens = try parseLine(parser)
+            
+            // regex compile error (Onigmo error (too big wide-char value)) at 14:13(521)
+        
+        XCTAssertEqual(Array(tokens[..<5]), [
+            NaiveToken(range: 0..<6, scopes: [
+                "storage.modifier.php",
+                "meta.function.php",
+                "meta.class.body.php",
+                "meta.class.php",
+                "source.php",
+                "meta.embedded.block.php",
+                "text.html.php"
+                ].reversed()),
+            NaiveToken(range: 6..<7, scopes: [
+                "meta.function.php",
+                "meta.class.body.php",
+                "meta.class.php",
+                "source.php",
+                "meta.embedded.block.php",
+                "text.html.php",
+                ].reversed()),
+            NaiveToken(range: 7..<15, scopes: [
+                "storage.type.function.php",
+                "meta.function.php",
+                "meta.class.body.php",
+                "meta.class.php",
+                "source.php",
+                "meta.embedded.block.php",
+                "text.html.php",
+                ].reversed()),
+            NaiveToken(range: 15..<16, scopes: [
+                "meta.function.php",
+                "meta.class.body.php",
+                "meta.class.php",
+                "source.php",
+                "meta.embedded.block.php",
+                "text.html.php",
+                ].reversed()),
+            NaiveToken(range: 16..<27, scopes: [
+                "support.function.magic.php",
+                "meta.function.php",
+                "meta.class.body.php",
+                "meta.class.php",
+                "source.php",
+                "meta.embedded.block.php",
+                "text.html.php",
+                ].reversed()),
+            ])
+            
+        } catch {
+            print("\(error)")
+        }
     }
     
     private func parseLine(_ parser: Parser) throws -> [NaiveToken] {

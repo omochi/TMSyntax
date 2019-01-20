@@ -90,4 +90,12 @@ class OnigmoTests: XCTestCase {
         
         XCTAssertEqual(rep, "bbxbbxxxxx")
     }
+    
+    func testBigChar() throws {
+        do {
+            let regex = try Regex(pattern: "\\x{7FFFFFFF}")
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
 }
