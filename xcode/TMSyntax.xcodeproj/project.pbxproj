@@ -51,6 +51,8 @@
 		D64F5EAA21F3793200CA06B7 /* LineParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EA921F3793200CA06B7 /* LineParser.swift */; };
 		D64F5EAC21F39AB900CA06B7 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EAB21F39AB900CA06B7 /* StringExtension.swift */; };
 		D64F5EAE21F39C6100CA06B7 /* StringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EAD21F39C6100CA06B7 /* StringTests.swift */; };
+		D64F5EB221F4103B00CA06B7 /* FirstMateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EB121F4103B00CA06B7 /* FirstMateTests.swift */; };
+		D64F5EB621F416F300CA06B7 /* HookXCTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EB521F416F300CA06B7 /* HookXCTestCase.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,6 +113,10 @@
 		D64F5EA921F3793200CA06B7 /* LineParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineParser.swift; sourceTree = "<group>"; };
 		D64F5EAB21F39AB900CA06B7 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		D64F5EAD21F39C6100CA06B7 /* StringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
+		D64F5EB121F4103B00CA06B7 /* FirstMateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstMateTests.swift; sourceTree = "<group>"; };
+		D64F5EB321F416F200CA06B7 /* TMSyntaxTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TMSyntaxTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		D64F5EB421F416F300CA06B7 /* HookXCTestCase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HookXCTestCase.h; sourceTree = "<group>"; };
+		D64F5EB521F416F300CA06B7 /* HookXCTestCase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HookXCTestCase.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -294,11 +300,15 @@
 			isa = PBXGroup;
 			children = (
 				D64F5DFC21F3316300CA06B7 /* BinarySearchTests.swift */,
+				D64F5EB121F4103B00CA06B7 /* FirstMateTests.swift */,
 				D64F5DE821F2448900CA06B7 /* OnigmoTests.swift */,
 				D64F5DB621F2003500CA06B7 /* ParserTests.swift */,
 				D64F5EA521F3688800CA06B7 /* ScopeAccumulatorScriptTests.swift */,
 				D64F5EA721F36E9500CA06B7 /* ScopeAccumulatorTokenTests.swift */,
 				D64F5EAD21F39C6100CA06B7 /* StringTests.swift */,
+				D64F5EB421F416F300CA06B7 /* HookXCTestCase.h */,
+				D64F5EB521F416F300CA06B7 /* HookXCTestCase.m */,
+				D64F5EB321F416F200CA06B7 /* TMSyntaxTests-Bridging-Header.h */,
 			);
 			path = TestCase;
 			sourceTree = "<group>";
@@ -452,7 +462,9 @@
 				D64F5DFD21F3316300CA06B7 /* BinarySearchTests.swift in Sources */,
 				D64F5DB821F2003500CA06B7 /* ParserTests.swift in Sources */,
 				D64F5EA821F36E9500CA06B7 /* ScopeAccumulatorTokenTests.swift in Sources */,
+				D64F5EB221F4103B00CA06B7 /* FirstMateTests.swift in Sources */,
 				D64F5DE921F2448900CA06B7 /* OnigmoTests.swift in Sources */,
+				D64F5EB621F416F300CA06B7 /* HookXCTestCase.m in Sources */,
 				D64F5EA621F3688800CA06B7 /* ScopeAccumulatorScriptTests.swift in Sources */,
 				D64F5DD721F212D400CA06B7 /* Resources.swift in Sources */,
 				D64F5E0321F3367400CA06B7 /* Utils.swift in Sources */,
@@ -666,6 +678,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_BUNDLE_IDENTIFIER = com.omochimetaru.TMSyntaxTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "../Tests/TMSyntaxTests/TestCase/TMSyntaxTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 			};
@@ -687,6 +700,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.14;
 				PRODUCT_BUNDLE_IDENTIFIER = com.omochimetaru.TMSyntaxTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "../Tests/TMSyntaxTests/TestCase/TMSyntaxTests-Bridging-Header.h";
 				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
