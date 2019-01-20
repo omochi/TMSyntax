@@ -22,6 +22,8 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
     
     public var repository: RuleRepository? { return nil }
     public var scopeName: ScopeName? { return nil }
+    
+    public var endCaptures: CaptureAttributes? { return nil }
 
     public let sourceLocation: SourceLocation?
     
@@ -44,10 +46,9 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
         case .match(let rule):
             d += "match rule \(rule.pattern)"
         case .scope(let rule):
-            switch rule.condition {
-            case .beginEnd(let cond):
-                d += "begin end rule \(cond.begin)"
-            case .none:
+            if let begin = rule.begin {
+                d += "begin end rule \(begin)"
+            } else {
                 d += "scope rule"
             }
         }
@@ -86,29 +87,6 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
             ruleOrNone = rule.parent
         }
         return nil
-    }
-    
-    public func collectEnterMatchPlans() -> [MatchPlan] {
-        switch switcher {
-        case .include(let rule):
-            guard let target = rule.targetRule else {
-                return []
-            }
-            return target.collectEnterMatchPlans()
-        case .match(let rule):
-            return [MatchPlan.matchRule(rule)]
-        case .scope(let rule):
-            switch rule.condition {
-            case .beginEnd(let cond):
-                return [MatchPlan.beginRule(rule, cond)]
-            case .none:
-                var plans: [MatchPlan] = []
-                for e in rule.patterns {
-                    plans += e.collectEnterMatchPlans()
-                }
-                return plans
-            }
-        }
     }
     
     internal func _compileRegex(pattern: String) throws -> Regex {

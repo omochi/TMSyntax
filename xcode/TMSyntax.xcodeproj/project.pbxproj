@@ -38,11 +38,9 @@
 		D64F5E9121F35D6600CA06B7 /* RuleRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8D21F35D6600CA06B7 /* RuleRepository.swift */; };
 		D64F5E9221F35D6600CA06B7 /* IncludeTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8E21F35D6600CA06B7 /* IncludeTarget.swift */; };
 		D64F5E9921F35D7400CA06B7 /* IncludeRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9321F35D7400CA06B7 /* IncludeRule.swift */; };
-		D64F5E9A21F35D7400CA06B7 /* BeginEndCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9421F35D7400CA06B7 /* BeginEndCondition.swift */; };
 		D64F5E9B21F35D7400CA06B7 /* MatchRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9521F35D7400CA06B7 /* MatchRule.swift */; };
 		D64F5E9C21F35D7400CA06B7 /* ScopeRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9621F35D7400CA06B7 /* ScopeRule.swift */; };
 		D64F5E9D21F35D7400CA06B7 /* Rule.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9721F35D7400CA06B7 /* Rule.swift */; };
-		D64F5E9E21F35D7400CA06B7 /* ScopeCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9821F35D7400CA06B7 /* ScopeCondition.swift */; };
 		D64F5EA021F35F8100CA06B7 /* CaptureAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E9F21F35F8100CA06B7 /* CaptureAttributes.swift */; };
 		D64F5EA221F360D500CA06B7 /* RuleDecode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EA121F360D500CA06B7 /* RuleDecode.swift */; };
 		D64F5EA421F364CB00CA06B7 /* ScopeAccumulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EA321F364CB00CA06B7 /* ScopeAccumulator.swift */; };
@@ -100,11 +98,9 @@
 		D64F5E8D21F35D6600CA06B7 /* RuleRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuleRepository.swift; sourceTree = "<group>"; };
 		D64F5E8E21F35D6600CA06B7 /* IncludeTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncludeTarget.swift; sourceTree = "<group>"; };
 		D64F5E9321F35D7400CA06B7 /* IncludeRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncludeRule.swift; sourceTree = "<group>"; };
-		D64F5E9421F35D7400CA06B7 /* BeginEndCondition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeginEndCondition.swift; sourceTree = "<group>"; };
 		D64F5E9521F35D7400CA06B7 /* MatchRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MatchRule.swift; sourceTree = "<group>"; };
 		D64F5E9621F35D7400CA06B7 /* ScopeRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopeRule.swift; sourceTree = "<group>"; };
 		D64F5E9721F35D7400CA06B7 /* Rule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rule.swift; sourceTree = "<group>"; };
-		D64F5E9821F35D7400CA06B7 /* ScopeCondition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopeCondition.swift; sourceTree = "<group>"; };
 		D64F5E9F21F35F8100CA06B7 /* CaptureAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureAttributes.swift; sourceTree = "<group>"; };
 		D64F5EA121F360D500CA06B7 /* RuleDecode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleDecode.swift; sourceTree = "<group>"; };
 		D64F5EA321F364CB00CA06B7 /* ScopeAccumulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeAccumulator.swift; sourceTree = "<group>"; };
@@ -274,12 +270,10 @@
 		D64F5E6321F35D3900CA06B7 /* Rule */ = {
 			isa = PBXGroup;
 			children = (
-				D64F5E9421F35D7400CA06B7 /* BeginEndCondition.swift */,
 				D64F5E9321F35D7400CA06B7 /* IncludeRule.swift */,
 				D64F5E9521F35D7400CA06B7 /* MatchRule.swift */,
 				D64F5E9721F35D7400CA06B7 /* Rule.swift */,
 				D64F5EA121F360D500CA06B7 /* RuleDecode.swift */,
-				D64F5E9821F35D7400CA06B7 /* ScopeCondition.swift */,
 				D64F5E9621F35D7400CA06B7 /* ScopeRule.swift */,
 			);
 			path = Rule;
@@ -420,7 +414,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D64F5E7221F35D3900CA06B7 /* OnigmoAPI.swift in Sources */,
-				D64F5E9E21F35D7400CA06B7 /* ScopeCondition.swift in Sources */,
 				D64F5E9B21F35D7400CA06B7 /* MatchRule.swift in Sources */,
 				D64F5EB821F444EA00CA06B7 /* GrammerRepository.swift in Sources */,
 				D64F5EA421F364CB00CA06B7 /* ScopeAccumulator.swift in Sources */,
@@ -441,7 +434,6 @@
 				D64F5E7C21F35D3900CA06B7 /* Parser.swift in Sources */,
 				D64F5E7521F35D3900CA06B7 /* RegexPattern.swift in Sources */,
 				D64F5E8A21F35D4A00CA06B7 /* CopyInitializable.swift in Sources */,
-				D64F5E9A21F35D7400CA06B7 /* BeginEndCondition.swift in Sources */,
 				D64F5E9221F35D6600CA06B7 /* IncludeTarget.swift in Sources */,
 				D64F5E9C21F35D7400CA06B7 /* ScopeRule.swift in Sources */,
 				D64F5E8921F35D4A00CA06B7 /* DecodingError.swift in Sources */,

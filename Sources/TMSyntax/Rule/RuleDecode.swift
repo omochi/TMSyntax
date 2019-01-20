@@ -22,33 +22,32 @@ extension Rule {
         let patterns = try c.decodeIfPresent([Rule].self, forKey: .patterns) ?? []
         let repository = try c.decodeIfPresent(RuleRepository.self, forKey: .repository)
         
-        if let begin = try c.decodeIfPresent(RegexPattern.self, forKey: .begin) {
-            var beginCaptures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .beginCaptures)
+        let begin = try c.decodeIfPresent(RegexPattern.self, forKey: .begin)
+        var beginCaptures: CaptureAttributes? = nil
+        var end: RegexPattern? = nil
+        var endCaptures: CaptureAttributes? = nil
+        
+        if let _ = begin {
+            beginCaptures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .beginCaptures)
             
-            let end = try c.decode(RegexPattern.self, forKey: .end)
-            var endCaptures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .endCaptures)
+            end = try c.decode(RegexPattern.self, forKey: .end)
+            endCaptures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .endCaptures)
             
             if let captures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .captures) {
                 beginCaptures = captures
                 endCaptures = captures
             }
-            
-            let cond = BeginEndCondition(begin: begin,
-                                         beginCaptures: beginCaptures,
-                                         end: end,
-                                         endCaptures: endCaptures)
-            
-            return ScopeRule(sourceLocation: decoder.sourceLocation,
-                             condition: .beginEnd(cond),
-                             patterns: patterns,
-                             repository: repository,
-                             scopeName: scopeName)
         }
         
         return ScopeRule(sourceLocation: decoder.sourceLocation,
-                         condition: .none,
+                         begin: begin,
+                         beginCaptures: beginCaptures,
+                         beginPosition: nil,
+                         end: end,
+                         endCaptures: endCaptures,
+                         endPosition: nil,
                          patterns: patterns,
                          repository: repository,
-                         scopeName: nil)
+                         scopeName: scopeName)
     }
 }

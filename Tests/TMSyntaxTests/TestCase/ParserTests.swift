@@ -24,7 +24,7 @@ class ParserTests: XCTestCase {
             ])
     }
     
-    func test2() throws {
+    func testBeginCapture0() throws {
         let grammer = try Grammer(contentsOf: jsonSyntaxPath)
         
         let string = "[ 123 ]"
@@ -62,6 +62,36 @@ class ParserTests: XCTestCase {
             NaiveToken(range: 10..<11, scopes: [lang, array]),
             NaiveToken(range: 11..<12, scopes: [lang, array, arrayEnd]),
             NaiveToken(range: 12..<13, scopes: [lang]),
+            ])
+    }
+    
+    func testMatchRuleCapture0() throws {
+        let syntax = """
+{
+    "name": "test",
+    "scopeName": "root",
+    "patterns": [
+        {
+            "match": "aaa",
+            "name": "aaa",
+            "captures": {
+                "0": {
+                    "name": "aaa0"
+                }
+            }
+        }
+    ]
+}
+"""
+        let grammer = try! Grammer(data: syntax.data(using: .utf8)!)
+        
+        let string = "bbaaabb"
+        let parser = Parser(string: string, grammer: grammer)
+        let tokens = try parser.parseLine().map { $0.toNaive(string: string) }
+        XCTAssertEqual(tokens, [
+            NaiveToken(range: 0..<2, scopes: ["root"]),
+            NaiveToken(range: 2..<5, scopes: ["root", "aaa", "aaa0"]),
+            NaiveToken(range: 5..<7, scopes: ["root"]),
             ])
     }
     
