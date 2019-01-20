@@ -171,5 +171,4 @@ u'a"a'
         let line = parser.currentLine!
         return try parser.parseLine().map { $0.toNaive(string: line) }
     }
-
 }

@@ -191,15 +191,8 @@
 			isa = PBXGroup;
 			children = (
 				D64F5DD421F211D700CA06B7 /* Resources */,
-				D64F5E0221F3367400CA06B7 /* Utils.swift */,
-				D64F5DD621F212D400CA06B7 /* Resources.swift */,
-				D64F5E0421F3386000CA06B7 /* NaiveToken.swift */,
-				D64F5DB621F2003500CA06B7 /* ParserTests.swift */,
-				D64F5DE821F2448900CA06B7 /* OnigmoTests.swift */,
-				D64F5DFC21F3316300CA06B7 /* BinarySearchTests.swift */,
-				D64F5EA521F3688800CA06B7 /* ScopeAccumulatorScriptTests.swift */,
-				D64F5EA721F36E9500CA06B7 /* ScopeAccumulatorTokenTests.swift */,
-				D64F5EAD21F39C6100CA06B7 /* StringTests.swift */,
+				D64F5EAF21F40F7C00CA06B7 /* Support */,
+				D64F5EB021F40F8D00CA06B7 /* TestCase */,
 			);
 			name = Sources;
 			path = ../../Tests/TMSyntaxTests;
@@ -285,6 +278,29 @@
 				D64F5E9621F35D7400CA06B7 /* ScopeRule.swift */,
 			);
 			path = Rule;
+			sourceTree = "<group>";
+		};
+		D64F5EAF21F40F7C00CA06B7 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				D64F5E0221F3367400CA06B7 /* Utils.swift */,
+				D64F5DD621F212D400CA06B7 /* Resources.swift */,
+				D64F5E0421F3386000CA06B7 /* NaiveToken.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		D64F5EB021F40F8D00CA06B7 /* TestCase */ = {
+			isa = PBXGroup;
+			children = (
+				D64F5DFC21F3316300CA06B7 /* BinarySearchTests.swift */,
+				D64F5DE821F2448900CA06B7 /* OnigmoTests.swift */,
+				D64F5DB621F2003500CA06B7 /* ParserTests.swift */,
+				D64F5EA521F3688800CA06B7 /* ScopeAccumulatorScriptTests.swift */,
+				D64F5EA721F36E9500CA06B7 /* ScopeAccumulatorTokenTests.swift */,
+				D64F5EAD21F39C6100CA06B7 /* StringTests.swift */,
+			);
+			path = TestCase;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
