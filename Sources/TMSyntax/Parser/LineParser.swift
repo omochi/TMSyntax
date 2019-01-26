@@ -72,6 +72,11 @@ internal final class LineParser {
             case .line:
                 precondition(state.captureAnchors.isEmpty)
                 isLineEnd = true
+                
+                if line.startIndex == lineEndPosition {
+                    addToken(Token(range: line.startIndex..<lineEndPosition,
+                                   scopePath: state.scopePath))
+                }
             }
             
             return
