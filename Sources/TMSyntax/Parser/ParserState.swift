@@ -2,15 +2,13 @@ import Foundation
 
 public struct ParserState {
     public enum Phase {
-        case pushContent(ScopeRule)
+        case pushContentAtEndPosition(ScopeRule)
         case content(ScopeRule)
-        case pop(ScopeRule)
         
         public var scopeRule: ScopeRule? {
             switch self {
-            case .pushContent(let rule): return rule
+            case .pushContentAtEndPosition(let rule): return rule
             case .content(let rule): return rule
-            case .pop(let rule): return rule
             }
         }
     }

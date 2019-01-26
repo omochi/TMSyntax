@@ -1,7 +1,7 @@
 import Foundation
 import TMSyntax
 
-public struct NaiveToken : Equatable {
+public struct NaiveToken : Equatable, CustomStringConvertible {
     public var range: Range<Int>
     public var scopes: [String]
     
@@ -10,6 +10,10 @@ public struct NaiveToken : Equatable {
     {
         self.range = range
         self.scopes = scopes
+    }
+    
+    public var description: String {
+        return "(\(range), \(scopes))"
     }
 }
 

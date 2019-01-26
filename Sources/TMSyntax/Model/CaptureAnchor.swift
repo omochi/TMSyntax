@@ -38,6 +38,7 @@ public final class CaptureAnchor {
             guard let range = regexMatch[index],
                 !range.isEmpty else
             {
+                index += 1
                 continue
             }
             

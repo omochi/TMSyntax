@@ -40,10 +40,6 @@ internal final class LineParser {
     }
     
     private func parseLine() throws {
-        if processPhase() {
-            return
-        }
-        
         removePastAnchor()
         let searchEnd = collectSearchEnd()
         let plans = collectMatchPlans()
@@ -72,8 +68,7 @@ internal final class LineParser {
             case .beginCapture(let anchor):
                 processHitAnchor(anchor)
             case .endPosition:
-                trace("pop state")
-                popState()
+                processEndPosition()
             case .line:
                 precondition(state.captureAnchors.isEmpty)
                 isLineEnd = true
@@ -85,35 +80,23 @@ internal final class LineParser {
         extendOuterScope(range: searchRange.lowerBound..<result[].lowerBound)
         self.position = result[].lowerBound
         
+        switch searchEnd {
+        case .endPosition(let endPosition):
+            precondition(result[].lowerBound <= endPosition)
+            if endPosition == result[].lowerBound {
+                processEndPosition()
+                return
+            }
+        default:
+            break
+        }
+        
         processMatch(plan: plan, result: result)
     }
     
     private var state: ParserState {
         get { return stateStack.top! }
         set { stateStack.top = newValue }
-    }
-    
-    public typealias Exit = Bool
-    
-    private func processPhase() -> Exit {
-        if let phase = state.phase {
-            switch phase {
-            case .pushContent(let scopeRule):
-                trace("apply contentName")
-                if let contentName = scopeRule.contentName {
-                    state.scopePath.append(contentName)
-                }
-                state.phase = ParserState.Phase.content(scopeRule)
-            case .content:
-                break
-            case .pop:
-                trace("pop")
-                popState()
-                return true
-            }
-        }
-        
-        return false
     }
     
     private func removePastAnchor() {
@@ -239,20 +222,16 @@ internal final class LineParser {
                 scopePath.append(scope)
             }
             
-            let anchor0 = buildCaptureAnchor(regexMatch: regexMatch,
+            let anchors = buildCaptureAnchor(regexMatch: regexMatch,
                                              captures: rule.captures)
             let newState = ParserState(phase: nil,
                                        patterns: [],
-                                       captureAnchors: anchor0.map { [$0] } ?? [],
+                                       captureAnchors: anchors,
                                        scopePath: scopePath,
                                        endPattern: nil,
                                        endPosition: regexMatch[].upperBound)
             trace("push state")
             pushState(newState)
-            
-            if let anchor0 = anchor0 {
-                processHitAnchor(anchor0)
-            }
         case .beginRule(let rule, _):
             var scopePath = state.scopePath
             if let scope = rule.scopeName {
@@ -263,36 +242,32 @@ internal final class LineParser {
             let endPattern = resolveEndPatternBackReference(end: ruleEndPattern,
                                                             beginMatchResult: regexMatch)
             
-            let anchor0 = buildCaptureAnchor(regexMatch: regexMatch,
+            let anchors = buildCaptureAnchor(regexMatch: regexMatch,
                                              captures: rule.beginCaptures)
             
-            let newState = ParserState(phase: .pushContent(rule),
+            let newState = ParserState(phase: .pushContentAtEndPosition(rule),
                                        patterns: rule.patterns,
-                                       captureAnchors: anchor0.map { [$0] } ?? [],
+                                       captureAnchors: anchors,
                                        scopePath: scopePath,
                                        endPattern: endPattern,
-                                       endPosition: nil)
+                                       endPosition: regexMatch[].upperBound)
             trace("push state")
             pushState(newState)
-            
-            if let anchor0 = anchor0 {
-                processHitAnchor(anchor0)
-            }
         case .endPattern:
-            let scopeRule = state.scopeRule!
+            let rule = state.scopeRule!
             
             // end of contentName
-            if let contentName = scopeRule.contentName {
+            if let contentName = rule.contentName {
+                trace("pop contentName")
                 precondition(contentName == state.scopePath.last)
                 state.scopePath.removeLast()
             }
             
-            state.phase = ParserState.Phase.pop(scopeRule)
+            state.endPosition = regexMatch[].upperBound
             
-            if let anchor0 = buildCaptureAnchor(regexMatch: regexMatch,
-                                                captures: scopeRule.endCaptures) {
-                processHitAnchor(anchor0)
-            }
+            let anchors = buildCaptureAnchor(regexMatch: regexMatch,
+                                             captures: rule.endCaptures)
+            state.captureAnchors = anchors
         }
     }
     
@@ -312,43 +287,31 @@ internal final class LineParser {
         pushState(newState)
     }
     
-    private func buildCaptureAnchor(regexMatch: Regex.Match,
-                                    captures: CaptureAttributes?) -> CaptureAnchor?
-    {
-        if regexMatch[].isEmpty {
-            return nil
-        }
-        
-        var subAnchors: [CaptureAnchor] = []
-        
-        if let captures = captures {
-            for (key, capture) in captures.dictionary {
-                guard let index = Int(key),
-                    index != 0,
-                    let range = regexMatch[index],
-                    !range.isEmpty else
-                {
-                    continue
+    private func processEndPosition() {
+        if let phase = state.phase {
+            switch phase {
+            case .pushContentAtEndPosition(let rule):
+                trace("push contentName")
+                if let contentName = rule.contentName {
+                    state.scopePath.append(contentName)
                 }
-                
-                subAnchors.append(CaptureAnchor(attribute: capture,
-                                                range: range,
-                                                children: []))
+                state.phase = ParserState.Phase.content(rule)
+                state.endPosition = nil
+                return
+            default:
+                break
             }
         }
         
-        func _capture0() -> CaptureAttribute? {
-            if let captures = captures,
-                let capture0 = captures.dictionary["0"]
-            {
-                return capture0
-            }
-            return nil
-        }
-        
-        return CaptureAnchor(attribute: _capture0(),
-                             range: regexMatch[],
-                             children: subAnchors)
+        trace("pop state")
+        popState()
+    }
+    
+    private func buildCaptureAnchor(regexMatch: Regex.Match,
+                                    captures: CaptureAttributes?) -> [CaptureAnchor]
+    {
+        return CaptureAnchor.build(regexMatch: regexMatch,
+                                   captures: captures)
     }
     
     private func resolveEndPatternBackReference(end: RegexPattern,
