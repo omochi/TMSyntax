@@ -7,8 +7,7 @@ let xmlSyntaxPath = Resources.shared.path("Syntaxes/xml.tmLanguage.json")
 let pythonSyntaxPath = Resources.shared.path("Syntaxes/MagicPython.tmLanguage.json")
 let phpSyntaxPath = Resources.shared.path("Syntaxes/php.tmLanguage.json")
 
-class ParserTests: XCTestCase {
-    
+class ParserTests: XCTestCase {    
     func test1() throws {
         let grammer = try Grammer(contentsOf: jsonSyntaxPath)
 

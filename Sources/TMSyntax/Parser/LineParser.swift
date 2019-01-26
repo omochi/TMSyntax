@@ -7,7 +7,8 @@ internal final class LineParser {
     
     public init(line: String,
                 stateStack: ParserStateStack,
-                grammer: Grammer)
+                grammer: Grammer,
+                isTraceEnabled: Bool)
     {
         self.line = line
         self.lineEndPosition = line.lineEndIndex
@@ -16,6 +17,7 @@ internal final class LineParser {
         self.stateStack = stateStack
         self.grammer = grammer
         self.tokens = []
+        self.isTraceEnabled = isTraceEnabled
     }
     
     private let line: String
@@ -25,6 +27,7 @@ internal final class LineParser {
     private var stateStack: ParserStateStack
     private let grammer: Grammer
     private var tokens: [Token]
+    private let isTraceEnabled: Bool
     
     public func parse() throws -> Parser.Result {
         while true {
@@ -45,12 +48,14 @@ internal final class LineParser {
         let searchEnd = collectSearchEnd()
         let plans = collectMatchPlans()
         
-        let positionInByte = line.utf8.distance(from: line.startIndex, to: position)
-        trace("--- match plans, position \(positionInByte) ---")
-        for (index, plan) in plans.enumerated() {
-            trace("[\(index + 1)/\(plans.count)]\(plan)")
+        if isTraceEnabled {
+            let positionInByte = line.utf8.distance(from: line.startIndex, to: position)
+            trace("--- match plans, position \(positionInByte) ---")
+            for (index, plan) in plans.enumerated() {
+                trace("[\(index + 1)/\(plans.count)]\(plan)")
+            }
+            trace("------")
         }
-        trace("------")
         
         let searchRange = position..<searchEnd.position
 
@@ -238,13 +243,16 @@ internal final class LineParser {
                                              captures: rule.captures)
             let newState = ParserState(phase: nil,
                                        patterns: [],
-                                       captureAnchors: [anchor0],
+                                       captureAnchors: anchor0.map { [$0] } ?? [],
                                        scopePath: scopePath,
                                        endPattern: nil,
                                        endPosition: regexMatch[].upperBound)
             trace("push state")
             pushState(newState)
-            processHitAnchor(anchor0)
+            
+            if let anchor0 = anchor0 {
+                processHitAnchor(anchor0)
+            }
         case .beginRule(let rule, _):
             var scopePath = state.scopePath
             if let scope = rule.scopeName {
@@ -257,15 +265,19 @@ internal final class LineParser {
             
             let anchor0 = buildCaptureAnchor(regexMatch: regexMatch,
                                              captures: rule.beginCaptures)
+            
             let newState = ParserState(phase: .pushContent(rule),
                                        patterns: rule.patterns,
-                                       captureAnchors: [anchor0],
+                                       captureAnchors: anchor0.map { [$0] } ?? [],
                                        scopePath: scopePath,
                                        endPattern: endPattern,
                                        endPosition: nil)
             trace("push state")
             pushState(newState)
-            processHitAnchor(anchor0)
+            
+            if let anchor0 = anchor0 {
+                processHitAnchor(anchor0)
+            }
         case .endPattern:
             let scopeRule = state.scopeRule!
             
@@ -277,9 +289,10 @@ internal final class LineParser {
             
             state.phase = ParserState.Phase.pop(scopeRule)
             
-            let anchor0 = buildCaptureAnchor(regexMatch: regexMatch,
-                                             captures: scopeRule.endCaptures)
-            processHitAnchor(anchor0)
+            if let anchor0 = buildCaptureAnchor(regexMatch: regexMatch,
+                                                captures: scopeRule.endCaptures) {
+                processHitAnchor(anchor0)
+            }
         }
     }
     
@@ -300,8 +313,11 @@ internal final class LineParser {
     }
     
     private func buildCaptureAnchor(regexMatch: Regex.Match,
-                                    captures: CaptureAttributes?) -> CaptureAnchor
+                                    captures: CaptureAttributes?) -> CaptureAnchor?
     {
+        if regexMatch[].isEmpty {
+            return nil
+        }
         
         var subAnchors: [CaptureAnchor] = []
         
@@ -309,7 +325,8 @@ internal final class LineParser {
             for (key, capture) in captures.dictionary {
                 guard let index = Int(key),
                     index != 0,
-                    let range = regexMatch[index] else
+                    let range = regexMatch[index],
+                    !range.isEmpty else
                 {
                     continue
                 }
@@ -390,7 +407,9 @@ internal final class LineParser {
     }
     
     private func trace(_ string: String) {
-        print("[Parser trace] \(string)")
+        if isTraceEnabled {
+            print("[Parser trace] \(string)")
+        }
     }
 
 }

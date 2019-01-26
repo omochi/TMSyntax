@@ -53,13 +53,16 @@ public final class Parser {
         return currentLineIndex == lines.count
     }
     
+    public var isTraceEnabled: Bool = false
+    
     private let grammer: Grammer
     private var stateStack: ParserStateStack
     
     public func parseLine() throws -> [Token] {
         let parser = LineParser(line: currentLine!,
-                                 stateStack: stateStack,
-                                 grammer: grammer)
+                                stateStack: stateStack,
+                                grammer: grammer,
+                                isTraceEnabled: isTraceEnabled)
         let result = try parser.parse()
         self.stateStack = result.stateStack
         currentLineIndex += 1
