@@ -142,7 +142,7 @@ class FirstMateTests: XCTestCase {
             
             let tokens = try parser.parseLine()
             
-            let tokenDefs: [TestDefinition.Token] = tokens.map { (token) in
+            let actual: [TestDefinition.Token] = tokens.map { (token) in
                 let str: String = String(lineString[token.range])
                 let scopes: [String] = token.scopePath.map { $0.stringValue }
                 let tokenDef = TestDefinition.Token(value: str,
@@ -150,7 +150,10 @@ class FirstMateTests: XCTestCase {
                 return tokenDef
             }
             
-            XCTAssertEqual(tokenDefs, lineDef.tokens,
+            // ignore zero range token
+            let expected = lineDef.tokens.filter { !$0.value.isEmpty }
+            
+            XCTAssertEqual(actual, expected,
                            file: file, line: line)
         }
         
