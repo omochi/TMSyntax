@@ -12,9 +12,13 @@ class FirstMateTests: XCTestCase {
             public var tokens: [Token]
         }
         
-        public struct Token : Codable, Equatable {
+        public struct Token : Codable, Equatable, CustomStringConvertible {
             public var value: String
             public var scopes: [String]
+            
+            public var description: String {
+                return "(\(value), \(scopes))"
+            }
         }
         
         var desc: String

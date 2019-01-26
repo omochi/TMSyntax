@@ -13,6 +13,7 @@
 		D6100E7821FC49F000CD4974 /* CaptureAttribute.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E7721FC49F000CD4974 /* CaptureAttribute.swift */; };
 		D6100E7A21FC54B600CD4974 /* SearchEnd.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E7921FC54B600CD4974 /* SearchEnd.swift */; };
 		D6100E7C21FC58D500CD4974 /* ParserStateStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E7B21FC58D500CD4974 /* ParserStateStack.swift */; };
+		D6100E8021FC968200CD4974 /* CaptureAnchorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E7F21FC968200CD4974 /* CaptureAnchorTests.swift */; };
 		D64F5DAF21F2001900CA06B7 /* TMSyntax.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5D9821F1FF7A00CA06B7 /* TMSyntax.framework */; };
 		D64F5DB821F2003500CA06B7 /* ParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DB621F2003500CA06B7 /* ParserTests.swift */; };
 		D64F5DBE21F2036200CA06B7 /* FineJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5DBD21F2036200CA06B7 /* FineJSON.framework */; };
@@ -70,6 +71,7 @@
 		D6100E7721FC49F000CD4974 /* CaptureAttribute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureAttribute.swift; sourceTree = "<group>"; };
 		D6100E7921FC54B600CD4974 /* SearchEnd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchEnd.swift; sourceTree = "<group>"; };
 		D6100E7B21FC58D500CD4974 /* ParserStateStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParserStateStack.swift; sourceTree = "<group>"; };
+		D6100E7F21FC968200CD4974 /* CaptureAnchorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureAnchorTests.swift; sourceTree = "<group>"; };
 		D64F5D9821F1FF7A00CA06B7 /* TMSyntax.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TMSyntax.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D64F5D9C21F1FF7A00CA06B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D64F5DAA21F2001900CA06B7 /* TMSyntaxTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TMSyntaxTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -299,6 +301,7 @@
 				D64F5DE821F2448900CA06B7 /* OnigmoTests.swift */,
 				D64F5DB621F2003500CA06B7 /* ParserTests.swift */,
 				D64F5EAD21F39C6100CA06B7 /* StringTests.swift */,
+				D6100E7F21FC968200CD4974 /* CaptureAnchorTests.swift */,
 			);
 			path = TestCase;
 			sourceTree = "<group>";
@@ -454,6 +457,7 @@
 				D64F5DB821F2003500CA06B7 /* ParserTests.swift in Sources */,
 				D64F5EB221F4103B00CA06B7 /* FirstMateTests.swift in Sources */,
 				D64F5DE921F2448900CA06B7 /* OnigmoTests.swift in Sources */,
+				D6100E8021FC968200CD4974 /* CaptureAnchorTests.swift in Sources */,
 				D64F5DD721F212D400CA06B7 /* Resources.swift in Sources */,
 				D64F5E0321F3367400CA06B7 /* Utils.swift in Sources */,
 				D64F5EAE21F39C6100CA06B7 /* StringTests.swift in Sources */,

@@ -66,7 +66,9 @@ public struct Regex {
                 return nil
             }
             return ranges[index]
-        }        
+        }
+        
+        public var count: Int { return ranges.count }
     }
     
     public init(pattern: String, options: CompileOptions) throws {
