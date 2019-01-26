@@ -17,6 +17,8 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
         }
     }
     
+    public var scopeRule: ScopeRule? { return self as? ScopeRule }
+    
     public var name: String?
     public weak var parent: Rule?
     

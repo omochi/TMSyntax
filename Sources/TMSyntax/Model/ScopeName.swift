@@ -42,6 +42,6 @@ public struct ScopeName :
 
 extension ScopeName : CustomReflectable {
     public var customMirror: Mirror {
-        return Mirror(self, unlabeledChildren: [])
+        return Mirror(reflecting: stringValue)
     }
 }

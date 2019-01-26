@@ -7,13 +7,13 @@ internal extension Unicode.Scalar {
 
 public final class Parser {
     public struct Result {
-        public var matchStack: MatchStateStack
+        public var stateStack: ParserStateStack
         public var tokens: [Token]
         
-        public init(matchStack: MatchStateStack,
+        public init(stateStack: ParserStateStack,
                     tokens: [Token])
         {
-            self.matchStack = matchStack
+            self.stateStack = stateStack
             self.tokens = tokens
         }
     }
@@ -31,13 +31,14 @@ public final class Parser {
         self.lines = lines
         self.currentLineIndex = 0
         self.grammer = grammer
-        self.matchStack = MatchStateStack()
+        self.stateStack = ParserStateStack([])
         
-        matchStack.push(MatchState(rule: grammer.rule,
-                                   patterns: grammer.rule.patterns,
-                                   endPattern: nil,
-                                   endPosition: nil,
-                                   contentName: nil))
+        stateStack.stack.append(ParserState(phase: .content(grammer.rule),
+                                            patterns: grammer.rule.patterns,
+                                            captureAnchors: [],
+                                            scopePath: [grammer.scopeName],
+                                            endPattern: nil,
+                                            endPosition: nil))
     }
     
     public let lines: [String]
@@ -53,14 +54,14 @@ public final class Parser {
     }
     
     private let grammer: Grammer
-    private var matchStack: MatchStateStack
+    private var stateStack: ParserStateStack
     
     public func parseLine() throws -> [Token] {
         let parser = LineParser(line: currentLine!,
-                                matchStack: matchStack,
-                                grammer: grammer)
+                                 stateStack: stateStack,
+                                 grammer: grammer)
         let result = try parser.parse()
-        self.matchStack = result.matchStack
+        self.stateStack = result.stateStack
         currentLineIndex += 1
         return result.tokens
     }

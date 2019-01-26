@@ -21,7 +21,7 @@ public final class IncludeRule : Rule {
             return self.rule(with: name)
         case .self:
             return grammer.rule
-        case .language(let _):
+        case .language:
             // TODO
             return nil
         }

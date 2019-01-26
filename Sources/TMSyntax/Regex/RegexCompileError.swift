@@ -1,7 +1,7 @@
 import Foundation
 import RichJSONParser
 
-public struct RegexCompileError : Swift.Error, CustomStringConvertible {
+public struct RegexCompileError : LocalizedError {
     public var location: SourceLocation?
     public var error: Error
     
@@ -12,7 +12,7 @@ public struct RegexCompileError : Swift.Error, CustomStringConvertible {
         self.error = error
     }
     
-    public var description: String {
+    public var errorDescription: String? {
         var d = "regex compile error (\(error))"
         if let loc = location {
             d += " at \(loc)"

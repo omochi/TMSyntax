@@ -1,11 +1,11 @@
 public struct Token : Equatable {
     public var range: Range<String.Index>
-    public var scopes: [ScopeName]
+    public var scopePath: [ScopeName]
     
     public init(range: Range<String.Index>,
-                scopes: [ScopeName])
+                scopePath: [ScopeName])
     {
         self.range = range
-        self.scopes = scopes
+        self.scopePath = scopePath
     }
 }

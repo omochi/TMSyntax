@@ -1,178 +1,212 @@
 import Foundation
-import RichJSONParser
 
 internal final class LineParser {
     private static let backReferenceRegex: Regex = try! Regex(pattern: "\\\\(\\d+)", options: [])
     private static let invalidUnicode: Unicode.Scalar = Unicode.Scalar(0xFFFF)!
     private static let invalidString: String = String(String.UnicodeScalarView([invalidUnicode]))
-
+    
     public init(line: String,
-                matchStack: MatchStateStack,
+                stateStack: ParserStateStack,
                 grammer: Grammer)
     {
         self.line = line
         self.lineEndPosition = line.lineEndIndex
         self.position = line.startIndex
-        self.matchStack = matchStack
+        self.isLineEnd = false
+        self.stateStack = stateStack
         self.grammer = grammer
         self.tokens = []
     }
-
+    
     private let line: String
     private let lineEndPosition: String.Index
     private var position: String.Index
-    private var matchStack: MatchStateStack
+    private var isLineEnd: Bool
+    private var stateStack: ParserStateStack
     private let grammer: Grammer
     private var tokens: [Token]
     
-    private var lastState: MatchState {
-        return matchStack.top!
-    }
-    private var currentScopes: [ScopeName] {
-        return matchStack.items
-            .flatMap { (item) -> [ScopeName] in
-                var ret: [ScopeName] = []
-                if let scope = item.rule.scopeName {
-                    ret.append(scope)
-                }
-                if let scope = item.contentName {
-                    ret.append(scope)
-                }
-                return ret
+    public func parse() throws -> Parser.Result {
+        while true {
+            try parseLine()
+            if isLineEnd {
+                return Parser.Result(stateStack: stateStack,
+                                     tokens: tokens)
+            }
         }
     }
-
-    public func parse() throws -> Parser.Result {
-        lineLoop: while true {
-            let matchPlans = collectMatchPlans(position: position)
-            
-            let positionInByte = line.utf8.distance(from: line.startIndex, to: position)
-            
-            trace("--- match plans \(matchPlans.count), position \(positionInByte) ---")
-            for plan in matchPlans {
-                trace("\(plan)")
-            }
-            trace("------")
-            
-            func _endPosition() -> String.Index {
-                if let end = lastState.endPosition {
-                    return end
-                }
-                return lineEndPosition
-            }
-            
-            let endPosition = _endPosition()
-            
-            let searchRange = position..<endPosition
-            guard let result = try search(line: line,
-                                          range: searchRange,
-                                          plans: matchPlans) else
-            {
-                trace("no match, end line")
     
-                extendOuterScope(range: searchRange)
-                
-                var isPoped = false
-                
-                while true {
-                    guard let stateEnd = lastState.endPosition,
-                        stateEnd <= endPosition else
-                    {
-                        break
-                    }
-                    precondition(stateEnd == endPosition)
-                    
-                    trace("end position rule pop: \(lastState.rule)")
-                    
-                    popState()
-                    isPoped = true
-                }
-                
-                position = endPosition
-                
-                if isPoped {
-                    continue lineLoop
-                }
-
-                break lineLoop
-            }
-            
-            processMatchResult(searchRange: searchRange,
-                               result: result)
+    private func parseLine() throws {
+        if processPhase() {
+            return
         }
         
-        return Parser.Result(matchStack: matchStack, tokens: tokens)
+        removePastAnchor()
+        let searchEnd = collectSearchEnd()
+        let plans = collectMatchPlans()
+        
+        let positionInByte = line.utf8.distance(from: line.startIndex, to: position)
+        trace("--- match plans, position \(positionInByte) ---")
+        for (index, plan) in plans.enumerated() {
+            trace("[\(index + 1)/\(plans.count)]\(plan)")
+        }
+        trace("------")
+        
+        let searchRange = position..<searchEnd.position
+
+        guard let (plan, result) = try search(line: line,
+                                              range: searchRange,
+                                              plans: plans) else
+        {
+            trace("no match, end line")
+            
+            extendOuterScope(range: searchRange)
+            self.position = searchRange.upperBound
+            
+            switch searchEnd {
+            case .beginCapture(let anchor):
+                processHitAnchor(anchor)
+            case .endPosition:
+                trace("pop state")
+                popState()
+            case .line:
+                precondition(state.captureAnchors.isEmpty)
+                isLineEnd = true
+            }
+            
+            return
+        }
+        
+        extendOuterScope(range: searchRange.lowerBound..<result[].lowerBound)
+        self.position = result[].lowerBound
+        
+        processMatch(plan: plan, result: result)
     }
     
-    private func collectMatchPlans(position: String.Index) -> [MatchPlan] {
+    private var state: ParserState {
+        get { return stateStack.top! }
+        set { stateStack.top = newValue }
+    }
+    
+    public typealias Exit = Bool
+    
+    private func processPhase() -> Exit {
+        if let phase = state.phase {
+            switch phase {
+            case .pushContent(let scopeRule):
+                trace("apply contentName")
+                if let contentName = scopeRule.contentName {
+                    state.scopePath.append(contentName)
+                }
+                state.phase = ParserState.Phase.content(scopeRule)
+            case .content:
+                break
+            case .pop:
+                trace("pop")
+                popState()
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    private func removePastAnchor() {
+        var anchors = state.captureAnchors
+        anchors.removeAll { (anchor) in
+            anchor.range.lowerBound < self.position
+        }
+        state.captureAnchors = anchors
+    }
+    
+    private func collectSearchEnd() -> SearchEnd {
+        var anchors = state.captureAnchors.sorted { (a, b) in
+            a.range.lowerBound < b.range.lowerBound
+        }
+        anchors = anchors.filter { (anchor) in
+            self.position <= anchor.range.lowerBound
+        }
+        if let end = state.endPosition {
+            anchors = anchors.filter { (anchor) in
+                anchor.range.upperBound <= end
+            }
+        }
+        if let anchor = anchors.first {
+            return .beginCapture(anchor)
+        }
+        if let end = state.endPosition {
+            return .endPosition(end)
+        }
+        return .line(lineEndPosition)
+    }
+    
+    private func collectMatchPlans() -> [MatchPlan] {
         var plans: [MatchPlan] = []
         
-        let lastState = self.lastState
-        
-        if let endPattern = lastState.endPattern {
-            let endPlan = MatchPlan.createEnd(rule: lastState.rule as! ScopeRule,
-                                              pattern: endPattern)
+        if let endPattern = state.endPattern {
+            let endPlan = MatchPlan.endPattern(endPattern)
             plans.append(endPlan)
         }
-
-        for e in lastState.patterns {
-            plans += collectEnterMatchPlans(rule: e, position: position)
+        
+        for rule in state.patterns {
+            plans += collectEnterMatchPlans(rule: rule)
         }
         
         return plans
     }
     
-    public func collectEnterMatchPlans(rule: Rule, position: String.Index) -> [MatchPlan] {
+    private func collectEnterMatchPlans(rule: Rule) -> [MatchPlan] {
         switch rule.switcher {
         case .include(let rule):
             guard let target = rule.resolve(grammer: grammer) else {
                 return []
             }
-            return collectEnterMatchPlans(rule: target, position: position)
+            return collectEnterMatchPlans(rule: target)
         case .match(let rule):
-            return [MatchPlan.createMatch(rule: rule)]
+            return [.matchRule(rule)]
         case .scope(let rule):
-            if let _ = rule.begin {
-                return [MatchPlan.createBegin(rule: rule)]
-            } else if let ruleBeginPosition = rule.beginPosition {
-                guard position <= ruleBeginPosition else {
-                    return []
-                }
-                return [MatchPlan.createBeginPosition(rule: rule)]
+            if let begin = rule.begin {
+                return [.beginRule(rule, begin)]
             } else {
                 var plans: [MatchPlan] = []
-                for e in rule.patterns {
-                    plans += collectEnterMatchPlans(rule: e, position: position)
+                for rule in rule.patterns {
+                    plans += collectEnterMatchPlans(rule: rule)
                 }
                 return plans
             }
         }
     }
+        
+    private func search(line: String,
+                        range: Range<String.Index>,
+                        plans: [MatchPlan])
+        throws -> (plan: MatchPlan, result: Regex.Match)?
+    {
+        let patterns = plans.map { $0.pattern }
+        
+        guard let (index, result) = try search(line: line,
+                                               range: range,
+                                               patterns: patterns) else
+        {
+            return nil
+        }
+        
+        return (plan: plans[index], result: result)
+    }
     
     private func search(line: String,
                         range: Range<String.Index>,
-                        plans: [MatchPlan]) throws -> MatchResult?
+                        patterns: [RegexPattern])
+        throws -> (index: Int, result: Regex.Match)?
     {
-        typealias Record = (Int, MatchResult)
+        typealias Record = (index: Int, result: Regex.Match)
         
-        var matchResults: [Record] = []
+        var records: [Record] = []
         
-        for (index, plan) in plans.enumerated() {
-            if let pattern = plan.pattern {
-                let regex = try pattern.compile()
-                if let match = regex.search(string: line, range: range) {
-                    let result = Record(index,
-                                        MatchResult(plan: plan,
-                                                    match: match,
-                                                    position: match[].lowerBound))
-                    matchResults.append(result)
-                }
-            } else if let beginPosition = plan.beginPosition {
-                let result = Record(index,
-                                    MatchResult(plan: plan,
-                                                match: nil,
-                                                position: beginPosition))
-                matchResults.append(result)
+        for (index, pattern) in patterns.enumerated() {
+            let regex = try pattern.compile()
+            if let match = regex.search(string: line, range: range) {
+                records.append(Record(index: index, result: match))
             }
         }
         
@@ -180,134 +214,124 @@ internal final class LineParser {
             let (ai, am) = a
             let (bi, bm) = b
             
-            if am.position != bm.position {
-                return am.position < bm.position
+            if am[].lowerBound != bm[].lowerBound {
+                return am[].lowerBound < bm[].lowerBound
             }
             
             return ai < bi
         }
         
-        guard let best = matchResults.min(by: cmp) else {
-            return nil
-        }
-        
-        return best.1
+        return records.min(by: cmp)
     }
     
-    private func processMatchResult(searchRange: Range<String.Index>,
-                                    result: MatchResult)
-    {
-        trace("match!: \(result.plan)")
+    private func processMatch(plan: MatchPlan, result regexMatch: Regex.Match) {
+        trace("match!: \(plan)")
         
-        extendOuterScope(range: searchRange.lowerBound..<result.position)
-        
-        switch result.plan {
+        switch plan {
         case .matchRule(let rule):
-            let regexMatch = result.match!
-
-            let newState = MatchState(rule: rule,
-                                      patterns: [],
-                                      endPattern: nil,
-                                      endPosition: regexMatch[].upperBound,
-                                      contentName: nil)
+            var scopePath = state.scopePath
+            if let scope = rule.scopeName {
+                scopePath.append(scope)
+            }
+            
+            let anchor0 = buildCaptureAnchor(regexMatch: regexMatch,
+                                             captures: rule.captures)
+            let newState = ParserState(phase: nil,
+                                       patterns: [],
+                                       captureAnchors: [anchor0],
+                                       scopePath: scopePath,
+                                       endPattern: nil,
+                                       endPosition: regexMatch[].upperBound)
+            trace("push state")
             pushState(newState)
-            
-            let captureRule = buildCaptureScopeRule(captures: rule.captures,
-                                                    captureLocation: rule.pattern.location,
-                                                    regexMatch: regexMatch)
-            captureRule.parent = rule
-            let captureState = MatchState.createSimpleScope(rule: captureRule)
-            pushState(captureState)
-
-            position = regexMatch[].lowerBound
-            
-        case .beginRule(let rule):
-            let regexMatch = result.match!
+            processHitAnchor(anchor0)
+        case .beginRule(let rule, _):
+            var scopePath = state.scopePath
+            if let scope = rule.scopeName {
+                scopePath.append(scope)
+            }
             
             let ruleEndPattern = rule.end!
             let endPattern = resolveEndPatternBackReference(end: ruleEndPattern,
                                                             beginMatchResult: regexMatch)
-            let newState = MatchState(rule: rule,
-                                      patterns: rule.patterns,
-                                      endPattern: endPattern,
-                                      endPosition: nil,
-                                      contentName: nil)
+            
+            let anchor0 = buildCaptureAnchor(regexMatch: regexMatch,
+                                             captures: rule.beginCaptures)
+            let newState = ParserState(phase: .pushContent(rule),
+                                       patterns: rule.patterns,
+                                       captureAnchors: [anchor0],
+                                       scopePath: scopePath,
+                                       endPattern: endPattern,
+                                       endPosition: nil)
+            trace("push state")
             pushState(newState)
+            processHitAnchor(anchor0)
+        case .endPattern:
+            let scopeRule = state.scopeRule!
             
-            let captureRule = buildCaptureScopeRule(captures: rule.beginCaptures,
-                                                    captureLocation: rule.begin?.location,
-                                                    regexMatch: regexMatch)
-            captureRule.parent = rule
-            var captureState = MatchState.createSimpleScope(rule: captureRule)
-            captureState.pushContentNameWhenPop = rule.contentName
-            pushState(captureState)
+            // end of contentName
+            if let contentName = scopeRule.contentName {
+                precondition(contentName == state.scopePath.last)
+                state.scopePath.removeLast()
+            }
             
-            position = regexMatch[].lowerBound
-        case .beginPositionRule(let rule):
-            precondition(rule.beginPosition == result.position)
-            let newState = MatchState(rule: rule,
-                                      patterns: rule.patterns,
-                                      endPattern: rule.end,
-                                      endPosition: rule.endPosition,
-                                      contentName: nil)
-            pushState(newState)
-            position = rule.beginPosition!
-        case .endRule(let rule, _):
-            let regexMatch = result.match!
-            popState()
+            state.phase = ParserState.Phase.pop(scopeRule)
             
-            let endScopeRule = ScopeRule.createRangeRule(sourceLocation: rule.sourceLocation,
-                                                         range: regexMatch[],
-                                                         patterns: [],
-                                                         scopeName: rule.scopeName)
-            precondition(endScopeRule.contentName == nil)
-            endScopeRule.parent = rule.parent
-            let newState = MatchState.createSimpleScope(rule: endScopeRule)
-            pushState(newState)
-            
-            let captureRule = buildCaptureScopeRule(captures: rule.endCaptures,
-                                                    captureLocation: rule.end?.location,
-                                                    regexMatch: regexMatch)
-            captureRule.parent = rule
-            let captureState = MatchState.createSimpleScope(rule: captureRule)
-            pushState(captureState)
-            
-            position = regexMatch[].lowerBound
+            let anchor0 = buildCaptureAnchor(regexMatch: regexMatch,
+                                             captures: scopeRule.endCaptures)
+            processHitAnchor(anchor0)
         }
     }
     
-    private func buildCaptureScopeRule(captures: CaptureAttributes?,
-                                       captureLocation: SourceLocation?,
-                                       regexMatch: Regex.Match) -> ScopeRule {
-        var capturePatterns: [Rule] = []
+    private func processHitAnchor(_ anchor: CaptureAnchor) {
+        var scopePath = state.scopePath
+        if let scope = anchor.attribute?.name {
+            scopePath.append(scope)
+        }
+        
+        let newState = ParserState(phase: nil,
+                                   patterns: anchor.attribute?.patterns ?? [],
+                                   captureAnchors: anchor.children,
+                                   scopePath: scopePath,
+                                   endPattern: nil,
+                                   endPosition: anchor.range.upperBound)
+        trace("push state: anchor")
+        pushState(newState)
+    }
+    
+    private func buildCaptureAnchor(regexMatch: Regex.Match,
+                                    captures: CaptureAttributes?) -> CaptureAnchor
+    {
+        
+        var subAnchors: [CaptureAnchor] = []
         
         if let captures = captures {
-            for (key, attr) in captures.dictionary {
-                guard let captureIndex = Int(key),
-                    captureIndex != 0,
-                    let range = regexMatch[captureIndex] else
+            for (key, capture) in captures.dictionary {
+                guard let index = Int(key),
+                    index != 0,
+                    let range = regexMatch[index] else
                 {
                     continue
                 }
                 
-                let captureRule = ScopeRule.createRangeRule(sourceLocation: attr.sourceLocation,
-                                                            range: range,
-                                                            patterns: attr.patterns,
-                                                            scopeName: attr.name)
-                captureRule.name = "capture(\(captureIndex))"
-                capturePatterns.append(captureRule)
+                subAnchors.append(CaptureAnchor(attribute: capture,
+                                                range: range,
+                                                children: []))
             }
         }
         
-        let capture0Name = captures?.dictionary["0"]?.name
+        func _capture0() -> CaptureAttribute? {
+            if let captures = captures,
+                let capture0 = captures.dictionary["0"]
+            {
+                return capture0
+            }
+            return nil
+        }
         
-        let capture0Rule = ScopeRule.createRangeRule(sourceLocation: captureLocation,
-                                                     range: regexMatch[],
-                                                     patterns: capturePatterns,
-                                                     scopeName: capture0Name)
-        capture0Rule.name = "capture(0)"
-        
-        return capture0Rule
+        return CaptureAnchor(attribute: _capture0(),
+                             range: regexMatch[],
+                             children: subAnchors)
     }
     
     private func resolveEndPatternBackReference(end: RegexPattern,
@@ -325,7 +349,7 @@ internal final class LineParser {
             }
             return String(line[range])
         }
-
+        
         if num == 0 {
             // return same object
             return end
@@ -340,30 +364,25 @@ internal final class LineParser {
         }
         
         let token = Token(range: range,
-                          scopes: currentScopes)
+                          scopePath: state.scopePath)
         addToken(token)
     }
     
-    private func pushState(_ state: MatchState) {
-        var state = state
- 
-        if let currentEndPosition = lastState.endPosition {
-            if let newEndPosition = state.endPosition {
-                precondition(newEndPosition <= currentEndPosition)
-            } else {
-                state.endPosition = currentEndPosition
-            }
+    private func pushState(_ newState: ParserState) {
+        var newState = newState
+        
+        if let stateEnd = newState.endPosition,
+            let currentEnd = self.state.endPosition,
+            currentEnd < stateEnd
+        {
+            newState.endPosition = currentEnd
         }
         
-        matchStack.push(state)
+        stateStack.stack.append(newState)
     }
     
     private func popState() {
-        let lastState = self.lastState
-        matchStack.pop()
-        if let contentName = lastState.pushContentNameWhenPop {
-            matchStack.top!.contentName = contentName
-        }
+        stateStack.stack.removeLast()
     }
     
     private func addToken(_ token: Token) {

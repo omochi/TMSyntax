@@ -14,7 +14,6 @@ extension Rule {
     }
     
     public static func decode(from decoder: Decoder) throws -> Rule {
-        let loc = decoder.sourceLocation!
         let c = try decoder.container(keyedBy: CodingKeys.self)
         
         if let target = try c.decodeIfPresent(IncludeTarget.self, forKey: .include) {
@@ -57,10 +56,8 @@ extension Rule {
         return ScopeRule(sourceLocation: decoder.sourceLocation,
                          begin: begin,
                          beginCaptures: beginCaptures,
-                         beginPosition: nil,
                          end: end,
                          endCaptures: endCaptures,
-                         endPosition: nil,
                          contentName: contentName,
                          patterns: patterns,
                          repository: repository,
