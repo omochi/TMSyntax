@@ -365,8 +365,19 @@ internal final class LineParser {
         stateStack.stack.removeLast()
     }
     
-    private func addToken(_ token: Token) {
-        tokens.append(token)
+    private func addToken(_ newToken: Token) {
+        if var last = tokens.last {
+            precondition(last.range.upperBound == newToken.range.lowerBound)
+            
+            // squash
+            if last.scopePath == newToken.scopePath {
+                last.range = last.range.lowerBound..<newToken.range.upperBound
+                tokens[tokens.count - 1] = last
+                return
+            }
+        }
+        
+        tokens.append(newToken)
     }
     
     private func trace(_ string: String) {
