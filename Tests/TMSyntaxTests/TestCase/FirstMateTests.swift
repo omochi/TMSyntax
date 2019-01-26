@@ -150,8 +150,10 @@ class FirstMateTests: XCTestCase {
                 return tokenDef
             }
             
+            var expected = lineDef.tokens
+            
             // ignore zero range token
-            let expected = lineDef.tokens.filter { !$0.value.isEmpty }
+            expected.removeAll { $0.value.isEmpty }
             
             XCTAssertEqual(actual, expected,
                            file: file, line: line)

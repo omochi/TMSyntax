@@ -1,5 +1,6 @@
 import XCTest
 import TMSyntax
+import OrderedDictionary
 
 class CaptureAnchorTests: XCTestCase {
     class StringTree : Equatable, CustomStringConvertible {
@@ -27,8 +28,9 @@ class CaptureAnchorTests: XCTestCase {
     func test1() {
         let s = "abcdefghijk"
         
-        // (ab)c(de(f(g)))(h(ij)k)
+        // ((ab)c(de(f(g)))(h(ij)k))
         let ranges: [Range<String.Index>] = [
+            s.index(at: 0)..<s.index(at: 11),
             s.index(at: 0)..<s.index(at: 2),
             s.index(at: 3)..<s.index(at: 7),
             s.index(at: 5)..<s.index(at: 7),
@@ -37,8 +39,16 @@ class CaptureAnchorTests: XCTestCase {
             s.index(at: 8)..<s.index(at: 10)
         ]
         
+        let attr = CaptureAttribute(sourceLocation: nil, name: ScopeName("a"), patterns: [])
         let anchors = CaptureAnchor.build(regexMatch: Regex.Match(ranges: ranges),
-                                          captures: nil)
+                                          captures: CaptureAttributes(dictionary: OrderedDictionary([
+                                            "1": attr,
+                                            "2": attr,
+                                            "3": attr,
+                                            "4": attr,
+                                            "5": attr,
+                                            "6": attr,
+                                            ])))
         func map(_ anchor: CaptureAnchor) -> StringTree {
             return StringTree(String(s[anchor.range]),
                               anchor.children.map { map($0) })
@@ -46,7 +56,7 @@ class CaptureAnchorTests: XCTestCase {
         
         let actual = anchors.map { map($0) }
         
-        let expect: [StringTree] = [
+        let expect: [StringTree] = [StringTree("abcdefghijk",[
             StringTree("ab", []),
             StringTree("defg", [
                 StringTree("fg", [
@@ -56,7 +66,7 @@ class CaptureAnchorTests: XCTestCase {
             StringTree("hijk", [
                 StringTree("ij", [])
                 ])
-        ]
+            ])]
         
         XCTAssertEqual(actual, expect)
     }

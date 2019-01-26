@@ -82,11 +82,14 @@ internal final class LineParser {
         
         switch searchEnd {
         case .beginCapture(let anchor):
-            processHitAnchor(anchor)
+            precondition(result[].lowerBound <= anchor.range.lowerBound)
+            if result[].lowerBound == anchor.range.lowerBound {
+                processHitAnchor(anchor)
+            }
             return
         case .endPosition(let endPosition):
             precondition(result[].lowerBound <= endPosition)
-            if endPosition == result[].lowerBound {
+            if result[].lowerBound == endPosition {
                 processEndPosition()
                 return
             }
@@ -105,7 +108,7 @@ internal final class LineParser {
     private func removePastAnchor() {
         var anchors = state.captureAnchors
         anchors.removeAll { (anchor) in
-            anchor.range.lowerBound < self.position
+            anchor.range.upperBound <= self.position
         }
         state.captureAnchors = anchors
     }
@@ -330,7 +333,7 @@ internal final class LineParser {
             guard let range = beginMatchResult[captureIndex] else {
                 return LineParser.invalidString
             }
-            return String(line[range])
+            return Regex.escape(String(line[range]))
         }
         
         if num == 0 {
@@ -373,11 +376,11 @@ internal final class LineParser {
             precondition(last.range.upperBound == newToken.range.lowerBound)
             
             // squash
-            if last.scopePath == newToken.scopePath {
-                last.range = last.range.lowerBound..<newToken.range.upperBound
-                tokens[tokens.count - 1] = last
-                return
-            }
+//            if last.scopePath == newToken.scopePath {
+//                last.range = last.range.lowerBound..<newToken.range.upperBound
+//                tokens[tokens.count - 1] = last
+//                return
+//            }
         }
         
         tokens.append(newToken)

@@ -108,6 +108,16 @@ public struct Regex {
         
         return result
     }
+    
+    public static let metaCharRegex: Regex =
+        try! Regex(pattern: "[b-bbb{b}b*b+b?b|b^b$b.b,b[b]b(b)b#bs]"
+            .replacingOccurrences(of: "b", with: "\\"), options: [])
+    
+    public static func escape(_ string: String) -> String {
+        return metaCharRegex.replace(string: string) { (match) -> String in
+            return "\\" + String(string[match[]])
+        }
+    }
 }
 
 

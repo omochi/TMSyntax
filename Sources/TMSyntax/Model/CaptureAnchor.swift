@@ -14,6 +14,30 @@ public final class CaptureAnchor {
         self.children = children
     }
     
+    public var hasNoScopeSelf: Bool {
+        guard let attr = attribute else {
+            return true
+        }
+        return attr.name == nil &&
+            attr.patterns.isEmpty
+    }
+
+    public func removeNoScopeNode() {
+        _ = _removeNoScopeNode()
+    }
+    
+    private func _removeNoScopeNode() -> Bool {
+        var newChildren: [CaptureAnchor] = []
+        for c in self.children {
+            if c._removeNoScopeNode() {
+                continue
+            }
+            newChildren.append(c)
+        }
+        self.children = newChildren
+        return hasNoScopeSelf && children.isEmpty
+    }
+    
     public static func build(regexMatch: Regex.Match,
                              captures: CaptureAttributes?) -> [CaptureAnchor]
     {
@@ -35,8 +59,7 @@ public final class CaptureAnchor {
         
         var index = 0
         while index < regexMatch.count {
-            guard let range = regexMatch[index],
-                !range.isEmpty else
+            guard let range = regexMatch[index] else
             {
                 index += 1
                 continue
@@ -52,7 +75,7 @@ public final class CaptureAnchor {
                 continue
             }
             
-            if range.lowerBound < top.range.upperBound {
+            if range.upperBound <= top.range.upperBound {
                 let anchor = CaptureAnchor(attribute: _attr(index),
                                            range: range,
                                            children: [])
@@ -64,6 +87,7 @@ public final class CaptureAnchor {
             }
         }
         
+        roots.forEach { $0.removeNoScopeNode() }
         return roots
     }
 }

@@ -18,4 +18,13 @@ public struct CaptureAttribute : Decodable {
         self.name = try c.decodeIfPresent(ScopeName.self, forKey: .name)
         self.patterns = try c.decodeIfPresent([Rule].self, forKey: .patterns) ?? []
     }
+    
+    public init(sourceLocation: SourceLocation?,
+                name: ScopeName?,
+                patterns: [Rule])
+    {
+        self.sourceLocation = sourceLocation
+        self.name = name
+        self.patterns = patterns
+    }
 }
