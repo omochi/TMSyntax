@@ -10,6 +10,7 @@ public final class Grammar : Decodable, CopyInitializable {
     public var scopeName: ScopeName {
         return rule.scopeName!
     }
+    public weak var repository: GrammarRepository?
     
     public enum CodingKeys : String, CodingKey {
         case name
@@ -68,5 +69,6 @@ public final class Grammar : Decodable, CopyInitializable {
                               repository: repository,
                               scopeName: scopeName)
         rule.name = "root"
+        rule.setUpRootRule(grammar: self)
     }
 }

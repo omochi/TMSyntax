@@ -39,7 +39,7 @@ public final class Parser {
                                             phase: .content,
                                             patterns: rule.patterns,
                                             captureAnchors: [],
-                                            scopePath: [grammar.scopeName],
+                                            scopePath: ScopePath([grammar.scopeName]),
                                             endPattern: nil,
                                             endPosition: nil))
     }

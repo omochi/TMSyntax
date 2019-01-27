@@ -22,6 +22,22 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
     public var name: String?
     public weak var parent: Rule?
     
+    public var grammar: Grammar? {
+        var ruleOrNone: Rule? = self
+        while let rule = ruleOrNone {
+            if let grammar = rule._grammar {
+                return grammar
+            }
+            ruleOrNone = rule.parent
+        }
+        return nil
+    }
+    private weak var _grammar: Grammar?
+    
+    public var grammarRepository: GrammarRepository? {
+        return grammar?.repository
+    }
+    
     public var repository: RuleRepository? { return nil }
     public var scopeName: ScopeName? { return nil }
     
@@ -29,6 +45,10 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
     
     public init(sourceLocation: SourceLocation?) {
         self.sourceLocation = sourceLocation
+    }
+    
+    public func setUpRootRule(grammar: Grammar) {
+        _grammar = grammar
     }
     
     public var description: String {
@@ -74,22 +94,6 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
             ruleOrNone = rule.parent
         }
         return nil
-    }
-    
-    internal func _compileRegex(pattern: String) throws -> Regex {
-        do {
-            return try Regex(pattern: pattern, options: [])
-        } catch {
-            throw RegexCompileError(location: sourceLocation, error: error)
-        }
-    }
-    
-    internal var locationForDescription: String {
-        if let loc = sourceLocation {
-            return " at \(loc)"
-        } else {
-            return ""
-        }
     }
 }
 

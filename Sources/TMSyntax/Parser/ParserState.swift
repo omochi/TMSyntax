@@ -10,7 +10,7 @@ public struct ParserState {
     public var phase: Phase?
     public var patterns: [Rule]
     public var captureAnchors: [CaptureAnchor]
-    public var scopePath: [ScopeName]
+    public var scopePath: ScopePath
     public var endPattern: RegexPattern?
     public var endPosition: String.Index?
     
@@ -18,7 +18,7 @@ public struct ParserState {
                 phase: Phase?,
                 patterns: [Rule],
                 captureAnchors: [CaptureAnchor],
-                scopePath: [ScopeName],
+                scopePath: ScopePath,
                 endPattern: RegexPattern?,
                 endPosition: String.Index?)
     {

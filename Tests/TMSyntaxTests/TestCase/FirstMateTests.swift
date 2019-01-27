@@ -144,7 +144,7 @@ class FirstMateTests: XCTestCase {
             
             let actual: [TestDefinition.Token] = tokens.map { (token) in
                 let str: String = String(lineString[token.range])
-                let scopes: [String] = token.scopePath.map { $0.stringValue }
+                let scopes: [String] = token.scopePath.items.map { $0.stringValue }
                 let tokenDef = TestDefinition.Token(value: str,
                                                     scopes: scopes)
                 return tokenDef

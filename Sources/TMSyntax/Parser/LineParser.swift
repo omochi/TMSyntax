@@ -156,7 +156,7 @@ internal final class LineParser {
     private func collectEnterMatchPlans(rule: Rule) -> [MatchPlan] {
         switch rule.switcher {
         case .include(let rule):
-            guard let target = rule.resolve(grammar: grammar) else {
+            guard let target = rule.resolve() else {
                 return []
             }
             return collectEnterMatchPlans(rule: target)
@@ -229,7 +229,7 @@ internal final class LineParser {
         case .matchRule(let rule):
             var scopePath = state.scopePath
             if let scope = rule.scopeName {
-                scopePath.append(scope)
+                scopePath.push(scope)
             }
             
             let anchors = buildCaptureAnchor(regexMatch: regexMatch,
@@ -246,7 +246,7 @@ internal final class LineParser {
         case .beginRule(let rule):
             var scopePath = state.scopePath
             if let scope = rule.scopeName {
-                scopePath.append(scope)
+                scopePath.push(scope)
             }
             
             let ruleEndPattern = rule.end!
@@ -271,8 +271,8 @@ internal final class LineParser {
             // end of contentName
             if let contentName = rule.contentName {
                 trace("pop contentName")
-                precondition(contentName == state.scopePath.last)
-                state.scopePath.removeLast()
+                precondition(contentName == state.scopePath.top)
+                state.scopePath.pop()
             }
             
             state.endPosition = regexMatch[].upperBound
@@ -286,7 +286,7 @@ internal final class LineParser {
     private func processHitAnchor(_ anchor: CaptureAnchor) {
         var scopePath = state.scopePath
         if let scope = anchor.attribute?.name {
-            scopePath.append(scope)
+            scopePath.push(scope)
         }
         
         let newState = ParserState(rule: nil,
@@ -307,7 +307,7 @@ internal final class LineParser {
                 let rule = state.scopeRule!
                 trace("push contentName")
                 if let contentName = rule.contentName {
-                    state.scopePath.append(contentName)
+                    state.scopePath.push(contentName)
                 }
                 state.phase = ParserState.Phase.content
                 state.endPosition = nil

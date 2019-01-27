@@ -11,6 +11,7 @@ public final class GrammarRepository {
     public func loadGrammar(path: URL) throws {
         let grammar = try Grammar(contentsOf: path)
         self.dictionary[grammar.scopeName] = grammar
+        grammar.repository = self
     }
     
     public var entries: [(ScopeName, Grammar)] {
