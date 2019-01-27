@@ -10,4 +10,12 @@ internal extension Optional {
         self = x
         return x
     }
+    
+    func mapToArray<U>(_ f: (Wrapped) throws -> U) rethrows -> [U] {
+        guard let t = self else {
+            return []
+        }
+        let u = try f(t)
+        return [u]
+    }
 }

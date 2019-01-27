@@ -2,8 +2,9 @@ import Foundation
 
 public struct ParserState {
     public enum Phase {
-        case pushContentAtEndPosition
-        case content
+        case scopeBegin
+        case scopeContent
+        case scopeEnd
     }
     
     public var rule: Rule?
