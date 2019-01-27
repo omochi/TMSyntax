@@ -19,27 +19,27 @@ public final class Parser {
     }
     
     public convenience init(string: String,
-                            grammer: Grammer)
+                            grammar: Grammar)
     {
         self.init(lines: string.splitLines(),
-                  grammer: grammer)
+                  grammar: grammar)
     }
     
     public init(lines: [String],
-                grammer: Grammer)
+                grammar: Grammar)
     {
         self.lines = lines
         self.currentLineIndex = 0
-        self.grammer = grammer
+        self.grammar = grammar
         self.stateStack = ParserStateStack([])
         
-        let rule = grammer.rule
+        let rule = grammar.rule
         
         stateStack.stack.append(ParserState(rule: rule,
                                             phase: .content,
                                             patterns: rule.patterns,
                                             captureAnchors: [],
-                                            scopePath: [grammer.scopeName],
+                                            scopePath: [grammar.scopeName],
                                             endPattern: nil,
                                             endPosition: nil))
     }
@@ -58,13 +58,13 @@ public final class Parser {
     
     public var isTraceEnabled: Bool = false
     
-    private let grammer: Grammer
+    private let grammar: Grammar
     private var stateStack: ParserStateStack
     
     public func parseLine() throws -> [Token] {
         let parser = LineParser(line: currentLine!,
                                 stateStack: stateStack,
-                                grammer: grammer,
+                                grammar: grammar,
                                 isTraceEnabled: isTraceEnabled)
         let result = try parser.parse()
         self.stateStack = result.stateStack

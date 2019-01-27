@@ -116,26 +116,26 @@ class FirstMateTests: XCTestCase {
     private func testEntry(_ def: TestDefinition, file: StaticString, line: UInt) throws {
         let dir = FirstMateTests.resourceDir!
 
-        let grammerRepository = GrammerRepository()
+        let grammarRepository = GrammarRepository()
         for path in def.grammars {
-            try grammerRepository.loadGrammer(path: dir.appendingPathComponent(path))
+            try grammarRepository.loadGrammar(path: dir.appendingPathComponent(path))
         }
         
-        func _grammer() throws -> Grammer {
+        func _grammar() throws -> Grammar {
             if let name = def.grammarScopeName {
-                return grammerRepository[ScopeName(name)]!
+                return grammarRepository[ScopeName(name)]!
             }
             if let path = def.grammarPath {
-                return try Grammer(contentsOf: dir.appendingPathComponent(path))
+                return try Grammar(contentsOf: dir.appendingPathComponent(path))
             }
             fatalError("unsupported")
         }
         
-        let grammer = try _grammer()
+        let grammar = try _grammar()
         
         let lines = def.lines.map { $0.line }
         
-        let parser = Parser(lines: lines, grammer: grammer)
+        let parser = Parser(lines: lines, grammar: grammar)
         
         for lineDef in def.lines {
             let lineString = parser.currentLine!

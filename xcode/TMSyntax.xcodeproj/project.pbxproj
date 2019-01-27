@@ -51,7 +51,7 @@
 		D64F5EAC21F39AB900CA06B7 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EAB21F39AB900CA06B7 /* StringExtension.swift */; };
 		D64F5EAE21F39C6100CA06B7 /* StringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EAD21F39C6100CA06B7 /* StringTests.swift */; };
 		D64F5EB221F4103B00CA06B7 /* FirstMateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EB121F4103B00CA06B7 /* FirstMateTests.swift */; };
-		D64F5EB821F444EA00CA06B7 /* GrammerRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EB721F444EA00CA06B7 /* GrammerRepository.swift */; };
+		D64F5EB821F444EA00CA06B7 /* GrammarRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5EB721F444EA00CA06B7 /* GrammarRepository.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,7 +112,7 @@
 		D64F5EAB21F39AB900CA06B7 /* StringExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		D64F5EAD21F39C6100CA06B7 /* StringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
 		D64F5EB121F4103B00CA06B7 /* FirstMateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstMateTests.swift; sourceTree = "<group>"; };
-		D64F5EB721F444EA00CA06B7 /* GrammerRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrammerRepository.swift; sourceTree = "<group>"; };
+		D64F5EB721F444EA00CA06B7 /* GrammarRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrammarRepository.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -252,7 +252,7 @@
 			isa = PBXGroup;
 			children = (
 				D64F5E5C21F35D3900CA06B7 /* Grammar.swift */,
-				D64F5EB721F444EA00CA06B7 /* GrammerRepository.swift */,
+				D64F5EB721F444EA00CA06B7 /* GrammarRepository.swift */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -418,7 +418,7 @@
 			files = (
 				D64F5E7221F35D3900CA06B7 /* OnigmoAPI.swift in Sources */,
 				D64F5E9B21F35D7400CA06B7 /* MatchRule.swift in Sources */,
-				D64F5EB821F444EA00CA06B7 /* GrammerRepository.swift in Sources */,
+				D64F5EB821F444EA00CA06B7 /* GrammarRepository.swift in Sources */,
 				D64F5E7921F35D3900CA06B7 /* MatchPlan.swift in Sources */,
 				D64F5EA221F360D500CA06B7 /* RuleDecode.swift in Sources */,
 				D64F5E8721F35D4A00CA06B7 /* OptionalExtension.swift in Sources */,

@@ -7,7 +7,7 @@ internal final class LineParser {
     
     public init(line: String,
                 stateStack: ParserStateStack,
-                grammer: Grammer,
+                grammar: Grammar,
                 isTraceEnabled: Bool)
     {
         self.line = line
@@ -15,7 +15,7 @@ internal final class LineParser {
         self.position = line.startIndex
         self.isLineEnd = false
         self.stateStack = stateStack
-        self.grammer = grammer
+        self.grammar = grammar
         self.tokens = []
         self.isTraceEnabled = isTraceEnabled
     }
@@ -25,7 +25,7 @@ internal final class LineParser {
     private var position: String.Index
     private var isLineEnd: Bool
     private var stateStack: ParserStateStack
-    private let grammer: Grammer
+    private let grammar: Grammar
     private var tokens: [Token]
     private let isTraceEnabled: Bool
     
@@ -156,7 +156,7 @@ internal final class LineParser {
     private func collectEnterMatchPlans(rule: Rule) -> [MatchPlan] {
         switch rule.switcher {
         case .include(let rule):
-            guard let target = rule.resolve(grammer: grammer) else {
+            guard let target = rule.resolve(grammar: grammar) else {
                 return []
             }
             return collectEnterMatchPlans(rule: target)

@@ -4,7 +4,7 @@ import enum FineJSON.DecodingError
 
 private let pathKey = CodingUserInfoKey(rawValue: "path")!
 
-public final class Grammer : Decodable, CopyInitializable {
+public final class Grammar : Decodable, CopyInitializable {
     public let name: String
     public let rule: ScopeRule
     public var scopeName: ScopeName {
@@ -28,7 +28,7 @@ public final class Grammer : Decodable, CopyInitializable {
         if let path = path {
             decoder.userInfo[pathKey] = path
         }
-        let copy = try decoder.decode(Grammer.self, from: data)
+        let copy = try decoder.decode(Grammar.self, from: data)
         self.init(copy: copy)
     }
     

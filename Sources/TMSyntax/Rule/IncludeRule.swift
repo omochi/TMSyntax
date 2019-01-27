@@ -15,12 +15,12 @@ public final class IncludeRule : Rule {
         fatalError()
     }
     
-    public func resolve(grammer: Grammer) -> Rule? {
+    public func resolve(grammar: Grammar) -> Rule? {
         switch target {
         case .repository(let name):
             return self.rule(with: name)
         case .self:
-            return grammer.rule
+            return grammar.rule
         case .language:
             // TODO
             return nil

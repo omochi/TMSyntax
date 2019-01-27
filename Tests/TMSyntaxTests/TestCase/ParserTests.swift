@@ -9,10 +9,10 @@ let phpSyntaxPath = Resources.shared.path("Syntaxes/php.tmLanguage.json")
 
 class ParserTests: XCTestCase {    
     func test1() throws {
-        let grammer = try Grammer(contentsOf: jsonSyntaxPath)
+        let grammar = try Grammar(contentsOf: jsonSyntaxPath)
 
         let string = "123 456 789"
-        let parser = Parser(string: string, grammer: grammer)
+        let parser = Parser(string: string, grammar: grammar)
         let tokens = try parser.parseLine().map { $0.toNaive(string: string) }
         XCTAssertEqual(tokens, [
             NaiveToken(range: 0..<3, scopes: ["source.json", "constant.numeric.json"]),
@@ -24,10 +24,10 @@ class ParserTests: XCTestCase {
     }
     
     func testBeginCapture0() throws {
-        let grammer = try Grammer(contentsOf: jsonSyntaxPath)
+        let grammar = try Grammar(contentsOf: jsonSyntaxPath)
         
         let string = "[ 123 ]"
-        let parser = Parser(string: string, grammer: grammer)
+        let parser = Parser(string: string, grammar: grammar)
         let tokens = try parser.parseLine().map { $0.toNaive(string: string) }
         XCTAssertEqual(tokens, [
             NaiveToken(range: 0..<1, scopes: ["source.json", "meta.structure.array.json", "punctuation.definition.array.begin.json"]),
@@ -39,10 +39,10 @@ class ParserTests: XCTestCase {
     }
     
     func testNest() throws {
-        let grammer = try Grammer(contentsOf: jsonSyntaxPath)
+        let grammar = try Grammar(contentsOf: jsonSyntaxPath)
         
         let string = " [ [ 123 ] ] "
-        let parser = Parser(string: string, grammer: grammer)
+        let parser = Parser(string: string, grammar: grammar)
         let tokens = try parser.parseLine().map { $0.toNaive(string: string) }
         
         let lang = "source.json"
@@ -82,10 +82,10 @@ class ParserTests: XCTestCase {
     ]
 }
 """
-        let grammer = try Grammer(data: syntax.data(using: .utf8)!)
+        let grammar = try Grammar(data: syntax.data(using: .utf8)!)
         
         let string = "bbaaabb"
-        let parser = Parser(string: string, grammer: grammer)
+        let parser = Parser(string: string, grammar: grammar)
         let tokens = try parser.parseLine().map { $0.toNaive(string: string) }
         XCTAssertEqual(tokens, [
             NaiveToken(range: 0..<2, scopes: ["root"]),
@@ -109,10 +109,10 @@ class ParserTests: XCTestCase {
     ]
 }
 """
-        let grammer = try Grammer(data: syntax.data(using: .utf8)!)
+        let grammar = try Grammar(data: syntax.data(using: .utf8)!)
         
         let string = "axb"
-        let parser = Parser(string: string, grammer: grammer)
+        let parser = Parser(string: string, grammar: grammar)
         let tokens = try parser.parseLine().map { $0.toNaive(string: string) }
         XCTAssertEqual(tokens, [
             NaiveToken(range: 0..<1, scopes: ["root", "outer"]),
@@ -122,10 +122,10 @@ class ParserTests: XCTestCase {
     }
     
     func testMatchRuleCapture() throws {
-        let grammer = try Grammer(contentsOf: xmlSyntaxPath)
+        let grammar = try Grammar(contentsOf: xmlSyntaxPath)
         
         let string = "&nbsp;"
-        let parser = Parser(string: string, grammer: grammer)
+        let parser = Parser(string: string, grammar: grammar)
         let tokens = try parser.parseLine().map { $0.toNaive(string: string) }
         
         let lang = "text.xml"
@@ -137,7 +137,7 @@ class ParserTests: XCTestCase {
     }
     
     func testNestMultiline() throws {
-        let grammer = try Grammer(contentsOf: jsonSyntaxPath)
+        let grammar = try Grammar(contentsOf: jsonSyntaxPath)
 
         
         let string = """
@@ -155,7 +155,7 @@ class ParserTests: XCTestCase {
         let numeric = "constant.numeric.json"
         let comma = "punctuation.separator.array.json"
         
-        let parser = Parser(string: string, grammer: grammer)
+        let parser = Parser(string: string, grammar: grammar)
         var tokens = try parseLine(parser)
         XCTAssertEqual(tokens, [
             NaiveToken(range: 0..<1, scopes: [lang, array, arrayBegin])
@@ -195,7 +195,7 @@ class ParserTests: XCTestCase {
     }
     
     func testEndBackReference() throws {
-        let grammer = try Grammer(contentsOf: pythonSyntaxPath)
+        let grammar = try Grammar(contentsOf: pythonSyntaxPath)
         
         
         let string = """
@@ -206,7 +206,7 @@ u'a"a'
         let lang = "source.python"
         let qstr = "string.quoted.single.python"
         
-        let parser = Parser(string: string, grammer: grammer)
+        let parser = Parser(string: string, grammar: grammar)
         var tokens = try parseLine(parser)
         XCTAssertEqual(tokens, [
             NaiveToken(range: 0..<1, scopes: [lang, qstr, "storage.type.string.python"]),
@@ -225,14 +225,14 @@ u'a"a'
     }
     
     func testMatchCaptureNestPattern() throws {
-        let grammer = try Grammer(contentsOf: phpSyntaxPath)
+        let grammar = try Grammar(contentsOf: phpSyntaxPath)
         
         let code = """
 class BaseClass {
 public function __construct(){}
 }
 """
-        let parser = Parser(string: code, grammer: grammer)
+        let parser = Parser(string: code, grammar: grammar)
         var tokens = try parseLine(parser)
         
         tokens = try parseLine(parser)
