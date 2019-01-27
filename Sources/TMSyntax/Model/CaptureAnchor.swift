@@ -38,7 +38,7 @@ public final class CaptureAnchor {
         return hasNoScopeSelf && children.isEmpty
     }
     
-    public static func build(regexMatch: Regex.Match,
+    public static func build(matchResult: Regex.MatchResult,
                              captures: CaptureAttributes?) -> [CaptureAnchor]
     {
         func _attr(_ index: Int) -> CaptureAttribute? {
@@ -58,8 +58,8 @@ public final class CaptureAnchor {
         }
         
         var index = 0
-        while index < regexMatch.count {
-            guard let range = regexMatch[index] else
+        while index < matchResult.count {
+            guard let range = matchResult[index] else
             {
                 index += 1
                 continue

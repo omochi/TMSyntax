@@ -125,4 +125,14 @@ clone|set_state|sleep|wakeup|autoload|invoke|callStatic))
         XCTAssertEqual(m![], string.index(at: 3)..<string.index(at: 6))
     }
     
+    func testWordBound() throws {
+        let regex = try Regex(pattern: "<--(\\\"?)SQL\\b\\1", options: [])
+        let string = "<% <--SQL SELECT"
+        var m = regex.search(string: string, range: string.index(at: 0)..<string.index(at: 16))
+        XCTAssertNotNil(m)
+        
+        m = regex.search(string: string, range: string.index(at: 3)..<string.index(at: 9))
+        XCTAssertNotNil(m)
+    }
+    
 }

@@ -40,7 +40,7 @@ class CaptureAnchorTests: XCTestCase {
         ]
         
         let attr = CaptureAttribute(sourceLocation: nil, name: ScopeName("a"), patterns: [])
-        let anchors = CaptureAnchor.build(regexMatch: Regex.Match(ranges: ranges),
+        let anchors = CaptureAnchor.build(matchResult: Regex.MatchResult(ranges: ranges),
                                           captures: CaptureAttributes(dictionary: OrderedDictionary([
                                             "1": attr,
                                             "2": attr,

@@ -1,8 +1,8 @@
 public struct MatchResult {
-    public var match: Regex.Match?
+    public var match: Regex.MatchResult?
     public var position: String.Index
     
-    public init(match: Regex.Match?,
+    public init(match: Regex.MatchResult?,
                 position: String.Index)
     {
         self.match = match

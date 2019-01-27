@@ -40,6 +40,8 @@ public final class Parser {
                                             patterns: rule.patterns,
                                             captureAnchors: [],
                                             scopePath: ScopePath([grammar.scopeName]),
+                                            beginMatchResult: nil,
+                                            beginLineIndex: nil,
                                             endPattern: nil,
                                             endPosition: nil))
     }
@@ -63,6 +65,7 @@ public final class Parser {
     
     public func parseLine() throws -> [Token] {
         let parser = LineParser(line: currentLine!,
+                                lineIndex: currentLineIndex,
                                 stateStack: stateStack,
                                 grammar: grammar,
                                 isTraceEnabled: isTraceEnabled)

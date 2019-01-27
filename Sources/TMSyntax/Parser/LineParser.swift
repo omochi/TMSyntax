@@ -6,11 +6,13 @@ internal final class LineParser {
     private static let invalidString: String = String(String.UnicodeScalarView([invalidUnicode]))
     
     public init(line: String,
+                lineIndex: Int,
                 stateStack: ParserStateStack,
                 grammar: Grammar,
                 isTraceEnabled: Bool)
     {
         self.line = line
+        self.lineIndex = lineIndex
         self.lineEndPosition = line.lineEndIndex
         self.position = line.startIndex
         self.isLineEnd = false
@@ -21,6 +23,7 @@ internal final class LineParser {
     }
     
     private let line: String
+    private let lineIndex: Int
     private let lineEndPosition: String.Index
     private var position: String.Index
     private var isLineEnd: Bool
@@ -56,6 +59,7 @@ internal final class LineParser {
         let searchRange = position..<searchEnd.position
 
         guard let (plan, result) = try search(line: line,
+                                              lineIndex: lineIndex,
                                               range: searchRange,
                                               plans: plans) else
         {
@@ -85,8 +89,8 @@ internal final class LineParser {
             precondition(result[].lowerBound <= anchor.range.lowerBound)
             if result[].lowerBound == anchor.range.lowerBound {
                 processHitAnchor(anchor)
+                return
             }
-            return
         case .endPosition(let endPosition):
             precondition(result[].lowerBound <= endPosition)
             if result[].lowerBound == endPosition {
@@ -97,7 +101,7 @@ internal final class LineParser {
             break
         }
         
-        processMatch(plan: plan, result: result)
+        processMatch(plan: plan, matchResult: result)
     }
     
     private var state: ParserState {
@@ -142,7 +146,9 @@ internal final class LineParser {
         }
         
         if let endPattern = state.endPattern {
-            let endPlan = MatchPlan.endPattern(endPattern)
+            let endPlan = MatchPlan.createEndPattern(pattern: endPattern,
+                                                     beginMatchResult: state.beginMatchResult,
+                                                     beginLineIndex: state.beginLineIndex)
             if let yes = state.scopeRule?.applyEndPatternLast, yes {
                 plans.append(endPlan)
             } else {
@@ -176,15 +182,41 @@ internal final class LineParser {
     }
         
     private func search(line: String,
+                        lineIndex: Int,
                         range: Range<String.Index>,
                         plans: [MatchPlan])
-        throws -> (plan: MatchPlan, result: Regex.Match)?
+        throws -> (plan: MatchPlan, result: Regex.MatchResult)?
     {
-        let patterns = plans.map { $0.pattern }
+        func build(plan: MatchPlan) -> RegexMatchPlan {
+            switch plan {
+            case .matchRule(let rule):
+                return RegexMatchPlan(pattern: rule.pattern, globalPosition: nil)
+            case .beginRule(let rule):
+                let begin = rule.begin!
+                return RegexMatchPlan(pattern: begin, globalPosition: nil)
+            case .endPattern(pattern: let pattern,
+                             beginMatchResult: let beginMatchResult,
+                             beginLineIndex: let beginLineIndex):
+                let globalPosition: String.Index?
+                
+                if let beginMatchResult = beginMatchResult,
+                    let beginLineIndex = beginLineIndex,
+                    lineIndex == beginLineIndex
+                {
+                    globalPosition = beginMatchResult[].upperBound
+                } else {
+                    globalPosition = nil
+                }
+                return RegexMatchPlan(pattern: pattern,
+                                      globalPosition: globalPosition)
+            }
+        }
+        
+        let regexPlans: [RegexMatchPlan] = plans.map { build(plan: $0) }
         
         guard let (index, result) = try search(line: line,
                                                range: range,
-                                               patterns: patterns) else
+                                               plans: regexPlans) else
         {
             return nil
         }
@@ -194,16 +226,15 @@ internal final class LineParser {
     
     private func search(line: String,
                         range: Range<String.Index>,
-                        patterns: [RegexPattern])
-        throws -> (index: Int, result: Regex.Match)?
+                        plans: [RegexMatchPlan])
+        throws -> (index: Int, result: Regex.MatchResult)?
     {
-        typealias Record = (index: Int, result: Regex.Match)
+        typealias Record = (index: Int, result: Regex.MatchResult)
         
         var records: [Record] = []
         
-        for (index, pattern) in patterns.enumerated() {
-            let regex = try pattern.compile()
-            if let match = regex.search(string: line, range: range) {
+        for (index, plan) in plans.enumerated() {
+            if let match = try plan.search(string: line, range: range) {
                 records.append(Record(index: index, result: match))
             }
         }
@@ -222,7 +253,7 @@ internal final class LineParser {
         return records.min(by: cmp)
     }
     
-    private func processMatch(plan: MatchPlan, result regexMatch: Regex.Match) {
+    private func processMatch(plan: MatchPlan, matchResult: Regex.MatchResult) {
         trace("match!: \(plan)")
         
         switch plan {
@@ -232,15 +263,17 @@ internal final class LineParser {
                 scopePath.push(scope)
             }
             
-            let anchors = buildCaptureAnchor(regexMatch: regexMatch,
+            let anchors = buildCaptureAnchor(matchResult: matchResult,
                                              captures: rule.captures)
             let newState = ParserState(rule: rule,
                                        phase: nil,
                                        patterns: [],
                                        captureAnchors: anchors,
                                        scopePath: scopePath,
+                                       beginMatchResult: nil,
+                                       beginLineIndex: nil,
                                        endPattern: nil,
-                                       endPosition: regexMatch[].upperBound)
+                                       endPosition: matchResult[].upperBound)
             trace("push state")
             pushState(newState)
         case .beginRule(let rule):
@@ -250,10 +283,10 @@ internal final class LineParser {
             }
             
             let ruleEndPattern = rule.end!
-            let endPattern = resolveEndPatternBackReference(end: ruleEndPattern,
-                                                            beginMatchResult: regexMatch)
+            let endPattern = resolveEndPattern(end: ruleEndPattern,
+                                               beginMatchResult: matchResult)
             
-            let anchors = buildCaptureAnchor(regexMatch: regexMatch,
+            let anchors = buildCaptureAnchor(matchResult: matchResult,
                                              captures: rule.beginCaptures)
             
             let newState = ParserState(rule: rule,
@@ -261,8 +294,10 @@ internal final class LineParser {
                                        patterns: rule.patterns,
                                        captureAnchors: anchors,
                                        scopePath: scopePath,
+                                       beginMatchResult: matchResult,
+                                       beginLineIndex: lineIndex,
                                        endPattern: endPattern,
-                                       endPosition: regexMatch[].upperBound)
+                                       endPosition: matchResult[].upperBound)
             trace("push state")
             pushState(newState)
         case .endPattern:
@@ -275,9 +310,9 @@ internal final class LineParser {
                 state.scopePath.pop()
             }
             
-            state.endPosition = regexMatch[].upperBound
+            state.endPosition = matchResult[].upperBound
             
-            let anchors = buildCaptureAnchor(regexMatch: regexMatch,
+            let anchors = buildCaptureAnchor(matchResult: matchResult,
                                              captures: rule.endCaptures)
             state.captureAnchors = anchors
         }
@@ -294,6 +329,8 @@ internal final class LineParser {
                                    patterns: anchor.attribute?.patterns ?? [],
                                    captureAnchors: anchor.children,
                                    scopePath: scopePath,
+                                   beginMatchResult: nil,
+                                   beginLineIndex: nil,
                                    endPattern: nil,
                                    endPosition: anchor.range.upperBound)
         trace("push state: anchor")
@@ -321,15 +358,16 @@ internal final class LineParser {
         popState()
     }
     
-    private func buildCaptureAnchor(regexMatch: Regex.Match,
+    private func buildCaptureAnchor(matchResult: Regex.MatchResult,
                                     captures: CaptureAttributes?) -> [CaptureAnchor]
     {
-        return CaptureAnchor.build(regexMatch: regexMatch,
-                                   captures: captures)
+        let anchors = CaptureAnchor.build(matchResult: matchResult,
+                                          captures: captures)
+        return anchors
     }
     
-    private func resolveEndPatternBackReference(end: RegexPattern,
-                                                beginMatchResult: Regex.Match) -> RegexPattern
+    private func resolveEndPattern(end: RegexPattern,
+                                   beginMatchResult: Regex.MatchResult) -> RegexPattern
     {
         var num = 0
         

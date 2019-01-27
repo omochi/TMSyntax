@@ -61,6 +61,6 @@ public final class RegexPattern : Decodable, CustomStringConvertible {
             pat += "..."
         }
         
-        return "\(pat.debugDescription)"
+        return "\(pat)"
     }
 }

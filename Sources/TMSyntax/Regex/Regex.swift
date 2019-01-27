@@ -50,7 +50,7 @@ public struct Regex {
         }
     }
     
-    public struct Match {
+    public struct MatchResult {
         public var ranges: [Range<String.Index>?]
         
         public init(ranges: [Range<String.Index>?]) {
@@ -78,22 +78,28 @@ public struct Regex {
     
     private let object: Object
     
-    public func search(string: String, range: Range<String.Index>) -> Match? {
+    public func search(string: String,
+                       range: Range<String.Index>,
+                       globalPosition: String.Index? = nil) -> MatchResult? {
         guard let ranges = Onigmo.search(regex: object.onig,
                                          string: string,
-                                         range: range) else
+                                         range: range,
+                                         globalPosition: globalPosition) else
         {
             return nil
         }
         
-        return Match(ranges: ranges)
+        return MatchResult(ranges: ranges)
     }
     
-    public func replace(string: String, replacer: (Regex.Match) -> String) -> String {
+    public func replace(string: String, replacer: (Regex.MatchResult) -> String) -> String {
         var result = ""
         var pos = string.startIndex
+        var globalPosition: String.Index? = nil
         while true {
-            guard let match = search(string: string, range: pos..<string.endIndex) else {
+            guard let match = search(string: string,
+                                     range: pos..<string.endIndex,
+                                     globalPosition: globalPosition) else {
                 break
             }
             
@@ -103,6 +109,7 @@ public struct Regex {
             result.append(rep)
             
             pos = match[].upperBound
+            globalPosition = match[].lowerBound
         }
         result.append(String(string[pos...]))
         

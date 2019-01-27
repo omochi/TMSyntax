@@ -1,18 +1,10 @@
 public enum MatchPlan : CustomStringConvertible {
     case matchRule(MatchRule)
     case beginRule(ScopeRule)
-    case endPattern(RegexPattern)
-    
-    public var pattern: RegexPattern {
-        switch self {
-        case .matchRule(let rule):
-            return rule.pattern
-        case .beginRule(let rule):
-            return rule.begin!
-        case .endPattern(let pattern):
-            return pattern
-        }
-    }
+    case endPattern(
+        pattern: RegexPattern,
+        beginMatchResult: Regex.MatchResult?,
+        beginLineIndex: Int?)
     
     public var description: String {
         switch self {
@@ -20,7 +12,7 @@ public enum MatchPlan : CustomStringConvertible {
             return "test: \(rule)"
         case .beginRule(let rule):
             return "begin test: \(rule)"
-        case .endPattern(let pattern):
+        case .endPattern(let pattern, _, _):
             return "end test: \(pattern)"
         }
     }
@@ -28,6 +20,15 @@ public enum MatchPlan : CustomStringConvertible {
     public static func createBeginRule(_ rule: ScopeRule) -> MatchPlan {
         precondition(rule.begin != nil)
         return .beginRule(rule)
+    }
+    
+    public static func createEndPattern(pattern: RegexPattern,
+                                        beginMatchResult: Regex.MatchResult?,
+                                        beginLineIndex: Int?) -> MatchPlan
+    {
+        return .endPattern(pattern: pattern,
+                           beginMatchResult: beginMatchResult,
+                           beginLineIndex: beginLineIndex)
     }
 }
 

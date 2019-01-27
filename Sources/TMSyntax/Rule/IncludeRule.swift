@@ -22,7 +22,10 @@ public final class IncludeRule : Rule {
         case .self:
             return self.grammar?.rule
         case .language(let scope):
-            return self.grammarRepository?[scope]?.rule
+            guard let grammar = self.grammarRepository?[scope] else {
+                return nil
+            }
+            return grammar.rule
         }
     }
 }
