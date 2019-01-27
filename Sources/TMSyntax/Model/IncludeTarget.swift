@@ -6,14 +6,19 @@ import enum FineJSON.DecodingError
 public enum IncludeTarget : CustomStringConvertible, Decodable, CopyInitializable {
     case repository(String)
     case `self`
-    case language(ScopeName)
+    case language(ScopeName, String?)
     
     public var stringValue: String {
         get {
             switch self {
             case .repository(let name): return "#\(name)"
             case .self: return "$self"
-            case .language(let name): return "\(name)"
+            case .language(let lang, let name):
+                var s = "\(lang)"
+                if let name = name {
+                    s += "#\(name)"
+                }
+                return s
             }
         }
     }
@@ -23,9 +28,21 @@ public enum IncludeTarget : CustomStringConvertible, Decodable, CopyInitializabl
     }
     
     public init?(_ string: String) {
-        if string.starts(with: "#") {
-            let start = string.index(after: string.startIndex)
-            self = .repository(String(string[start...]))
+        if let index = string.firstIndex(where: { $0 == Character("#") }) {
+            if index == string.startIndex {
+                let st = string.index(after: index)
+                self = .repository(String(string[st...]))
+            } else {
+                let lang = String(string[..<index])
+                
+                let st = string.index(after: index)
+                guard st < string.endIndex else {
+                    return nil
+                }
+                
+                let name = String(string[st...])
+                self = .language(ScopeName(lang), name)
+            }
         } else if string.starts(with: "$") {
             let start = string.index(after: string.startIndex)
             let str = String(string[start...])
@@ -35,10 +52,9 @@ public enum IncludeTarget : CustomStringConvertible, Decodable, CopyInitializabl
             } else {
                 return nil
             }
-        
         } else {
             let name = ScopeName(string)
-            self = .language(name)
+            self = .language(name, nil)
         }
     }
     

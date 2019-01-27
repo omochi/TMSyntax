@@ -21,11 +21,15 @@ public final class IncludeRule : Rule {
             return self.rule(with: name)
         case .self:
             return self.grammar?.rule
-        case .language(let scope):
+        case .language(let scope, let name):
             guard let grammar = self.grammarRepository?[scope] else {
                 return nil
             }
-            return grammar.rule
+            if let name = name {
+                return grammar.rule.rule(with: name)
+            } else {
+                return grammar.rule
+            }
         }
     }
 }
