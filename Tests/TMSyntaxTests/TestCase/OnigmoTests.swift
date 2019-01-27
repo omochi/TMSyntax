@@ -116,4 +116,13 @@ clone|set_state|sleep|wakeup|autoload|invoke|callStatic))
             XCTFail("\(error)")
         }
     }
+    
+    func testRange() throws {
+        let regex = try Regex(pattern: "abc", options: [])
+        let string = "xxxabcxxx"
+        let m = regex.search(string: string,
+                             range: string.index(at: 3)..<string.index(at: 6))
+        XCTAssertEqual(m![], string.index(at: 3)..<string.index(at: 6))
+    }
+    
 }

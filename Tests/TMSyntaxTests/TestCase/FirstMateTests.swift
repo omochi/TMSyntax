@@ -42,13 +42,13 @@ class FirstMateTests: XCTestCase {
         }
     }
     
-    func test3() throws { try test(id: 3) }
-    func test4() throws { try test(id: 4) }
-    func test5() throws { try test(id: 5) }
-    func test6() throws { try test(id: 6) }
-    func test7() throws { try test(id: 7) }
-    func test8() throws { try test(id: 8) }
-    func test9() throws { try test(id: 9) }
+    func test03() throws { try test(id: 3) }
+    func test04() throws { try test(id: 4) }
+    func test05() throws { try test(id: 5) }
+    func test06() throws { try test(id: 6) }
+    func test07() throws { try test(id: 7) }
+    func test08() throws { try test(id: 8) }
+    func test09() throws { try test(id: 9) }
     func test10() throws { try test(id: 10) }
     func test11() throws { try test(id: 11) }
     func test12() throws { try test(id: 12) }

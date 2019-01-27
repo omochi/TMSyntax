@@ -33,8 +33,11 @@ public final class Parser {
         self.grammer = grammer
         self.stateStack = ParserStateStack([])
         
-        stateStack.stack.append(ParserState(phase: .content(grammer.rule),
-                                            patterns: grammer.rule.patterns,
+        let rule = grammer.rule
+        
+        stateStack.stack.append(ParserState(rule: rule,
+                                            phase: .content,
+                                            patterns: rule.patterns,
                                             captureAnchors: [],
                                             scopePath: [grammer.scopeName],
                                             endPattern: nil,

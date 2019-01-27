@@ -136,14 +136,18 @@ internal final class LineParser {
     
     private func collectMatchPlans() -> [MatchPlan] {
         var plans: [MatchPlan] = []
+
+        for rule in state.patterns {
+            plans += collectEnterMatchPlans(rule: rule)
+        }
         
         if let endPattern = state.endPattern {
             let endPlan = MatchPlan.endPattern(endPattern)
-            plans.append(endPlan)
-        }
-        
-        for rule in state.patterns {
-            plans += collectEnterMatchPlans(rule: rule)
+            if let yes = state.scopeRule?.applyEndPatternLast, yes {
+                plans.append(endPlan)
+            } else {
+                plans.insert(endPlan, at: 0)
+            }
         }
         
         return plans
@@ -159,8 +163,8 @@ internal final class LineParser {
         case .match(let rule):
             return [.matchRule(rule)]
         case .scope(let rule):
-            if let begin = rule.begin {
-                return [.beginRule(rule, begin)]
+            if let _ = rule.begin {
+                return [.createBeginRule(rule)]
             } else {
                 var plans: [MatchPlan] = []
                 for rule in rule.patterns {
@@ -230,7 +234,8 @@ internal final class LineParser {
             
             let anchors = buildCaptureAnchor(regexMatch: regexMatch,
                                              captures: rule.captures)
-            let newState = ParserState(phase: nil,
+            let newState = ParserState(rule: rule,
+                                       phase: nil,
                                        patterns: [],
                                        captureAnchors: anchors,
                                        scopePath: scopePath,
@@ -238,7 +243,7 @@ internal final class LineParser {
                                        endPosition: regexMatch[].upperBound)
             trace("push state")
             pushState(newState)
-        case .beginRule(let rule, _):
+        case .beginRule(let rule):
             var scopePath = state.scopePath
             if let scope = rule.scopeName {
                 scopePath.append(scope)
@@ -251,7 +256,8 @@ internal final class LineParser {
             let anchors = buildCaptureAnchor(regexMatch: regexMatch,
                                              captures: rule.beginCaptures)
             
-            let newState = ParserState(phase: .pushContentAtEndPosition(rule),
+            let newState = ParserState(rule: rule,
+                                       phase: .pushContentAtEndPosition,
                                        patterns: rule.patterns,
                                        captureAnchors: anchors,
                                        scopePath: scopePath,
@@ -283,7 +289,8 @@ internal final class LineParser {
             scopePath.append(scope)
         }
         
-        let newState = ParserState(phase: nil,
+        let newState = ParserState(rule: nil,
+                                   phase: nil,
                                    patterns: anchor.attribute?.patterns ?? [],
                                    captureAnchors: anchor.children,
                                    scopePath: scopePath,
@@ -296,12 +303,13 @@ internal final class LineParser {
     private func processEndPosition() {
         if let phase = state.phase {
             switch phase {
-            case .pushContentAtEndPosition(let rule):
+            case .pushContentAtEndPosition:
+                let rule = state.scopeRule!
                 trace("push contentName")
                 if let contentName = rule.contentName {
                     state.scopePath.append(contentName)
                 }
-                state.phase = ParserState.Phase.content(rule)
+                state.phase = ParserState.Phase.content
                 state.endPosition = nil
                 return
             default:

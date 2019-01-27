@@ -2,17 +2,11 @@ import Foundation
 
 public struct ParserState {
     public enum Phase {
-        case pushContentAtEndPosition(ScopeRule)
-        case content(ScopeRule)
-        
-        public var scopeRule: ScopeRule? {
-            switch self {
-            case .pushContentAtEndPosition(let rule): return rule
-            case .content(let rule): return rule
-            }
-        }
+        case pushContentAtEndPosition
+        case content
     }
     
+    public var rule: Rule?
     public var phase: Phase?
     public var patterns: [Rule]
     public var captureAnchors: [CaptureAnchor]
@@ -20,13 +14,15 @@ public struct ParserState {
     public var endPattern: RegexPattern?
     public var endPosition: String.Index?
     
-    public init(phase: Phase?,
+    public init(rule: Rule?,
+                phase: Phase?,
                 patterns: [Rule],
                 captureAnchors: [CaptureAnchor],
                 scopePath: [ScopeName],
                 endPattern: RegexPattern?,
                 endPosition: String.Index?)
     {
+        self.rule = rule
         self.phase = phase
         self.patterns = patterns
         self.captureAnchors = captureAnchors
@@ -36,6 +32,6 @@ public struct ParserState {
     }
     
     public var scopeRule: ScopeRule? {
-        return phase?.scopeRule
+        return rule as? ScopeRule
     }
 }

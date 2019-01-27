@@ -18,6 +18,7 @@ public final class ScopeRule : Rule {
     public let end: RegexPattern?
     public let endCaptures: CaptureAttributes?
     public let contentName: ScopeName?
+    public let applyEndPatternLast: Bool
     
     public init(sourceLocation: SourceLocation?,
                 begin: RegexPattern?,
@@ -25,6 +26,7 @@ public final class ScopeRule : Rule {
                 end: RegexPattern?,
                 endCaptures: CaptureAttributes?,
                 contentName: ScopeName?,
+                applyEndPatternLast: Bool,
                 patterns: [Rule],
                 repository: RuleRepository?,
                 scopeName: ScopeName?)
@@ -40,10 +42,12 @@ public final class ScopeRule : Rule {
         }
         
         self.contentName = contentName
+        self.applyEndPatternLast = applyEndPatternLast
 
         self.patterns = patterns
         self._repository = repository
         self._scopeName = scopeName
+        
         super.init(sourceLocation: sourceLocation)
         
         for rule in patterns {

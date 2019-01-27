@@ -11,6 +11,7 @@ extension Rule {
         case endCaptures
         case captures
         case contentName
+        case applyEndPatternLast
     }
     
     public static func decode(from decoder: Decoder) throws -> Rule {
@@ -40,6 +41,7 @@ extension Rule {
         var end: RegexPattern? = nil
         var endCaptures: CaptureAttributes? = nil
         let contentName: ScopeName? = try c.decodeIfPresent(ScopeName.self, forKey: .contentName)
+        let applyEndPatternLast: Bool = try c.decodeIfPresent(Bool.self, forKey: .applyEndPatternLast) ?? false
         
         if let _ = begin {
             beginCaptures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .beginCaptures)
@@ -59,6 +61,7 @@ extension Rule {
                          end: end,
                          endCaptures: endCaptures,
                          contentName: contentName,
+                         applyEndPatternLast: applyEndPatternLast,
                          patterns: patterns,
                          repository: repository,
                          scopeName: scopeName)
