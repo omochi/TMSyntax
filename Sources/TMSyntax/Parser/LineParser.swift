@@ -13,7 +13,7 @@ internal final class LineParser {
     {
         self.line = line
         self.lineIndex = lineIndex
-        self.lineEndPosition = line.lineEndIndex
+        self.lineEndPosition = line.endIndex
         self.position = line.startIndex
         self.isLineEnd = false
         self.stateStack = stateStack
@@ -36,6 +36,22 @@ internal final class LineParser {
         while true {
             try parseLine()
             if isLineEnd {
+                let lineEndIndex = line.lineEndIndex
+                while var token = tokens.last {
+                    if token.range.upperBound <= lineEndIndex {
+                        break
+                    }
+                    
+                    if lineEndIndex <= token.range.lowerBound {
+                        tokens.removeLast()
+                        continue
+                    }
+
+                    token.range = token.range.lowerBound..<lineEndIndex
+                    tokens[tokens.count - 1] = token
+                    break
+                }
+                
                 return Parser.Result(stateStack: stateStack,
                                      tokens: tokens)
             }

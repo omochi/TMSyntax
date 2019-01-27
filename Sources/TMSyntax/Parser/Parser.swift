@@ -33,6 +33,8 @@ public final class Parser {
         self.grammar = grammar
         self.stateStack = ParserStateStack([])
         
+        makeLine()
+        
         let rule = grammar.rule
         
         stateStack.stack.append(ParserState(rule: rule,
@@ -48,12 +50,7 @@ public final class Parser {
     
     public let lines: [String]
     public private(set) var currentLineIndex: Int
-    public var currentLine: String? {
-        guard currentLineIndex < lines.count else {
-            return nil
-        }
-        return lines[currentLineIndex]
-    }
+    public private(set) var currentLine: String?
     public var isAtEnd: Bool {
         return currentLineIndex == lines.count
     }
@@ -62,6 +59,17 @@ public final class Parser {
     
     private let grammar: Grammar
     private var stateStack: ParserStateStack
+    
+    private func makeLine() {
+        guard currentLineIndex < lines.count else {
+            currentLine = nil
+            return
+        }
+        
+        var line = lines[currentLineIndex]
+        line = String(line[..<line.lineEndIndex]) + "\n"
+        self.currentLine = line
+    }
     
     public func parseLine() throws -> [Token] {
         let parser = LineParser(line: currentLine!,
@@ -72,6 +80,7 @@ public final class Parser {
         let result = try parser.parse()
         self.stateStack = result.stateStack
         currentLineIndex += 1
+        makeLine()
         return result.tokens
     }
     
