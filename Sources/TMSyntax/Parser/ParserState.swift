@@ -5,10 +5,11 @@ public struct ParserState {
         case scopeBegin
         case scopeContent
         case scopeEnd
+        case other
     }
     
     public var rule: Rule?
-    public var phase: Phase?
+    public var phase: Phase
     public var patterns: [Rule]
     public var captureAnchors: [CaptureAnchor]
     public var scopePath: ScopePath
@@ -18,7 +19,7 @@ public struct ParserState {
     public var endPosition: String.Index?
     
     public init(rule: Rule?,
-                phase: Phase?,
+                phase: Phase,
                 patterns: [Rule],
                 captureAnchors: [CaptureAnchor],
                 scopePath: ScopePath,

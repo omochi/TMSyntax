@@ -98,24 +98,7 @@ internal final class LineParser {
         
         extendOuterScope(range: searchRange.lowerBound..<result[].lowerBound)
         self.position = result[].lowerBound
-        
-        switch searchEnd {
-        case .beginCapture(let anchor):
-            precondition(result[].lowerBound <= anchor.range.lowerBound)
-            if result[].lowerBound == anchor.range.lowerBound {
-                processHitAnchor(anchor)
-                return
-            }
-        case .endPosition(let endPosition):
-            precondition(result[].lowerBound <= endPosition)
-            if result[].lowerBound == endPosition {
-                processEndPosition()
-                return
-            }
-        default:
-            break
-        }
-        
+
         processMatch(plan: plan, matchResult: result)
     }
     
@@ -154,6 +137,15 @@ internal final class LineParser {
     }
     
     private func collectMatchPlans() -> [MatchPlan] {
+        switch state.phase {
+        case .scopeBegin,
+             .scopeEnd:
+            return []
+        case .scopeContent,
+             .other:
+            break
+        }
+        
         var plans: [MatchPlan] = []
 
         for rule in state.patterns {
@@ -281,7 +273,7 @@ internal final class LineParser {
             let anchor = buildCaptureAnchor(matchResult: matchResult,
                                              captures: rule.captures)
             let newState = ParserState(rule: rule,
-                                       phase: nil,
+                                       phase: .other,
                                        patterns: [],
                                        captureAnchors: anchor.mapToArray { $0 },
                                        scopePath: scopePath,
@@ -297,16 +289,15 @@ internal final class LineParser {
                 scopePath.push(scope)
             }
             
-            let ruleEndPattern = rule.end!
-            let endPattern = resolveEndPattern(end: ruleEndPattern,
-                                               beginMatchResult: matchResult)
-            
             let anchor = buildCaptureAnchor(matchResult: matchResult,
                                              captures: rule.beginCaptures)
             
+            let endPattern = resolveEndPattern(end: rule.end!,
+                                               beginMatchResult: matchResult)
+            
             let newState = ParserState(rule: rule,
                                        phase: .scopeBegin,
-                                       patterns: [],
+                                       patterns: rule.patterns,
                                        captureAnchors: anchor.mapToArray { $0 },
                                        scopePath: scopePath,
                                        beginMatchResult: matchResult,
@@ -331,7 +322,6 @@ internal final class LineParser {
                                              captures: rule.endCaptures)
             
             state.phase = ParserState.Phase.scopeEnd
-            state.patterns = []
             state.endPosition = matchResult[].upperBound
             state.captureAnchors = anchors.mapToArray { $0 }
         }
@@ -344,7 +334,7 @@ internal final class LineParser {
         }
         
         let newState = ParserState(rule: nil,
-                                   phase: nil,
+                                   phase: .other,
                                    patterns: anchor.attribute?.patterns ?? [],
                                    captureAnchors: anchor.children,
                                    scopePath: scopePath,
@@ -357,21 +347,19 @@ internal final class LineParser {
     }
     
     private func processEndPosition() {
-        if let phase = state.phase {
-            switch phase {
-            case .scopeBegin:
-                let rule = state.scopeRule!
-                trace("move state: scopeBegin->scopeContent \(positionToIntForDebug(position))")
-                if let contentName = rule.contentName {
-                    state.scopePath.push(contentName)
-                }
-                state.phase = ParserState.Phase.scopeContent
-                state.patterns = rule.patterns
-                state.endPosition = nil
-                return
-            default:
-                break
+        switch state.phase {
+        case .scopeBegin:
+            let rule = state.scopeRule!
+            trace("move state: scopeBegin->scopeContent \(positionToIntForDebug(position))")
+            if let contentName = rule.contentName {
+                state.scopePath.push(contentName)
             }
+            
+            state.phase = ParserState.Phase.scopeContent
+            state.endPosition = nil
+            return
+        default:
+            break
         }
         
         trace("pop state")
