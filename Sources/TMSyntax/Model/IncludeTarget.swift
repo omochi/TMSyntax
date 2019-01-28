@@ -47,7 +47,7 @@ public enum IncludeTarget : CustomStringConvertible, Decodable, CopyInitializabl
             let start = string.index(after: string.startIndex)
             let str = String(string[start...])
             
-            if str == "self" {
+            if str == "self" || str == "base" {
                 self = .self
             } else {
                 return nil
