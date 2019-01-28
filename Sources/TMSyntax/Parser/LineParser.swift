@@ -326,12 +326,13 @@ internal final class LineParser {
                 state.scopePath.pop()
             }
             
-            state.phase = ParserState.Phase.scopeEnd
-            state.patterns = []
-            state.endPosition = matchResult[].upperBound
             
             let anchors = buildCaptureAnchor(matchResult: matchResult,
                                              captures: rule.endCaptures)
+            
+            state.phase = ParserState.Phase.scopeEnd
+            state.patterns = []
+            state.endPosition = matchResult[].upperBound
             state.captureAnchors = anchors.mapToArray { $0 }
         }
     }
