@@ -76,7 +76,7 @@ internal final class LineParser {
                                               range: searchRange,
                                               plans: plans) else
         {
-            extendScope(to: searchRange.upperBound)
+            buildToken(to: searchRange.upperBound)
             
             switch searchEnd {
             case .beginCapture(let anchor):
@@ -97,7 +97,7 @@ internal final class LineParser {
         
         trace("match: \(plan)")
         
-        extendScope(to: result[].lowerBound)
+        buildToken(to: result[].lowerBound)
 
         processMatch(plan: plan, matchResult: result)
     }
@@ -263,13 +263,22 @@ internal final class LineParser {
     private func processMatch(plan: MatchPlan, matchResult: Regex.MatchResult) {
         switch plan {
         case .matchRule(let rule):
+            if position == matchResult[].upperBound {
+                trace("infinite loop detected. no advance match rule.")
+                
+                popStateIfWillNotBeEmpty()
+                advance(to: line.endIndex)
+                buildToken(to: position)
+                return
+            }
+            
             var scopePath = state.scopePath
             if let scope = rule.scopeName {
                 scopePath.push(scope)
             }
             
             let anchor = buildCaptureAnchor(matchResult: matchResult,
-                                             captures: rule.captures)
+                                            captures: rule.captures)
             let newState = ParserState(rule: rule,
                                        phase: .other,
                                        patterns: [],
@@ -403,7 +412,7 @@ internal final class LineParser {
         return RegexPattern(newPattern, location: end.location)
     }
     
-    private func extendScope(to end: String.Index) {
+    private func buildToken(to end: String.Index) {
         let start = tokens.last?.range.upperBound ?? line.startIndex
         
         guard start < end else {
@@ -412,7 +421,7 @@ internal final class LineParser {
 
         let token = Token(range: start..<end,
                           scopePath: state.scopePath)
-        addToken(token)
+        _addToken(token)
     }
     
     private func pushState(_ newState: ParserState) {
@@ -432,7 +441,14 @@ internal final class LineParser {
         stateStack.stack.removeLast()
     }
     
-    private func addToken(_ newToken: Token) {
+    private func popStateIfWillNotBeEmpty() {
+        guard stateStack.stack.count >= 2 else {
+            return
+        }
+        popState()
+    }
+    
+    private func _addToken(_ newToken: Token) {
         if var last = tokens.last {
             precondition(last.range.upperBound == newToken.range.lowerBound)
             
