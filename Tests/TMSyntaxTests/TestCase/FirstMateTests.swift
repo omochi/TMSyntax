@@ -79,33 +79,33 @@ class FirstMateTests: XCTestCase {
     func test37() throws { try test(id: 37) }
     func test38() throws { try test(id: 38) }
     func test39() throws { try test(id: 39) }
-    func test42() throws { try test(id: 42) }
-    func test44() throws { try test(id: 44) }
-    func test45() throws { try test(id: 45) }
-    func test46() throws { try test(id: 46) }
-    func test47() throws { try test(id: 47) }
-    func test48() throws { try test(id: 48) }
-    func test49() throws { try test(id: 49) }
-    func test50() throws { try test(id: 50) }
-    func test51() throws { try test(id: 51) }
-    func test53() throws { try test(id: 53) }
-    func test54() throws { try test(id: 54) }
-    func test55() throws { try test(id: 55) }
-    func test56() throws { try test(id: 56) }
-    func test57() throws { try test(id: 57) }
-    func test58() throws { try test(id: 58) }
-    func test61() throws { try test(id: 61) }
-    func test62() throws { try test(id: 62) }
-    func test63() throws { try test(id: 63) }
-    func test64() throws { try test(id: 64) }
-    func test65() throws { try test(id: 65) }
-    func test66() throws { try test(id: 66) }
-    func test67() throws { try test(id: 67) }
-    func test68() throws { try test(id: 68) }
-    func test71() throws { try test(id: 71) }
-    func test72() throws { try test(id: 72) }
-    func test73() throws { try test(id: 73) }
-    func test74() throws { try test(id: 74) }
+    func _test42() throws { try test(id: 42) }
+    func _test44() throws { try test(id: 44) }
+    func _test45() throws { try test(id: 45) }
+    func _test46() throws { try test(id: 46) }
+    func _test47() throws { try test(id: 47) }
+    func _test48() throws { try test(id: 48) }
+    func _test49() throws { try test(id: 49) }
+    func _test50() throws { try test(id: 50) }
+    func _test51() throws { try test(id: 51) }
+    func _test53() throws { try test(id: 53) }
+    func _test54() throws { try test(id: 54) }
+    func _test55() throws { try test(id: 55) }
+    func _test56() throws { try test(id: 56) }
+    func _test57() throws { try test(id: 57) }
+    func _test58() throws { try test(id: 58) }
+    func _test61() throws { try test(id: 61) }
+    func _test62() throws { try test(id: 62) }
+    func _test63() throws { try test(id: 63) }
+    func _test64() throws { try test(id: 64) }
+    func _test65() throws { try test(id: 65) }
+    func _test66() throws { try test(id: 66) }
+    func _test67() throws { try test(id: 67) }
+    func _test68() throws { try test(id: 68) }
+    func _test71() throws { try test(id: 71) }
+    func _test72() throws { try test(id: 72) }
+    func _test73() throws { try test(id: 73) }
+    func _test74() throws { try test(id: 74) }
     
     private func test(id: Int, file: StaticString = #file, line: UInt = #line) throws {
         let desc = "TEST #\(id)"
