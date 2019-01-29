@@ -45,14 +45,14 @@ extension Rule {
         
         if let _ = begin {
             beginCaptures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .beginCaptures)
-            
-            end = try c.decode(RegexPattern.self, forKey: .end)
             endCaptures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .endCaptures)
             
             if let captures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .captures) {
-                beginCaptures = captures
-                endCaptures = captures
+                beginCaptures = beginCaptures ?? captures
+                endCaptures = endCaptures ?? captures
             }
+            
+            end = try c.decode(RegexPattern.self, forKey: .end)
         }
         
         return ScopeRule(sourceLocation: decoder.sourceLocation,
