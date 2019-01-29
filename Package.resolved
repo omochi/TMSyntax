@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/omochi/FineJSON",
         "state": {
           "branch": null,
-          "revision": "049a4df1ec1436b30c4149750486f1d825ad3f99",
-          "version": "1.4.1"
+          "revision": "e3b27c7a728b811a8a4a2303573f2d1860c8ec2c",
+          "version": "1.4.2"
         }
       },
       {
@@ -33,8 +33,8 @@
         "repositoryURL": "https://github.com/omochi/RichJSONParser.git",
         "state": {
           "branch": null,
-          "revision": "03e9149ef3ed33f0e7ec871f24c067904ad93e60",
-          "version": "1.3.0"
+          "revision": "e0a8380bd47b6c77de784643f3cb6cceb2f16f60",
+          "version": "1.3.1"
         }
       }
     ]

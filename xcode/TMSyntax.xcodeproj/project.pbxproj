@@ -16,6 +16,17 @@
 		D6100E8021FC968200CD4974 /* CaptureAnchorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E7F21FC968200CD4974 /* CaptureAnchorTests.swift */; };
 		D6100E8221FDD45900CD4974 /* ScopePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E8121FDD45900CD4974 /* ScopePath.swift */; };
 		D6100E8421FDF2CA00CD4974 /* RegexMatchPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E8321FDF2CA00CD4974 /* RegexMatchPlan.swift */; };
+		D6100E872200B35200CD4974 /* ScopeSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E862200B35200CD4974 /* ScopeSelector.swift */; };
+		D6100E892200B43200CD4974 /* ScopePositionalMatchExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E882200B43200CD4974 /* ScopePositionalMatchExpression.swift */; };
+		D6100E8B2200B47E00CD4974 /* ScopeMatchExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E8A2200B47E00CD4974 /* ScopeMatchExpression.swift */; };
+		D6100E8D2200B4AA00CD4974 /* ScopeSelectorParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E8C2200B4AA00CD4974 /* ScopeSelectorParser.swift */; };
+		D6100E8F2200B52F00CD4974 /* ScopeNameMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E8E2200B52F00CD4974 /* ScopeNameMatcher.swift */; };
+		D6100E912200C01100CD4974 /* ScopeMatchConjunctionExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E902200C01100CD4974 /* ScopeMatchConjunctionExpression.swift */; };
+		D6100E932200C0BD00CD4974 /* ScopeMatchNegationExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E922200C0BD00CD4974 /* ScopeMatchNegationExpression.swift */; };
+		D6100E952200C21C00CD4974 /* ScopeMatchDisjunctionExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E942200C21C00CD4974 /* ScopeMatchDisjunctionExpression.swift */; };
+		D6100E972200C34400CD4974 /* ScopeMatchNameExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E962200C34400CD4974 /* ScopeMatchNameExpression.swift */; };
+		D6100E9A2200C57200CD4974 /* ScopeSelectorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E992200C57200CD4974 /* ScopeSelectorTest.swift */; };
+		D6100E9C2200C9F300CD4974 /* ScopeMatchPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E9B2200C9F300CD4974 /* ScopeMatchPosition.swift */; };
 		D64F5DAF21F2001900CA06B7 /* TMSyntax.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5D9821F1FF7A00CA06B7 /* TMSyntax.framework */; };
 		D64F5DB821F2003500CA06B7 /* ParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DB621F2003500CA06B7 /* ParserTests.swift */; };
 		D64F5DBE21F2036200CA06B7 /* FineJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5DBD21F2036200CA06B7 /* FineJSON.framework */; };
@@ -76,6 +87,17 @@
 		D6100E7F21FC968200CD4974 /* CaptureAnchorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureAnchorTests.swift; sourceTree = "<group>"; };
 		D6100E8121FDD45900CD4974 /* ScopePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopePath.swift; sourceTree = "<group>"; };
 		D6100E8321FDF2CA00CD4974 /* RegexMatchPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegexMatchPlan.swift; sourceTree = "<group>"; };
+		D6100E862200B35200CD4974 /* ScopeSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeSelector.swift; sourceTree = "<group>"; };
+		D6100E882200B43200CD4974 /* ScopePositionalMatchExpression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopePositionalMatchExpression.swift; sourceTree = "<group>"; };
+		D6100E8A2200B47E00CD4974 /* ScopeMatchExpression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeMatchExpression.swift; sourceTree = "<group>"; };
+		D6100E8C2200B4AA00CD4974 /* ScopeSelectorParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeSelectorParser.swift; sourceTree = "<group>"; };
+		D6100E8E2200B52F00CD4974 /* ScopeNameMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeNameMatcher.swift; sourceTree = "<group>"; };
+		D6100E902200C01100CD4974 /* ScopeMatchConjunctionExpression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeMatchConjunctionExpression.swift; sourceTree = "<group>"; };
+		D6100E922200C0BD00CD4974 /* ScopeMatchNegationExpression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeMatchNegationExpression.swift; sourceTree = "<group>"; };
+		D6100E942200C21C00CD4974 /* ScopeMatchDisjunctionExpression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeMatchDisjunctionExpression.swift; sourceTree = "<group>"; };
+		D6100E962200C34400CD4974 /* ScopeMatchNameExpression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeMatchNameExpression.swift; sourceTree = "<group>"; };
+		D6100E992200C57200CD4974 /* ScopeSelectorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeSelectorTest.swift; sourceTree = "<group>"; };
+		D6100E9B2200C9F300CD4974 /* ScopeMatchPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeMatchPosition.swift; sourceTree = "<group>"; };
 		D64F5D9821F1FF7A00CA06B7 /* TMSyntax.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TMSyntax.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D64F5D9C21F1FF7A00CA06B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D64F5DAA21F2001900CA06B7 /* TMSyntaxTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TMSyntaxTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -142,6 +164,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D6100E852200B31B00CD4974 /* ScopeSelector */ = {
+			isa = PBXGroup;
+			children = (
+				D6100E982200C4E600CD4974 /* Expression */,
+				D6100E862200B35200CD4974 /* ScopeSelector.swift */,
+				D6100E882200B43200CD4974 /* ScopePositionalMatchExpression.swift */,
+				D6100E8C2200B4AA00CD4974 /* ScopeSelectorParser.swift */,
+				D6100E8E2200B52F00CD4974 /* ScopeNameMatcher.swift */,
+				D6100E9B2200C9F300CD4974 /* ScopeMatchPosition.swift */,
+			);
+			path = ScopeSelector;
+			sourceTree = "<group>";
+		};
+		D6100E982200C4E600CD4974 /* Expression */ = {
+			isa = PBXGroup;
+			children = (
+				D6100E8A2200B47E00CD4974 /* ScopeMatchExpression.swift */,
+				D6100E962200C34400CD4974 /* ScopeMatchNameExpression.swift */,
+				D6100E902200C01100CD4974 /* ScopeMatchConjunctionExpression.swift */,
+				D6100E922200C0BD00CD4974 /* ScopeMatchNegationExpression.swift */,
+				D6100E942200C21C00CD4974 /* ScopeMatchDisjunctionExpression.swift */,
+			);
+			path = Expression;
+			sourceTree = "<group>";
+		};
 		D64F5D8E21F1FF7A00CA06B7 = {
 			isa = PBXGroup;
 			children = (
@@ -176,6 +223,7 @@
 				D64F5E4A21F35D3900CA06B7 /* Basic */,
 				D64F5E5921F35D3900CA06B7 /* Component */,
 				D64F5E4F21F35D3900CA06B7 /* Model */,
+				D6100E852200B31B00CD4974 /* ScopeSelector */,
 				D64F5E5D21F35D3900CA06B7 /* Parser */,
 				D64F5E5421F35D3900CA06B7 /* Regex */,
 				D64F5E6321F35D3900CA06B7 /* Rule */,
@@ -308,6 +356,7 @@
 				D64F5DB621F2003500CA06B7 /* ParserTests.swift */,
 				D64F5EAD21F39C6100CA06B7 /* StringTests.swift */,
 				D6100E7F21FC968200CD4974 /* CaptureAnchorTests.swift */,
+				D6100E992200C57200CD4974 /* ScopeSelectorTest.swift */,
 			);
 			path = TestCase;
 			sourceTree = "<group>";
@@ -422,6 +471,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D6100E8B2200B47E00CD4974 /* ScopeMatchExpression.swift in Sources */,
 				D64F5E7221F35D3900CA06B7 /* OnigmoAPI.swift in Sources */,
 				D64F5E9B21F35D7400CA06B7 /* MatchRule.swift in Sources */,
 				D6100E8421FDF2CA00CD4974 /* RegexMatchPlan.swift in Sources */,
@@ -430,27 +480,36 @@
 				D64F5E7921F35D3900CA06B7 /* MatchPlan.swift in Sources */,
 				D64F5EA221F360D500CA06B7 /* RuleDecode.swift in Sources */,
 				D64F5E8721F35D4A00CA06B7 /* OptionalExtension.swift in Sources */,
+				D6100E8F2200B52F00CD4974 /* ScopeNameMatcher.swift in Sources */,
+				D6100E972200C34400CD4974 /* ScopeMatchNameExpression.swift in Sources */,
 				D64F5EA021F35F8100CA06B7 /* CaptureAttributes.swift in Sources */,
 				D64F5E7721F35D3900CA06B7 /* Grammar.swift in Sources */,
 				D64F5E9921F35D7400CA06B7 /* IncludeRule.swift in Sources */,
 				D64F5E8F21F35D6600CA06B7 /* Token.swift in Sources */,
 				D64F5EAC21F39AB900CA06B7 /* StringExtension.swift in Sources */,
 				D64F5E7321F35D3900CA06B7 /* RegexCompileError.swift in Sources */,
+				D6100E872200B35200CD4974 /* ScopeSelector.swift in Sources */,
+				D6100E952200C21C00CD4974 /* ScopeMatchDisjunctionExpression.swift in Sources */,
 				D6100E7821FC49F000CD4974 /* CaptureAttribute.swift in Sources */,
 				D6100E7621FC48E900CD4974 /* CaptureAnchor.swift in Sources */,
 				D6100E7C21FC58D500CD4974 /* ParserStateStack.swift in Sources */,
+				D6100E932200C0BD00CD4974 /* ScopeMatchNegationExpression.swift in Sources */,
 				D6100E7421FC346D00CD4974 /* LineParser.swift in Sources */,
 				D64F5E8821F35D4A00CA06B7 /* BinarySearch.swift in Sources */,
+				D6100E9C2200C9F300CD4974 /* ScopeMatchPosition.swift in Sources */,
 				D64F5E7A21F35D3900CA06B7 /* MatchResult.swift in Sources */,
 				D64F5E7C21F35D3900CA06B7 /* Parser.swift in Sources */,
 				D64F5E7521F35D3900CA06B7 /* RegexPattern.swift in Sources */,
 				D64F5E8A21F35D4A00CA06B7 /* CopyInitializable.swift in Sources */,
 				D6100E7A21FC54B600CD4974 /* SearchEnd.swift in Sources */,
+				D6100E892200B43200CD4974 /* ScopePositionalMatchExpression.swift in Sources */,
 				D64F5E9221F35D6600CA06B7 /* IncludeTarget.swift in Sources */,
 				D64F5E9C21F35D7400CA06B7 /* ScopeRule.swift in Sources */,
 				D64F5E8921F35D4A00CA06B7 /* DecodingError.swift in Sources */,
 				D64F5E7421F35D3900CA06B7 /* Regex.swift in Sources */,
 				D64F5E9D21F35D7400CA06B7 /* Rule.swift in Sources */,
+				D6100E912200C01100CD4974 /* ScopeMatchConjunctionExpression.swift in Sources */,
+				D6100E8D2200B4AA00CD4974 /* ScopeSelectorParser.swift in Sources */,
 				D6100E7221FC2F5600CD4974 /* ParserState.swift in Sources */,
 				D64F5E9021F35D6600CA06B7 /* ScopeName.swift in Sources */,
 				D64F5E9121F35D6600CA06B7 /* RuleRepository.swift in Sources */,
@@ -466,6 +525,7 @@
 				D64F5EB221F4103B00CA06B7 /* FirstMateTests.swift in Sources */,
 				D64F5DE921F2448900CA06B7 /* OnigmoTests.swift in Sources */,
 				D6100E8021FC968200CD4974 /* CaptureAnchorTests.swift in Sources */,
+				D6100E9A2200C57200CD4974 /* ScopeSelectorTest.swift in Sources */,
 				D64F5DD721F212D400CA06B7 /* Resources.swift in Sources */,
 				D64F5E0321F3367400CA06B7 /* Utils.swift in Sources */,
 				D64F5EAE21F39C6100CA06B7 /* StringTests.swift in Sources */,
