@@ -8,4 +8,8 @@ public final class ScopeMatchNegationExpression : ScopeMatchExpression {
     public func match(path: ScopePath) -> Bool {
         return !expression.match(path: path)
     }
+    
+    public var description: String {
+        return "- " + expression.description
+    }
 }

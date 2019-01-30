@@ -12,4 +12,8 @@ public final class ScopeMatchPathExpression : ScopeMatchExpression {
     public func match(path: ScopePath) -> Bool {
         return matcher(pattern, path)
     }
+    
+    public var description: String {
+        return pattern.items.map { $0.stringValue }.joined(separator: " ")
+    }
 }

@@ -1,4 +1,4 @@
-public final class ScopeSelector {
+public final class ScopeSelector : CustomStringConvertible {
     public struct MatchResult : Equatable {
         public var position: ScopeMatchPosition
         
@@ -20,5 +20,9 @@ public final class ScopeSelector {
             }
         }
         return nil
+    }
+    
+    public var description: String {
+        return expressions.map { $0.description }.joined(separator: ", ")
     }
 }

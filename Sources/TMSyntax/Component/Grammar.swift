@@ -1,6 +1,7 @@
 import Foundation
 import FineJSON
 import enum FineJSON.DecodingError
+import OrderedDictionary
 
 private let pathKey = CodingUserInfoKey(rawValue: "path")!
 
@@ -10,6 +11,7 @@ public final class Grammar : Decodable, CopyInitializable {
     public var scopeName: ScopeName {
         return rule.scopeName!
     }
+    public let injections: [RuleInjection]
     public weak var repository: GrammarRepository?
     
     public enum CodingKeys : String, CodingKey {
@@ -17,6 +19,7 @@ public final class Grammar : Decodable, CopyInitializable {
         case scopeName
         case patterns
         case repository
+        case injections
     }
     
     public convenience init(contentsOf url: URL) throws {
@@ -57,7 +60,20 @@ public final class Grammar : Decodable, CopyInitializable {
         
         let patterns = try c.decodeIfPresent([Rule].self, forKey: .patterns) ?? []
         let repository = try c.decodeIfPresent(RuleRepository.self, forKey: .repository)
-
+        
+        var injections: [RuleInjection] = []
+        
+        if let injectionDict = try c.decodeIfPresent(OrderedDictionary<String, RuleInjection.JSON>.self,
+                                                     forKey: .injections)
+        {
+            for (source, json) in injectionDict {
+                let injection = try RuleInjection(selectorSource: source, json: json)
+                injections.append(injection)
+            }
+        }
+        
+        self.injections = injections
+        
         self.rule = ScopeRule(sourceLocation: decoder.sourceLocation,
                               begin: nil,
                               beginCaptures: nil,
@@ -70,5 +86,9 @@ public final class Grammar : Decodable, CopyInitializable {
                               scopeName: scopeName)
         rule.name = "root"
         rule.setUpRootRule(grammar: self)
+    }
+    
+    public static func pathMatcher(pattern: ScopePath, target: ScopePath) -> Bool {
+        return true //TODO
     }
 }

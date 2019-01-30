@@ -13,4 +13,8 @@ public final class ScopeMatchConjunctionExpression : ScopeMatchExpression {
         }
         return true
     }
+    
+    public var description: String {
+        return expressions.map { $0.description }.joined(separator: " ")
+    }
 }
