@@ -5,9 +5,9 @@ public final class ScopeMatchDisjunctionExpression : ScopeMatchExpression {
         self.expressions = expressions
     }
     
-    public func match(scope: ScopeName) -> Bool {
+    public func match(path: ScopePath) -> Bool {
         for e in expressions {
-            if e.match(scope: scope) {
+            if e.match(path: path) {
                 return true
             }
         }

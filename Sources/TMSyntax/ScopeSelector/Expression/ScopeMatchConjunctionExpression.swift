@@ -5,9 +5,9 @@ public final class ScopeMatchConjunctionExpression : ScopeMatchExpression {
         self.expressions = expressions
     }
     
-    public func match(scope: ScopeName) -> Bool {
+    public func match(path: ScopePath) -> Bool {
         for e in expressions {
-            guard e.match(scope: scope) else {
+            guard e.match(path: path) else {
                 return false
             }
         }

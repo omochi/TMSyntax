@@ -1,5 +1,5 @@
 public protocol ScopeMatchExpression {
-    func match(scope: ScopeName) -> Bool
+    func match(path: ScopePath) -> Bool
 }
 
 

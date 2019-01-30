@@ -10,6 +10,11 @@ class ScopeSelectorTest: XCTestCase {
         var result: Bool
     }
 
+    // offset line number
+    // .
+    // .
+    // .
+    // .
     static let testsJSON = """
 [
         { "expression": "foo", "input": ["foo"], "result": true },
@@ -88,16 +93,17 @@ class ScopeSelectorTest: XCTestCase {
         let defs = ScopeSelectorTest.testsDef!
         let def = defs[index]
         try test(source: def.expression,
-                 target: ScopeName(parts: def.input), expected: def.result,
+                 target: ScopePath(def.input.map { ScopeName($0) }),
+                 expected: def.result,
                  file: file, line: line)
     }
     
-    static func nameMatcher(pattern: ScopeName, name: ScopeName) -> Bool {
+    static func pathMatcher(pattern: ScopePath, path: ScopePath) -> Bool {
         var lastIndex = 0
         
-        return pattern.parts.allSatisfy { (part) in
-            for i in lastIndex..<name.parts.count {
-                if name.parts[i] == part {
+        return pattern.items.allSatisfy { (part) in
+            for i in lastIndex..<path.items.count {
+                if part == path.items[i] {
                     lastIndex = i + 1
                     return true
                 }
@@ -106,13 +112,13 @@ class ScopeSelectorTest: XCTestCase {
         }
     }
     
-    private func test(source: String, target: ScopeName, expected: Bool,
+    private func test(source: String, target: ScopePath, expected: Bool,
                       file: StaticString = #file, line: UInt = #line) throws
     {
         let parser = ScopeSelectorParser(source: source,
-                                         nameMatcher: ScopeSelectorTest.nameMatcher)
+                                         pathMatcher: ScopeSelectorTest.pathMatcher)
         let selector = try parser.parse()
-        let result = selector.match(scope: target)
+        let result = selector.match(path: target)
         let actual = result != nil
         XCTAssertEqual(actual, expected, file: file, line: line)
     }

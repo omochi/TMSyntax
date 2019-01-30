@@ -11,7 +11,7 @@ public final class ScopePositionalMatchExpression {
         self.expression = expression
     }
     
-    public func match(scope: ScopeName) -> Bool {
-        return expression.match(scope: scope)
+    public func match(path: ScopePath) -> Bool {
+        return expression.match(path: path)
     }
 }

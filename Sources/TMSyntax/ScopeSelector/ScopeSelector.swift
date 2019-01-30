@@ -13,9 +13,9 @@ public final class ScopeSelector {
         self.expressions = expressions
     }
     
-    public func match(scope: ScopeName) -> MatchResult? {
+    public func match(path: ScopePath) -> MatchResult? {
         for e in expressions {
-            if e.match(scope: scope) {
+            if e.match(path: path) {
                 return MatchResult(position: e.position)
             }
         }

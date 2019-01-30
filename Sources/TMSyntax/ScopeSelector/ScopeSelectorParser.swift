@@ -12,7 +12,7 @@ public final class ScopeSelectorParser {
     }
     
     private let source: String
-    private let nameMatcher: ScopeNameMatcher
+    private let pathMatcher: ScopePathMatcher
 
     private let tokenRegex: Regex
     private var position: String.Index
@@ -31,12 +31,12 @@ public final class ScopeSelectorParser {
     }
     
     public init(source: String,
-                nameMatcher: @escaping ScopeNameMatcher)
+                pathMatcher: @escaping ScopePathMatcher)
     {
         self.source = source
-        self.nameMatcher = nameMatcher
+        self.pathMatcher = pathMatcher
         
-        let pattern = "([LR]:|[bwb.b-]+|[b,b|b-b(b)])".replacingOccurrences(of: "b", with: "\\")
+        let pattern = "([LR]:|[bwb.][bwb.b-]*|[b,b|b-b(b)])".replacingOccurrences(of: "b", with: "\\")
         
         self.tokenRegex = try! Regex(pattern: pattern, options: [])
         self.position = source.startIndex
@@ -61,7 +61,9 @@ public final class ScopeSelectorParser {
                 readToken()
             }
             
-            let expression = try parseConjunction()
+            guard let expression = try tryParseConjunction() else {
+                throw Error.syntaxError
+            }
             
             let pe = ScopePositionalMatchExpression(position: position,
                                                     expression: expression)
@@ -71,13 +73,11 @@ public final class ScopeSelectorParser {
                 readToken()
                 continue
             }
-            
-            break
         }
         return ScopeSelector(expressions: pes)
     }
     
-    private func parseConjunction() throws -> ScopeMatchConjunctionExpression {
+    private func tryParseConjunction() throws -> ScopeMatchConjunctionExpression? {
         var es: [ScopeMatchExpression] = []
         while true {
             guard let e = try tryParseExpression() else {
@@ -85,13 +85,16 @@ public final class ScopeSelectorParser {
             }
             es.append(e)
         }
+        guard !es.isEmpty else {
+            return nil
+        }
         return ScopeMatchConjunctionExpression(expressions: es)
     }
     
     private func parseDisjunction() throws -> ScopeMatchDisjunctionExpression {
         var es: [ScopeMatchExpression] = []
         while true {
-            guard let e = try tryParseExpression() else {
+            guard let e = try tryParseConjunction() else {
                 break
             }
             es.append(e)
@@ -100,7 +103,6 @@ public final class ScopeSelectorParser {
                 readToken()
                 continue
             }
-            break
         }
         return ScopeMatchDisjunctionExpression(expressions: es)
     }
@@ -122,9 +124,18 @@ public final class ScopeSelectorParser {
             readToken()
             return e
         case .name(let name):
+            var pattern = ScopePath([name])
             readToken()
-            return ScopeMatchNameExpression(pattern: name,
-                                            matcher: nameMatcher)
+            while true {
+                guard case .name(let name) = token else {
+                    break
+                }
+                pattern.items.append(name)
+                readToken()
+            }
+            
+            return ScopeMatchPathExpression(pattern: pattern,
+                                            matcher: pathMatcher)
         default:
             return nil
         }
