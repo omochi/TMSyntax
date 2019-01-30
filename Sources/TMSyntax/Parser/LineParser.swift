@@ -242,7 +242,12 @@ internal final class LineParser {
         
         for (index, plan) in plans.enumerated() {
             if let match = try plan.search(string: line, range: range) {
-                records.append(Record(index: index, result: match))
+                let record = Record(index: index, result: match)
+                if record.result[].lowerBound == range.lowerBound {
+                    // absolute winner
+                    return record
+                }
+                records.append(record)                
             }
         }
         
