@@ -86,6 +86,10 @@ public final class Grammar : Decodable, CopyInitializable {
                               scopeName: scopeName)
         rule.name = "root"
         rule.setUpRootRule(grammar: self)
+        
+        for injection in self.injections {
+            injection.rule.parent = self.rule
+        }
     }
     
     public static func pathMatcher(pattern: ScopePath, target: ScopePath) -> Bool {

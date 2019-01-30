@@ -28,6 +28,7 @@
 		D6100E9A2200C57200CD4974 /* ScopeSelectorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E992200C57200CD4974 /* ScopeSelectorTest.swift */; };
 		D6100E9C2200C9F300CD4974 /* ScopeMatchPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E9B2200C9F300CD4974 /* ScopeMatchPosition.swift */; };
 		D6100E9E2201DCF300CD4974 /* RuleInjection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E9D2201DCF300CD4974 /* RuleInjection.swift */; };
+		D6100EA02202010600CD4974 /* StableSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6100E9F2202010600CD4974 /* StableSort.swift */; };
 		D64F5DAF21F2001900CA06B7 /* TMSyntax.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5D9821F1FF7A00CA06B7 /* TMSyntax.framework */; };
 		D64F5DB821F2003500CA06B7 /* ParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DB621F2003500CA06B7 /* ParserTests.swift */; };
 		D64F5DBE21F2036200CA06B7 /* FineJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5DBD21F2036200CA06B7 /* FineJSON.framework */; };
@@ -50,7 +51,6 @@
 		D64F5E7C21F35D3900CA06B7 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E6221F35D3900CA06B7 /* Parser.swift */; };
 		D64F5E8721F35D4A00CA06B7 /* OptionalExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8321F35D4A00CA06B7 /* OptionalExtension.swift */; };
 		D64F5E8821F35D4A00CA06B7 /* BinarySearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8421F35D4A00CA06B7 /* BinarySearch.swift */; };
-		D64F5E8921F35D4A00CA06B7 /* DecodingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8521F35D4A00CA06B7 /* DecodingError.swift */; };
 		D64F5E8A21F35D4A00CA06B7 /* CopyInitializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8621F35D4A00CA06B7 /* CopyInitializable.swift */; };
 		D64F5E8F21F35D6600CA06B7 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8B21F35D6600CA06B7 /* Token.swift */; };
 		D64F5E9021F35D6600CA06B7 /* ScopeName.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5E8C21F35D6600CA06B7 /* ScopeName.swift */; };
@@ -100,6 +100,7 @@
 		D6100E992200C57200CD4974 /* ScopeSelectorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeSelectorTest.swift; sourceTree = "<group>"; };
 		D6100E9B2200C9F300CD4974 /* ScopeMatchPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScopeMatchPosition.swift; sourceTree = "<group>"; };
 		D6100E9D2201DCF300CD4974 /* RuleInjection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleInjection.swift; sourceTree = "<group>"; };
+		D6100E9F2202010600CD4974 /* StableSort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StableSort.swift; sourceTree = "<group>"; };
 		D64F5D9821F1FF7A00CA06B7 /* TMSyntax.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TMSyntax.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D64F5D9C21F1FF7A00CA06B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D64F5DAA21F2001900CA06B7 /* TMSyntaxTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TMSyntaxTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,7 +126,6 @@
 		D64F5E6221F35D3900CA06B7 /* Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		D64F5E8321F35D4A00CA06B7 /* OptionalExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionalExtension.swift; sourceTree = "<group>"; };
 		D64F5E8421F35D4A00CA06B7 /* BinarySearch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinarySearch.swift; sourceTree = "<group>"; };
-		D64F5E8521F35D4A00CA06B7 /* DecodingError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DecodingError.swift; sourceTree = "<group>"; };
 		D64F5E8621F35D4A00CA06B7 /* CopyInitializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CopyInitializable.swift; sourceTree = "<group>"; };
 		D64F5E8B21F35D6600CA06B7 /* Token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
 		D64F5E8C21F35D6600CA06B7 /* ScopeName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopeName.swift; sourceTree = "<group>"; };
@@ -270,9 +270,9 @@
 			children = (
 				D64F5E8421F35D4A00CA06B7 /* BinarySearch.swift */,
 				D64F5E8621F35D4A00CA06B7 /* CopyInitializable.swift */,
-				D64F5E8521F35D4A00CA06B7 /* DecodingError.swift */,
 				D64F5E8321F35D4A00CA06B7 /* OptionalExtension.swift */,
 				D64F5EAB21F39AB900CA06B7 /* StringExtension.swift */,
+				D6100E9F2202010600CD4974 /* StableSort.swift */,
 			);
 			path = Basic;
 			sourceTree = "<group>";
@@ -498,6 +498,7 @@
 				D6100E7C21FC58D500CD4974 /* ParserStateStack.swift in Sources */,
 				D6100E932200C0BD00CD4974 /* ScopeMatchNegationExpression.swift in Sources */,
 				D6100E7421FC346D00CD4974 /* LineParser.swift in Sources */,
+				D6100EA02202010600CD4974 /* StableSort.swift in Sources */,
 				D64F5E8821F35D4A00CA06B7 /* BinarySearch.swift in Sources */,
 				D6100E9C2200C9F300CD4974 /* ScopeMatchPosition.swift in Sources */,
 				D64F5E7A21F35D3900CA06B7 /* MatchResult.swift in Sources */,
@@ -508,7 +509,6 @@
 				D6100E892200B43200CD4974 /* ScopePositionalMatchExpression.swift in Sources */,
 				D64F5E9221F35D6600CA06B7 /* IncludeTarget.swift in Sources */,
 				D64F5E9C21F35D7400CA06B7 /* ScopeRule.swift in Sources */,
-				D64F5E8921F35D4A00CA06B7 /* DecodingError.swift in Sources */,
 				D6100E9E2201DCF300CD4974 /* RuleInjection.swift in Sources */,
 				D64F5E7421F35D3900CA06B7 /* Regex.swift in Sources */,
 				D64F5E9D21F35D7400CA06B7 /* Rule.swift in Sources */,
