@@ -2,10 +2,11 @@ import Foundation
 
 public struct ParserState {
     public enum Phase {
+        case match
         case scopeBegin
         case scopeContent
         case scopeEnd
-        case other
+        case captureAnchor
     }
     
     public var rule: Rule?

@@ -1,4 +1,4 @@
-public struct MatchPlan {
+public struct MatchPlan : CustomStringConvertible {
     public enum Pattern {
         case match(MatchRule)
         case begin(ScopeRule)

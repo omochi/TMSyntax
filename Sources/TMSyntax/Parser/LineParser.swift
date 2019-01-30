@@ -137,12 +137,18 @@ internal final class LineParser {
     }
     
     private func collectMatchPlans() -> [MatchPlan] {
+        var isInjectionEnabled: Bool = false
+        
         switch state.phase {
-        case .scopeBegin,
+        case .match,
+             .scopeBegin,
              .scopeEnd:
             return []
-        case .scopeContent,
-             .other:
+        case .scopeContent:
+            isInjectionEnabled = true
+            break
+        case .captureAnchor:
+            isInjectionEnabled = false
             break
         }
         
@@ -162,6 +168,11 @@ internal final class LineParser {
             } else {
                 plans.insert(endPlan, at: 0)
             }
+        }
+        
+        if isInjectionEnabled {
+            // injection is back
+            plans += collectInjectionMatchPlans()
         }
         
         return plans
@@ -192,6 +203,21 @@ internal final class LineParser {
                 return plans
             }
         }
+    }
+    
+    private func collectInjectionMatchPlans() -> [MatchPlan] {
+        var plans: [MatchPlan] = []
+        
+        for injection in grammar.injections {
+            guard let result = injection.selector.match(path: state.scopePath) else {
+                continue
+            }
+            
+            plans += collectEnterMatchPlans(position: result.position,
+                                            rule: injection.rule)
+        }
+        
+        return plans
     }
     
     private func buildRegexMatchPlan(_ plan: MatchPlan) -> RegexMatchPlan {
@@ -316,7 +342,7 @@ internal final class LineParser {
             let anchor = buildCaptureAnchor(matchResult: matchResult,
                                             captures: rule.captures)
             let newState = ParserState(rule: rule,
-                                       phase: .other,
+                                       phase: .match,
                                        patterns: [],
                                        captureAnchors: anchor.mapToArray { $0 },
                                        scopePath: scopePath,
@@ -382,7 +408,7 @@ internal final class LineParser {
         }
         
         let newState = ParserState(rule: nil,
-                                   phase: .other,
+                                   phase: .captureAnchor,
                                    patterns: anchor.attribute?.patterns ?? [],
                                    captureAnchors: anchor.children,
                                    scopePath: scopePath,
