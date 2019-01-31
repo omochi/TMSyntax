@@ -2,6 +2,15 @@ import Foundation
 import RichJSONParser
 
 public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
+    internal static let scopeNameBackReferenceRegex: Regex =
+        try! Regex(pattern: "b$(bd+)|b${(bd+):b/(bw+)}".replacingOccurrences(of: "b", with: "\\"), options: [])
+    
+    internal static let regexBackReferenceRegex: Regex =
+        try! Regex(pattern: "bb(bd+)".replacingOccurrences(of: "b", with: "\\"), options: [])
+    
+    internal static let invalidUnicode: Unicode.Scalar = Unicode.Scalar(0xFFFF)!
+    internal static let invalidString: String = String(String.UnicodeScalarView([invalidUnicode]))
+    
     public enum Switcher {
         case scope(ScopeRule)
         case match(MatchRule)
@@ -94,6 +103,56 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
             ruleOrNone = rule.parent
         }
         return nil
+    }
+    
+    public func resolveScopeName(line: String,
+                                 matchResult: Regex.MatchResult)
+        throws -> ScopeName?
+    {
+        guard let name = self.scopeName else {
+            return nil
+        }
+        return try _resolveName(name: name,
+                                line: line, matchResult: matchResult)
+    }
+
+    internal func _resolveName(name: ScopeName,
+                               line: String,
+                               matchResult: Regex.MatchResult) throws -> ScopeName
+    {
+        func replacer(part: String, matchResult m: Regex.MatchResult) throws -> String {
+            guard let captureIndexRange = m[1] ?? m[2],
+                let captureIndex = Int(part[captureIndexRange]),
+                let captureRange = matchResult[captureIndex] else
+            {
+                throw Parser.Error.invalidScopeName(name)
+            }
+            
+            var str = String(line[captureRange])
+            
+            if let modifierRange = m[3] {
+                let modifier = part[modifierRange]
+                
+                switch modifier {
+                case "upcase":
+                    str = str.uppercased()
+                case "downcase":
+                    str = str.lowercased()
+                default:
+                    throw Parser.Error.invalidScopeName(name)
+                }
+            }
+            
+            return str
+        }
+        
+        let resolvedParts: [String] = try name.parts.map { (part) in
+            try Rule.scopeNameBackReferenceRegex.replace(string: part) { (matchResult) in
+                try replacer(part: part, matchResult: matchResult)
+            }
+        }
+        
+        return ScopeName(parts: resolvedParts)
     }
 }
 

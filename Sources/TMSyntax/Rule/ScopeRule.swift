@@ -65,4 +65,53 @@ public final class ScopeRule : Rule {
     public required init(from decoder: Decoder) throws {
         fatalError()
     }
+    
+    public func resolveContentName(line: String,
+                                   matchResult: Regex.MatchResult)
+        throws -> ScopeName?
+    {
+        guard let name = self.contentName else {
+            return nil
+        }
+        return try _resolveName(name: name,
+                                line: line,
+                                matchResult: matchResult)
+    }
+    
+    
+    public func resolveEnd(line: String,
+                           matchResult: Regex.MatchResult)
+        throws -> RegexPattern
+    {
+        guard let pattern = self.end else {
+            throw Parser.Error.noEndPattern(self)
+        }
+        
+        var num = 0
+        
+        let resolvedPattern = try Rule.regexBackReferenceRegex
+            .replace(string: pattern.value) { (m) in
+                num += 1
+                
+                guard let captureIndexRange = m[1],
+                    let captureIndex = Int(pattern.value[captureIndexRange]) else
+                {
+                    throw Parser.Error.invalidRegexPattern(pattern)
+                }
+                
+                guard let range = matchResult[captureIndex] else {
+                    return Rule.invalidString
+                }
+                return Regex.escape(String(line[range]))
+        }
+        
+        if num == 0 {
+            // return same object to make internal cache reusable
+            return pattern
+        }
+        
+        return RegexPattern(resolvedPattern, location: pattern.location)
+    }
+    
+    
 }

@@ -92,7 +92,7 @@ public struct Regex {
         return MatchResult(ranges: ranges)
     }
     
-    public func replace(string: String, replacer: (Regex.MatchResult) -> String) -> String {
+    public func replace(string: String, replacer: (Regex.MatchResult) throws -> String) rethrows -> String {
         var result = ""
         var pos = string.startIndex
         var globalPosition: String.Index? = nil
@@ -105,7 +105,7 @@ public struct Regex {
             
             result.append(String(string[pos..<match[].lowerBound]))
             
-            let rep = replacer(match)
+            let rep = try replacer(match)
             result.append(rep)
             
             pos = match[].upperBound

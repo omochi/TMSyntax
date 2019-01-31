@@ -14,6 +14,7 @@ public struct ParserState {
     public var patterns: [Rule]
     public var captureAnchors: [CaptureAnchor]
     public var scopePath: ScopePath
+    public var contentName: ScopeName?
     public var beginMatchResult: Regex.MatchResult?
     public var beginLineIndex: Int?
     public var endPattern: RegexPattern?
@@ -24,6 +25,7 @@ public struct ParserState {
                 patterns: [Rule],
                 captureAnchors: [CaptureAnchor],
                 scopePath: ScopePath,
+                contentName: ScopeName?,
                 beginMatchResult: Regex.MatchResult?,
                 beginLineIndex: Int?,
                 endPattern: RegexPattern?,
@@ -34,6 +36,7 @@ public struct ParserState {
         self.patterns = patterns
         self.captureAnchors = captureAnchors
         self.scopePath = scopePath
+        self.contentName = contentName
         self.beginMatchResult = beginMatchResult
         self.beginLineIndex = beginLineIndex
         self.endPattern = endPattern
