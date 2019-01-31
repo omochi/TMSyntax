@@ -19,3 +19,23 @@ internal extension Optional {
         return [u]
     }
 }
+
+internal func minFromOptionals<T>(_ a: T?, _ b: T?, cmp: (T, T) -> Bool) -> T? {
+    if let a = a {
+        if let b = b {
+            if cmp(b, a) {
+                return b
+            }
+            // prefer a
+            return a
+        } else {
+            return a
+        }
+    } else {
+        if let b = b {
+            return b
+        } else {
+            return nil
+        }
+    }
+}

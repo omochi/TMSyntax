@@ -58,7 +58,7 @@ internal final class LineParser {
     
     private func parseLine() throws {
         removePastAnchor()
-        let searchEnd = collectSearchEnd()
+        let searchEnd = self.searchEnd()
         let plans = collectMatchPlans()
         
         if isTraceEnabled {
@@ -70,18 +70,18 @@ internal final class LineParser {
         }
         
         let searchRange = position..<searchEnd.position
+        
+        let mostLeftAnchor = self.mostLeftAnchor()
 
-        guard let (plan, result) = try search(line: line,
-                                              lineIndex: lineIndex,
-                                              range: searchRange,
-                                              plans: plans) else
+        guard let result = try search(line: line,
+                                      lineIndex: lineIndex,
+                                      range: searchRange,
+                                      plans: plans,
+                                      anchor: mostLeftAnchor) else
         {
             buildToken(to: searchRange.upperBound)
             
             switch searchEnd {
-            case .beginCapture(let anchor):
-                trace("hit anchor")
-                processHitAnchor(anchor)
             case .endPosition(let position):
                 trace("hit end position")
                 processEndPosition(position)
@@ -95,11 +95,16 @@ internal final class LineParser {
             return
         }
         
-        trace("match: \(plan)")
-        
-        buildToken(to: result[].lowerBound)
-
-        processMatch(plan: plan, matchResult: result)
+        switch result {
+        case .regex(plan: let plan, matchResult: let matchResult):
+            trace("regex match: \(plan)")
+            buildToken(to: matchResult[].lowerBound)
+            processMatch(plan: plan, matchResult: matchResult)
+        case .anchor(let anchor):
+            trace("hit anchor")
+            buildToken(to: anchor.range.lowerBound)
+            processHitAnchor(anchor)
+        }
     }
     
     private var state: ParserState {
@@ -115,25 +120,30 @@ internal final class LineParser {
         state.captureAnchors = anchors
     }
     
-    private func collectSearchEnd() -> SearchEnd {
-        var anchors = state.captureAnchors.sorted { (a, b) in
-            a.range.lowerBound < b.range.lowerBound
-        }
-        anchors = anchors.filter { (anchor) in
-            self.position <= anchor.range.lowerBound
-        }
-        if let end = state.endPosition {
-            anchors = anchors.filter { (anchor) in
-                anchor.range.upperBound <= end
+    public enum SearchEnd {
+        case endPosition(String.Index)
+        case line(String.Index)
+        
+        public var position: String.Index {
+            switch self {
+            case .endPosition(let position),
+                 .line(let position):
+                return position
             }
         }
-        if let anchor = anchors.first {
-            return .beginCapture(anchor)
-        }
+    }
+    
+    private func searchEnd() -> SearchEnd {
         if let end = state.endPosition {
             return .endPosition(end)
         }
         return .line(line.endIndex)
+    }
+    
+    private func mostLeftAnchor() -> CaptureAnchor? {
+        return state.captureAnchors.min { (a, b) in
+            a.range.lowerBound < b.range.lowerBound
+        }
     }
     
     private func collectMatchPlans() -> [MatchPlan] {
@@ -249,37 +259,67 @@ internal final class LineParser {
                                   globalPosition: globalPosition)
         }
     }
+    
+    public enum SearchResult {
+        case regex(plan: MatchPlan,
+                   matchResult: Regex.MatchResult)
+        case anchor(CaptureAnchor)
         
-    private func search(line: String,
-                        lineIndex: Int,
-                        range: Range<String.Index>,
-                        plans: [MatchPlan])
-        throws -> (plan: MatchPlan, result: Regex.MatchResult)?
-    {
-        let regexPlans = plans.map { buildRegexMatchPlan($0) }
-        
-        guard let (index, result) = try search(line: line,
-                                               range: range,
-                                               plans: regexPlans) else
-        {
-            return nil
+        public var leftIndex: String.Index {
+            switch self {
+            case .regex(plan: _, matchResult: let result): return result[].lowerBound
+            case .anchor(let anchor): return anchor.range.lowerBound
+            }
         }
         
-        return (plan: plans[index], result: result)
+        public var position: ScopeMatchPosition {
+            switch self {
+            case .regex(plan: let plan, matchResult: _): return plan.position
+            case .anchor: return .none
+            }
+        }
     }
     
     private func search(line: String,
+                        lineIndex: Int,
                         range: Range<String.Index>,
-                        plans: [RegexMatchPlan])
-        throws -> (index: Int, result: Regex.MatchResult)?
+                        plans: [MatchPlan],
+                        anchor: CaptureAnchor?)
+        throws -> SearchResult?
+    {
+        let regexPlans = plans.map { buildRegexMatchPlan($0) }
+        
+        let regexResult = try searchRegex(line: line,
+                                          range: range,
+                                          plans: regexPlans)
+        
+        let regexResultBox = regexResult.map {
+            SearchResult.regex(plan: plans[$0.index],
+                               matchResult: $0.matchResult) }
+        let anchorBox = anchor.map {
+            SearchResult.anchor($0)
+        }
+        
+        let best = minFromOptionals(regexResultBox, anchorBox) { (a, b) in
+            compare(a, b,
+                    { $0.leftIndex < $1.leftIndex },
+                    { $0.position < $1.position })
+        }
+        
+        return best
+    }
+    
+    private func searchRegex(line: String,
+                             range: Range<String.Index>,
+                             plans: [RegexMatchPlan])
+        throws -> (index: Int, matchResult: Regex.MatchResult)?
     {
         var plans = Array(plans.enumerated())
         
         plans.sort { (a, b) in
-            if a.element.position != b.element.position {
-                return a.element.position < b.element.position
-            }
-            return a.offset < b.offset
+            compare(a, b,
+                    { $0.element.position < $1.element.position },
+                    { $0.offset < $1.offset })
         }
         
         typealias Record = (
@@ -293,7 +333,8 @@ internal final class LineParser {
             if let match = try plan.element.search(string: line, range: range) {
                 if match[].lowerBound == range.lowerBound {
                     // absolute winner
-                    return (index: plan.offset, result: match)
+                    return (index: plan.offset,
+                            matchResult: match)
                 }
                 
                 let record = Record(index: plan.offset,
@@ -303,23 +344,19 @@ internal final class LineParser {
             }
         }
         
-        func cmp(_ a: Record, _ b: Record) -> Bool {
-            if a.result[].lowerBound != b.result[].lowerBound {
-                return a.result[].lowerBound < b.result[].lowerBound
-            }
-            
-            if a.position != b.position {
-                return a.position < b.position
-            }
-            
-            return a.index < b.index
+        let bestOrNone = records.min { (a, b) in
+            compare(a, b,
+                    { $0.result[].lowerBound < $1.result[].lowerBound },
+                    { $0.position < $1.position },
+                    { $0.index < $1.index })
         }
         
-        guard let best = records.min(by: cmp) else {
+        guard let best = bestOrNone else {
             return nil
         }
         
-        return (index: best.index, result: best.result)
+        return (index: best.index,
+                matchResult: best.result)
     }
     
     private func processMatch(plan: MatchPlan, matchResult: Regex.MatchResult) {

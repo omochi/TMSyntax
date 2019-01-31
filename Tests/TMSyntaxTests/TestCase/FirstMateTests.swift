@@ -80,7 +80,7 @@ class FirstMateTests: XCTestCase {
     func test38() throws { try test(id: 38) }
     func test39() throws { try test(id: 39) }
     func test42() throws { try test(id: 42) }
-    func _test44() throws { try test(id: 44) }
+    func test44() throws { try test(id: 44) }
     func _test45() throws { try test(id: 45) }
     func _test46() throws { try test(id: 46) }
     func _test47() throws { try test(id: 47) }
@@ -136,7 +136,7 @@ class FirstMateTests: XCTestCase {
         let lines = def.lines.map { $0.line }
         
         let parser = Parser(lines: lines, grammar: grammar)
-//        parser.isTraceEnabled = true
+        parser.isTraceEnabled = true
         
         for lineDef in def.lines {
             let lineString = parser.currentLine!
