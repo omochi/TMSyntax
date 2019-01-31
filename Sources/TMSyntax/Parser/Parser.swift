@@ -84,7 +84,7 @@ public final class Parser {
         }
         
         var line = lines[currentLineIndex]
-        line = String(line[..<line.lineEndIndex]) + "\n"
+        line = String(line[..<line.lastNewLineIndex]) + "\n"
         self.currentLine = line
     }
     

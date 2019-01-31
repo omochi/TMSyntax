@@ -83,7 +83,7 @@ class FirstMateTests: XCTestCase {
     func test44() throws { try test(id: 44) }
     func test45() throws { try test(id: 45) }
     func test46() throws { try test(id: 46) }
-    func _test47() throws { try test(id: 47) }
+    func test47() throws { try test(id: 47) }
     func _test48() throws { try test(id: 48) }
     func _test49() throws { try test(id: 49) }
     func _test50() throws { try test(id: 50) }
@@ -151,10 +151,10 @@ class FirstMateTests: XCTestCase {
                 return tokenDef
             }
             
-            var expected = lineDef.tokens
+            let expected = lineDef.tokens
             
             // ignore zero range token
-            expected.removeAll { $0.value.isEmpty }
+//            expected.removeAll { $0.value.isEmpty }
             
             XCTAssertEqual(actual, expected,
                            file: file, line: line)

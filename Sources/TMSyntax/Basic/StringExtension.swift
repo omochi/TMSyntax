@@ -48,7 +48,7 @@ extension String {
         return result
     }
 
-    public var lineEndIndex: String.Index {
+    public var lastNewLineIndex: String.Index {
         let view = self.unicodeScalars
         var index = endIndex
         while true {

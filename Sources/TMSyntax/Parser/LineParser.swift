@@ -28,28 +28,31 @@ internal final class LineParser {
     private let isTraceEnabled: Bool
     
     public func parse() throws -> Parser.Result {
-        while true {
+        while !isLineEnd {
             try parseLine()
-            if isLineEnd {
-                let lineEndIndex = line.lineEndIndex
-                while var token = tokens.last {
-                    if token.range.upperBound <= lineEndIndex {
-                        break
-                    }
-                    
-                    if lineEndIndex <= token.range.lowerBound {
-                        tokens.removeLast()
-                        continue
-                    }
-
-                    token.range = token.range.lowerBound..<lineEndIndex
-                    tokens[tokens.count - 1] = token
-                    break
-                }
-                
-                return Parser.Result(stateStack: stateStack,
-                                     tokens: tokens)
+        }
+        fixLineEndTokens()
+        return Parser.Result(stateStack: stateStack,
+                             tokens: tokens)
+    }
+    
+    private func fixLineEndTokens() {
+        let lineEndIndex = line.lastNewLineIndex
+        while var token = tokens.last {
+//            if token.range.upperBound <= lineEndIndex {
+//                break
+//            }
+            
+            if token.range.isEmpty,
+                tokens.count >= 2
+            {
+                tokens.removeLast()
+                continue
             }
+            
+            token.range = token.range.lowerBound..<lineEndIndex
+            tokens[tokens.count - 1] = token
+            break
         }
     }
     
@@ -76,13 +79,18 @@ internal final class LineParser {
                                       plans: plans,
                                       anchor: mostLeftAnchor) else
         {
-            buildToken(to: searchRange.upperBound)
+
             
             switch searchEnd {
             case .endPosition(let position):
+                buildToken(to: searchRange.upperBound)
                 trace("hit end position")
                 processEndPosition(position)
             case .line(let position):
+                let lineNewLinePosition = line.lastNewLineIndex
+                if self.position <= lineNewLinePosition {
+                    buildToken(to: lineNewLinePosition, allowEmpty: true)
+                }
                 trace("hit end of line")
                 precondition(state.captureAnchors.isEmpty)
                 advance(to: position)
@@ -465,7 +473,7 @@ internal final class LineParser {
         case .scopeBegin:
             let rule = state.scopeRule!
             trace("move state: scopeBegin->scopeContent \(positionToIntForDebug(position))")
-            if let contentName = rule.contentName {
+            if let contentName = state.contentName {
                 state.scopePath.push(contentName)
             }
             
@@ -488,10 +496,10 @@ internal final class LineParser {
         return anchors.first
     }
     
-    private func buildToken(to end: String.Index) {
+    private func buildToken(to end: String.Index, allowEmpty: Bool = false) {
         let start = tokens.last?.range.upperBound ?? line.startIndex
         
-        guard start < end else {
+        guard allowEmpty || start < end else {
             return
         }
 
