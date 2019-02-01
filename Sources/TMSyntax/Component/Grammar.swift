@@ -12,6 +12,7 @@ public final class Grammar : Decodable, CopyInitializable {
         return rule.scopeName!
     }
     public let injections: [RuleInjection]
+    public let exportedInjection: RuleInjection?
     public weak var repository: GrammarRepository?
     
     public enum CodingKeys : String, CodingKey {
@@ -20,6 +21,7 @@ public final class Grammar : Decodable, CopyInitializable {
         case patterns
         case repository
         case injections
+        case injectionSelector
     }
     
     public convenience init(contentsOf url: URL) throws {
@@ -74,16 +76,32 @@ public final class Grammar : Decodable, CopyInitializable {
         
         self.injections = injections
         
-        self.rule = ScopeRule(sourceLocation: decoder.sourceLocation,
-                              begin: nil,
-                              beginCaptures: nil,
-                              end: nil,
-                              endCaptures: nil,
-                              contentName: nil,
-                              applyEndPatternLast: false,
-                              patterns: patterns,
-                              repository: repository,
-                              scopeName: scopeName)
+        let rule = ScopeRule(sourceLocation: decoder.sourceLocation,
+                             begin: nil,
+                             beginCaptures: nil,
+                             end: nil,
+                             endCaptures: nil,
+                             contentName: nil,
+                             applyEndPatternLast: false,
+                             patterns: patterns,
+                             repository: repository,
+                             scopeName: scopeName)
+        self.rule = rule
+        
+        func _exportedInjection() throws -> RuleInjection? {
+            guard let source = try c.decodeIfPresent(String.self, forKey: .injectionSelector) else {
+                return nil
+            }
+            let parser = ScopeSelectorParser(source: source,
+                                             pathMatcher: Grammar.pathMatcher)
+            let selector = try parser.parse()
+            
+            return RuleInjection(selector: selector,
+                                 rule: rule)
+        }
+        
+        self.exportedInjection = try _exportedInjection()
+        
         rule.name = "root"
         rule.setUpRootRule(grammar: self)
         

@@ -223,7 +223,13 @@ internal final class LineParser {
     private func collectInjectionMatchPlans() -> [MatchPlan] {
         var plans: [MatchPlan] = []
         
-        for injection in grammar.injections {
+        var injections = grammar.injections
+        
+        if let ijs = grammar.repository?.injections {
+            injections += ijs
+        }
+        
+        for injection in injections {
             guard let result = injection.selector.match(path: state.scopePath) else {
                 continue
             }

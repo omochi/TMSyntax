@@ -25,6 +25,7 @@ class FirstMateTests: XCTestCase {
         var grammars: [String]
         var grammarPath: String?
         var grammarScopeName: String?
+        var grammarInjections: [String]?
         var lines: [Line]
     }
     
@@ -38,7 +39,7 @@ class FirstMateTests: XCTestCase {
             let decoder = FineJSONDecoder()
             self.testsJSON = try decoder.decode([TestDefinition].self, from: testsJSONData)
         } catch {
-            XCTFail("\(error)")
+            fatalError("\(error)")
         }
     }
     
@@ -119,6 +120,10 @@ class FirstMateTests: XCTestCase {
         let grammarRepository = GrammarRepository()
         for path in def.grammars {
             try grammarRepository.loadGrammar(path: dir.appendingPathComponent(path))
+        }
+        
+        for injection in def.grammarInjections ?? [] {
+            grammarRepository.injectionScopes.append(ScopeName(injection))
         }
         
         func _grammar() throws -> Grammar {

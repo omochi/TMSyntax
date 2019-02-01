@@ -4,9 +4,12 @@ import OrderedDictionary
 public final class GrammarRepository {
     public init() {
         self.dictionary = OrderedDictionary()
+        self.injectionScopes = []
     }
     
     private var dictionary: OrderedDictionary<ScopeName, Grammar>
+
+    public var injectionScopes: [ScopeName]
     
     public func loadGrammar(path: URL) throws {
         let grammar = try Grammar(contentsOf: path)
@@ -20,5 +23,14 @@ public final class GrammarRepository {
     
     public subscript(scopeName: ScopeName) -> Grammar? {
         return dictionary[scopeName]
+    }
+    
+    public var injections: [RuleInjection] {
+        return injectionScopes
+            .compactMap { (scope) in
+                guard let grammar = self[scope] else {
+                    return nil
+                }
+                return grammar.exportedInjection }
     }
 }
