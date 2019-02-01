@@ -13,7 +13,7 @@ public struct RegexCompileError : LocalizedError {
     }
     
     public var errorDescription: String? {
-        var d = "regex compile error (\(error))"
+        var d: String = "regex compile error (\(error))"
         if let loc = location {
             d += " at \(loc)"
         }

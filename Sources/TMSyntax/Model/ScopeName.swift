@@ -8,7 +8,8 @@ public struct ScopeName :
     public var parts: [String]
     
     public init(_ string: String) {
-        self.init(parts: string.components(separatedBy: "."))
+        let parts: [String] = string.components(separatedBy: ".")
+        self.init(parts: parts)
     }
     
     public init(parts: [String]) {

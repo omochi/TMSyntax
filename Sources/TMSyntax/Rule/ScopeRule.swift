@@ -83,27 +83,30 @@ public final class ScopeRule : Rule {
                            matchResult: Regex.MatchResult)
         throws -> RegexPattern
     {
-        guard let pattern = self.end else {
+        guard let pattern: RegexPattern = self.end else {
             throw Parser.Error.noEndPattern(self)
         }
         
-        var num = 0
+        var num: Int = 0
+        
+        func replacer(m: Regex.MatchResult) throws -> String {
+            num += 1
+            
+            guard let captureIndexRange = m[1],
+                let captureIndex = Int(pattern.value[captureIndexRange]) else
+            {
+                throw Parser.Error.invalidRegexPattern(pattern)
+            }
+            
+            guard let range = matchResult[captureIndex] else {
+                return Rule.invalidString
+            }
+            
+            return Regex.escape(String(line[range]))
+        }
         
         let resolvedPattern = try Rule.regexBackReferenceRegex
-            .replace(string: pattern.value) { (m) in
-                num += 1
-                
-                guard let captureIndexRange = m[1],
-                    let captureIndex = Int(pattern.value[captureIndexRange]) else
-                {
-                    throw Parser.Error.invalidRegexPattern(pattern)
-                }
-                
-                guard let range = matchResult[captureIndex] else {
-                    return Rule.invalidString
-                }
-                return Regex.escape(String(line[range]))
-        }
+            .replace(string: pattern.value, replacer: replacer)
         
         if num == 0 {
             // return same object to make internal cache reusable

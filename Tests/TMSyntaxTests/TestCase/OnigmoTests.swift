@@ -111,7 +111,7 @@ clone|set_state|sleep|wakeup|autoload|invoke|callStatic))
     
     func _testBigChar() throws {
         do {
-            let regex = try Regex(pattern: "\\x{7FFFFFFF}", options: [])
+            _ = try Regex(pattern: "\\x{7FFFFFFF}", options: [])
         } catch {
             XCTFail("\(error)")
         }

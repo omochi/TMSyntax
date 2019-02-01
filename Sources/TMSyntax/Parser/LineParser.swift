@@ -311,10 +311,18 @@ internal final class LineParser {
             SearchResult.anchor($0)
         }
         
-        let best = minFromOptionals(regexResultBox, anchorBox) { (a, b) in
+        func cmpSBStrPos(_ a: SearchResult, b: SearchResult) -> Bool {
+            return a.leftIndex < b.leftIndex
+        }
+        func cmpSBRulePos(_ a: SearchResult, b: SearchResult) -> Bool {
+            return a.position < b.position
+        }
+        
+        let best = minFromOptionals(regexResultBox, anchorBox) {
+            (a: SearchResult, b: SearchResult) -> Bool in
             compare(a, b,
-                    { $0.leftIndex < $1.leftIndex },
-                    { $0.position < $1.position })
+                    cmpSBStrPos,
+                    cmpSBRulePos)
         }
         
         return best
@@ -327,16 +335,38 @@ internal final class LineParser {
     {
         var plans = Array(plans.enumerated())
         
+        func cmpPlanMatchPos(a: (offset: Int, element: RegexMatchPlan),
+                             b: (offset: Int, element: RegexMatchPlan)) -> Bool {
+            return a.element.position < b.element.position
+        }
+        
+        func cmpPlanOffset(a: (offset: Int, element: RegexMatchPlan),
+                           b: (offset: Int, element: RegexMatchPlan)) -> Bool {
+            return a.offset < b.offset
+        }
+        
+        
         plans.sort { (a, b) in
             compare(a, b,
-                    { $0.element.position < $1.element.position },
-                    { $0.offset < $1.offset })
+                    cmpPlanMatchPos,
+                    cmpPlanOffset)
         }
         
         typealias Record = (
             index: Int,
             position: ScopeMatchPosition,
             result: Regex.MatchResult)
+        
+        func cmpRecordStrPos(a: Record, b: Record) -> Bool {
+            return a.result[].lowerBound < b.result[].lowerBound
+        }
+        func cmpRecordMatchPos(a: Record, b: Record) -> Bool {
+            return a.position < b.position
+        }
+        func cmpRecordIndex(a: Record, b: Record) -> Bool {
+            return a.index < b.index
+        }
+        
         
         var records: [Record] = []
         
@@ -355,11 +385,11 @@ internal final class LineParser {
             }
         }
         
-        let bestOrNone = records.min { (a, b) in
+        let bestOrNone = records.min { (a: Record, b: Record) -> Bool in
             compare(a, b,
-                    { $0.result[].lowerBound < $1.result[].lowerBound },
-                    { $0.position < $1.position },
-                    { $0.index < $1.index })
+                    cmpRecordStrPos,
+                    cmpRecordMatchPos,
+                    cmpRecordIndex)
         }
         
         guard let best = bestOrNone else {
@@ -477,7 +507,6 @@ internal final class LineParser {
     private func processEndPosition(_ position: String.Index) {
         switch state.phase {
         case .scopeBegin:
-            let rule = state.scopeRule!
             trace("move state: scopeBegin->scopeContent \(positionToIntForDebug(position))")
             if let contentName = state.contentName {
                 state.scopePath.push(contentName)
@@ -539,16 +568,16 @@ internal final class LineParser {
     }
     
     private func _addToken(_ newToken: Token) {
-        if var last = tokens.last {
-            precondition(last.range.upperBound == newToken.range.lowerBound)
-            
-            // squash
-//            if last.scopePath == newToken.scopePath {
-//                last.range = last.range.lowerBound..<newToken.range.upperBound
-//                tokens[tokens.count - 1] = last
-//                return
-//            }
-        }
+//        if var last = tokens.last {
+//            precondition(last.range.upperBound == newToken.range.lowerBound)
+//            
+//            // squash
+////            if last.scopePath == newToken.scopePath {
+////                last.range = last.range.lowerBound..<newToken.range.upperBound
+////                tokens[tokens.count - 1] = last
+////                return
+////            }
+//        }
         
         tokens.append(newToken)
     }

@@ -1,44 +1,51 @@
 import Foundation
 
+// type infer helper
+fileprivate func substrUSS(_ us: String.UnicodeScalarView, _ l: String.Index, _ r: String.Index) -> String {
+    let range: Range<String.Index> = l..<r
+    let susv: Substring.UnicodeScalarView = us[range]
+    return String(susv)
+}
+
 extension String {
     public func splitLines() -> [String] {
         var result = [String]()
         
-        let view = self.unicodeScalars
+        let view: String.UnicodeScalarView = self.unicodeScalars
         
-        var pos = startIndex
-        var lineStart = pos
+        var pos: String.Index = startIndex
+        var lineStart: String.Index = pos
         while true {
             if pos == endIndex {
                 if lineStart != pos {
-                    result.append(String(view[lineStart..<pos]))
+                    result.append(substrUSS(view, lineStart, pos))
                     lineStart = pos
                 }
                 break
             }
             
-            let c0 = view[pos]
+            let c0: Unicode.Scalar = view[pos]
             
             if c0 == .cr {
                 pos = view.index(after: pos)
                 if pos == endIndex {
-                    result.append(String(view[lineStart..<pos]))
+                    result.append(substrUSS(view, lineStart, pos))
                     lineStart = pos
                     break
                 }
                 
-                let c1 = view[pos]
+                let c1: Unicode.Scalar = view[pos]
                 if c1 == .lf {
                     pos = view.index(after: pos)
-                    result.append(String(view[lineStart..<pos]))
+                    result.append(substrUSS(view, lineStart, pos))
                     lineStart = pos
                 } else {
-                    result.append(String(view[lineStart..<pos]))
+                    result.append(substrUSS(view, lineStart, pos))
                     lineStart = pos
                 }
             } else if c0 == .lf {
                 pos = view.index(after: pos)
-                result.append(String(view[lineStart..<pos]))
+                result.append(substrUSS(view, lineStart, pos))
                 lineStart = pos
             } else {
                 pos = view.index(after: pos)

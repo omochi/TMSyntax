@@ -55,9 +55,11 @@ public final class RegexPattern : Decodable, CustomStringConvertible {
     }
     
     public var description: String {
-        var pat = value
+        var pat: String = value
+        
         if pat.count > 40 {
-            pat = String(pat[..<pat.index(pat.startIndex, offsetBy: 40)])
+            let patEnd: String.Index = pat.index(pat.startIndex, offsetBy: 40)
+            pat = String(pat[..<patEnd])
             pat += "..."
         }
         

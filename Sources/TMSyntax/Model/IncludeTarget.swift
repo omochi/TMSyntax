@@ -14,7 +14,7 @@ public enum IncludeTarget : CustomStringConvertible, Decodable, CopyInitializabl
             case .repository(let name): return "#\(name)"
             case .self: return "$self"
             case .language(let lang, let name):
-                var s = "\(lang)"
+                var s: String = "\(lang)"
                 if let name = name {
                     s += "#\(name)"
                 }

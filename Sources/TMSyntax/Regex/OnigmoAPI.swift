@@ -13,17 +13,23 @@ public struct OnigmoError : Swift.Error, CustomStringConvertible {
     public init(status: CInt, errorInfo: UnsafeMutablePointer<OnigErrorInfo>) {
         var buf: [OnigUChar] = Array(repeating: 0, count: Int(ONIG_MAX_ERROR_MESSAGE_LEN))
         let ap: [CVarArg] = [errorInfo]
-        let _: CInt = buf.withUnsafeMutableBufferPointer { (buf: inout UnsafeMutableBufferPointer<OnigUChar>) in
-            withVaList(ap) { (ap: CVaListPointer) in
-                return onig_error_code_to_str_v(buf.baseAddress,
-                                                OnigPosition(status),
-                                                ap)
+        let _: CInt = buf.withUnsafeMutableBufferPointer {
+            (buf: inout UnsafeMutableBufferPointer<OnigUChar>) -> CInt in
+            
+            withVaList(ap) { (ap: CVaListPointer) -> CInt in
+                onig_error_code_to_str_v(buf.baseAddress,
+                                         OnigPosition(status),
+                                         ap)
             }
         }
         
-        let message: String = buf.withUnsafeBufferPointer { (buf: UnsafeBufferPointer<OnigUChar>) in
-            buf.withMemoryRebound(to: CChar.self) { (buf: UnsafeBufferPointer<CChar>) in
-                return String(utf8String: buf.baseAddress!)!
+        let message: String = buf.withUnsafeBufferPointer {
+            (buf: UnsafeBufferPointer<OnigUChar>) -> String in
+            
+            buf.withMemoryRebound(to: CChar.self) {
+                (buf: UnsafeBufferPointer<CChar>) -> String in
+            
+                String(utf8String: buf.baseAddress!)!
             }
         }
         

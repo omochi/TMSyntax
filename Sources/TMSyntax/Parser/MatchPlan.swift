@@ -10,11 +10,11 @@ public struct MatchPlan : CustomStringConvertible {
         public var description: String {
             switch self {
             case .match(let rule):
-                return "test: \(rule)"
+                return "test: \(rule)" as String
             case .begin(let rule):
-                return "begin test: \(rule)"
+                return "begin test: \(rule)" as String
             case .endPattern(let pattern, _, _):
-                return "end test: \(pattern)"
+                return "end test: \(pattern)" as String
             }
         }
     }
