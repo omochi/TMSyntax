@@ -12,19 +12,13 @@ public final class RuleInjection : CustomStringConvertible {
         self.rule = rule
     }
     
-    public struct JSON : Decodable {
-        public enum CodingKeys : String, CodingKey {
-            case patterns
-        }
+    public struct JSON : Decodable, JSONAnnotatable {
+        public static let keyAnnotations: JSONKeyAnnotations = [
+            "sourceLocation": JSONKeyAnnotation(isSourceLocationKey: true)
+        ]
         
         public var sourceLocation: SourceLocation?
-        public var patterns: [Rule]
-        
-        public init(from decoder: Decoder) throws {
-            let c = try decoder.container(keyedBy: CodingKeys.self)
-            self.sourceLocation = decoder.sourceLocation
-            self.patterns = try c.decodeIfPresent([Rule].self, forKey: .patterns) ?? []
-        }
+        public var patterns: [Rule]?
     }
     
     public convenience init(selectorSource: String,
@@ -40,7 +34,7 @@ public final class RuleInjection : CustomStringConvertible {
                              endCaptures: nil,
                              contentName: nil,
                              applyEndPatternLast: false,
-                             patterns: json.patterns,
+                             patterns: json.patterns ?? [],
                              repository: nil,
                              scopeName: nil)
         

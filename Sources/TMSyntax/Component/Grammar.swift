@@ -3,9 +3,19 @@ import FineJSON
 import enum FineJSON.DecodingError
 import OrderedDictionary
 
-private let pathKey = CodingUserInfoKey(rawValue: "path")!
-
-public final class Grammar : Decodable, CopyInitializable {
+public final class Grammar {
+    public enum Error : LocalizedError, CustomStringConvertible {
+        case noName
+        
+        public var errorDescription: String? { return description }
+        
+        public var description: String {
+            switch self {
+            case .noName: return "no name"
+            }
+        }
+    }
+    
     public let name: String
     public let rule: ScopeRule
     public var scopeName: ScopeName {
@@ -15,13 +25,18 @@ public final class Grammar : Decodable, CopyInitializable {
     public let exportedInjection: RuleInjection?
     public weak var repository: GrammarRepository?
     
-    public enum CodingKeys : String, CodingKey {
-        case name
-        case scopeName
-        case patterns
-        case repository
-        case injections
-        case injectionSelector
+    internal struct JSON : Decodable, JSONAnnotatable {
+        public static let keyAnnotations: JSONKeyAnnotations = [
+            "sourceLocation": JSONKeyAnnotation(isSourceLocationKey: true)
+        ]
+        
+        public var sourceLocation: SourceLocation?
+        public var name: String?
+        public var scopeName: ScopeName
+        public var patterns: [Rule]?
+        public var repository: RuleRepository?
+        public var injections: OrderedDictionary<String, RuleInjection.JSON>?
+        public var injectionSelector: String?
     }
     
     public convenience init(contentsOf url: URL) throws {
@@ -31,43 +46,31 @@ public final class Grammar : Decodable, CopyInitializable {
     
     public convenience init(data: Data, path: URL? = nil) throws {
         let decoder = FineJSONDecoder()
-        if let path = path {
-            decoder.userInfo[pathKey] = path
-        }
-        let copy = try decoder.decode(Grammar.self, from: data)
-        self.init(copy: copy)
+        decoder.file = path
+        let json = try decoder.decode(JSON.self, from: data)
+        try self.init(from: json, path: path)
     }
-    
-    public init(from decoder: Decoder) throws {
-        let c = try decoder.container(keyedBy: CodingKeys.self)
-        
+ 
+    private init(from json: JSON, path: URL?) throws {
         func _name() throws -> String {
-            if let name = try c.decodeIfPresent(String.self, forKey: .name) {
+            if let name = json.name {
                 return name
             }
-            if let path = decoder.userInfo[pathKey] as? URL {
+            if let path = path {
                 let fileName = path.lastPathComponent
                 if !fileName.isEmpty {
                     let name = fileName.components(separatedBy: ".").first!
                     return name
                 }
             }
-            throw DecodingError.keyNotFound("name",
-                                            codingPath: decoder.codingPath,
-                                            location: decoder.sourceLocation)
+            throw Error.noName
         }
         
         self.name = try _name()
-        let scopeName = try c.decode(ScopeName.self, forKey: .scopeName)
-        
-        let patterns = try c.decodeIfPresent([Rule].self, forKey: .patterns) ?? []
-        let repository = try c.decodeIfPresent(RuleRepository.self, forKey: .repository)
-        
+
         var injections: [RuleInjection] = []
         
-        if let injectionDict = try c.decodeIfPresent(OrderedDictionary<String, RuleInjection.JSON>.self,
-                                                     forKey: .injections)
-        {
+        if let injectionDict = json.injections {
             for (source, json) in injectionDict {
                 let injection = try RuleInjection(selectorSource: source, json: json)
                 injections.append(injection)
@@ -76,20 +79,20 @@ public final class Grammar : Decodable, CopyInitializable {
         
         self.injections = injections
         
-        let rule = ScopeRule(sourceLocation: decoder.sourceLocation,
+        let rule = ScopeRule(sourceLocation: json.sourceLocation,
                              begin: nil,
                              beginCaptures: nil,
                              end: nil,
                              endCaptures: nil,
                              contentName: nil,
                              applyEndPatternLast: false,
-                             patterns: patterns,
-                             repository: repository,
-                             scopeName: scopeName)
+                             patterns: json.patterns ?? [],
+                             repository: json.repository,
+                             scopeName: json.scopeName)
         self.rule = rule
         
         func _exportedInjection() throws -> RuleInjection? {
-            guard let source = try c.decodeIfPresent(String.self, forKey: .injectionSelector) else {
+            guard let source = json.injectionSelector else {
                 return nil
             }
             let parser = ScopeSelectorParser(source: source,
