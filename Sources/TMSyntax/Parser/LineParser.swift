@@ -434,6 +434,19 @@ internal final class LineParser {
             
             advance(to: matchResult[].lowerBound)
         case .begin(let rule):
+            if position == matchResult[].upperBound,
+                case .scope(let prevRule)? = state.rule?.switcher,
+                rule === prevRule
+            {
+                trace("infinite loop detected. no advance recursive begin rule.")
+                
+                advance(to: line.endIndex)
+                buildToken(to: position)
+                popState()
+                return
+            }
+            
+            
             var scopePath = state.scopePath
             if let scopeName = try rule.resolveScopeName(line: line, matchResult: matchResult) {
                 scopePath.push(scopeName)

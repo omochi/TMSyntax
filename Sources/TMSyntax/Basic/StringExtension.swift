@@ -9,7 +9,7 @@ fileprivate func substrUSS(_ us: String.UnicodeScalarView, _ l: String.Index, _ 
 
 extension String {
     public func splitLines() -> [String] {
-        var result = [String]()
+        var result: [String] = []
         
         let view: String.UnicodeScalarView = self.unicodeScalars
         

@@ -21,6 +21,9 @@ matchルールの前後で位置が変わっていない場合、またマッチ
 
 とりあえず first-mate test38 だけ対応する
 
+first-mate test47で進まないbeginループに対応
+
+
 ---
 
 状態遷移
