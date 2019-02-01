@@ -113,7 +113,27 @@ public final class Grammar {
         }
     }
     
+    public static func scopeMatcher(pattern: ScopeName, target: ScopeName) -> Bool {
+        let patternLen = pattern.parts.count
+        guard patternLen <= target.parts.count else {
+            return false
+        }
+        
+        return pattern.parts[...] == target.parts[..<patternLen]
+    }
+    
     public static func pathMatcher(pattern: ScopePath, target: ScopePath) -> Bool {
-        return true //TODO
+        var lastIndex = 0
+        
+        return pattern.items.allSatisfy { (patternItem) in
+            for i in lastIndex..<target.items.count {
+                let targetItem = target.items[i]
+                if scopeMatcher(pattern: patternItem, target: targetItem) {
+                    lastIndex = i + 1
+                    return true
+                }
+            }
+            return false
+        }
     }
 }
