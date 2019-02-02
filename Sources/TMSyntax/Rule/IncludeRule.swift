@@ -5,10 +5,12 @@ public final class IncludeRule : Rule {
     public let target: IncludeTarget
     
     public init(sourceLocation: SourceLocation?,
+                isEnabled: Bool,
                 target: IncludeTarget)
     {
         self.target = target
-        super.init(sourceLocation: sourceLocation)
+        super.init(sourceLocation: sourceLocation,
+                   isEnabled: isEnabled)
     }
     
     public required init(from decoder: Decoder) throws {

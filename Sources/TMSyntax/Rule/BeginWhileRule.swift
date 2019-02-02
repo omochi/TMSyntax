@@ -12,6 +12,7 @@ public final class BeginWhileRule : Rule, HubRuleProtocol {
     private let scopeName: ScopeName?
     
     public init(sourceLocation: SourceLocation?,
+                isEnabled: Bool,
                 begin: RegexPattern,
                 beginCaptures: CaptureAttributes?,
                 while while_: RegexPattern,
@@ -33,7 +34,8 @@ public final class BeginWhileRule : Rule, HubRuleProtocol {
         self._repository = repository
         self.scopeName = scopeName
         
-        super.init(sourceLocation: sourceLocation)
+        super.init(sourceLocation: sourceLocation,
+                   isEnabled: isEnabled)
         
         setUpChildren()
     }

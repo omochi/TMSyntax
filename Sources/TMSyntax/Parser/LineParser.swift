@@ -219,6 +219,10 @@ internal final class LineParser {
                                         base: Grammar)
         -> [MatchPlan]
     {
+        if !rule.isEnabled {
+            return []
+        }
+        
         switch rule.switcher {
         case .include(let rule):
             guard let target = rule.resolve(base: base) else {

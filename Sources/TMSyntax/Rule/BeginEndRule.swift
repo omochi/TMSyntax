@@ -13,6 +13,7 @@ public final class BeginEndRule : Rule, HubRuleProtocol {
     private let scopeName: ScopeName?
     
     public init(sourceLocation: SourceLocation?,
+                isEnabled: Bool,
                 begin: RegexPattern,
                 beginCaptures: CaptureAttributes?,
                 end: RegexPattern,
@@ -36,7 +37,8 @@ public final class BeginEndRule : Rule, HubRuleProtocol {
         self._repository = repository
         self.scopeName = scopeName
         
-        super.init(sourceLocation: sourceLocation)
+        super.init(sourceLocation: sourceLocation,
+                   isEnabled: isEnabled)
         
         setUpChildren()
     }

@@ -1,5 +1,6 @@
 extension Rule {
     public enum CodingKeys : String, CodingKey {
+        case disabled
         case include
         case match
         case name
@@ -21,8 +22,12 @@ extension Rule {
         
         let c = try decoder.container(keyedBy: CodingKeys.self)
         
+        let disabled = try c.decodeIfPresent(Int.self, forKey: .disabled) ?? 0
+        let isEnabled: Bool = disabled == 0
+        
         if let target = try c.decodeIfPresent(IncludeTarget.self, forKey: .include) {
-            return IncludeRule(sourceLocation: decoder.sourceLocation,
+            return IncludeRule(sourceLocation: sourceLocation,
+                               isEnabled: isEnabled,
                                target: target)
         }
         
@@ -32,6 +37,7 @@ extension Rule {
             let captures = try c.decodeIfPresent(CaptureAttributes.self, forKey: .captures)
             
             return MatchRule(sourceLocation: sourceLocation,
+                             isEnabled: isEnabled,
                              pattern: matchPattern,
                              scopeName: scopeName,
                              captures: captures)
@@ -42,6 +48,7 @@ extension Rule {
         
         guard let begin = try c.decodeIfPresent(RegexPattern.self, forKey: .begin) else {
             return HubRule(sourceLocation: sourceLocation,
+                           isEnabled: isEnabled,
                            patterns: patterns,
                            repository: repository)
         }
@@ -61,6 +68,7 @@ extension Rule {
         
         if let end = try c.decodeIfPresent(RegexPattern.self, forKey: .end) {
             return BeginEndRule(sourceLocation: sourceLocation,
+                                isEnabled: isEnabled,
                                 begin: begin,
                                 beginCaptures: beginCaptures,
                                 end: end,
@@ -72,6 +80,7 @@ extension Rule {
                                 scopeName: scopeName)
         } else if let while_ = try c.decodeIfPresent(RegexPattern.self, forKey: .while) {
             return BeginWhileRule(sourceLocation: sourceLocation,
+                                  isEnabled: isEnabled,
                                   begin: begin,
                                   beginCaptures: beginCaptures,
                                   while: while_,

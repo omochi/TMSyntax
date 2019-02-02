@@ -22,7 +22,8 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
     public var switcher: Switcher {
         fatalError("unimplemented")
     }
-        
+    
+    public var isEnabled: Bool
     public var name: String?
     public weak var parent: Rule?
     private weak var _grammar: Grammar?
@@ -45,8 +46,11 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
 
     public var repository: RuleRepository? { return nil }
     
-    public init(sourceLocation: SourceLocation?) {
+    public init(sourceLocation: SourceLocation?,
+                isEnabled: Bool)
+    {
         self.sourceLocation = sourceLocation
+        self.isEnabled = isEnabled
     }
     
     public func setUpRootRule(grammar: Grammar) {

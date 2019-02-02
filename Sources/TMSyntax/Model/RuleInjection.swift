@@ -28,6 +28,7 @@ public final class RuleInjection : CustomStringConvertible {
         let selector = try parser.parse()
         
         let rule = HubRule(sourceLocation: json.sourceLocation,
+                           isEnabled: true,
                            patterns: json.patterns ?? [],
                            repository: nil)
         

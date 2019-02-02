@@ -25,13 +25,15 @@ public final class HubRule : Rule, HubRuleProtocol {
     private let _repository: RuleRepository?
     
     public init(sourceLocation: SourceLocation?,
+                isEnabled: Bool,
                 patterns: [Rule],
                 repository: RuleRepository?)
     {
         self.patterns = patterns
         self._repository = repository
      
-        super.init(sourceLocation: sourceLocation)
+        super.init(sourceLocation: sourceLocation,
+                   isEnabled: isEnabled)
         
         setUpChildren()
     }

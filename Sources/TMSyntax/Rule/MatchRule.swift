@@ -9,6 +9,7 @@ public final class MatchRule : Rule {
     public var captures: CaptureAttributes?
     
     public init(sourceLocation: SourceLocation?,
+                isEnabled: Bool,
                 pattern: RegexPattern,
                 scopeName: ScopeName?,
                 captures: CaptureAttributes?)
@@ -16,7 +17,8 @@ public final class MatchRule : Rule {
         self.pattern = pattern
         self.scopeName = scopeName
         self.captures = captures
-        super.init(sourceLocation: sourceLocation)
+        super.init(sourceLocation: sourceLocation,
+                   isEnabled: isEnabled)
     }
     
     public required convenience init(from decoder: Decoder) throws {

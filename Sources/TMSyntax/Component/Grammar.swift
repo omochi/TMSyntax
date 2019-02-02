@@ -79,6 +79,7 @@ public final class Grammar {
         
         let scopeName = json.scopeName
         let rule = HubRule(sourceLocation: json.sourceLocation,
+                           isEnabled: true,
                            patterns: json.patterns ?? [],
                            repository: json.repository)
         
