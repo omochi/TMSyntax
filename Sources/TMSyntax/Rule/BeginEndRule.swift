@@ -140,6 +140,12 @@ public final class BeginEndRule : Rule, HubRuleProtocol {
             
             var str = String(line[captureRange])
             
+            // I want to remove this.
+            // see: https://github.com/Microsoft/vscode-textmate/issues/84
+            while str.starts(with: ".") {
+                str.removeFirst()
+            }
+            
             if let modifierRange = m[3] {
                 let modifier = part[modifierRange]
                 
