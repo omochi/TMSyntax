@@ -71,7 +71,7 @@ internal enum Onigmo {
         throw OnigmoError(status: status, errorInfo: errorInfo)
     }
     
-    static func new(pattern: String, options: UInt32) throws -> OnigRegex {
+    static func new<S: StringProtocol>(pattern: S, options: UInt32) throws -> OnigRegex {
         initOnce()
         
         var onig: OnigRegex?
@@ -98,11 +98,14 @@ internal enum Onigmo {
         onig_free(regex)
     }
     
-    static func search(regex: OnigRegex,
-                       string: String,
-                       range: Range<String.Index>,
-                       globalPosition: String.Index?)
+    static func search<S>(regex: OnigRegex,
+                          string: S,
+                          range: Range<String.Index>,
+                          globalPosition: String.Index?)
         -> [Range<String.Index>?]?
+        where S : StringProtocol,
+        S.Index == String.Index,
+        S.UTF8View.Index == String.Index
     {
         let u8 = string.utf8
         
@@ -152,15 +155,21 @@ internal enum Onigmo {
                 return nil
             }
             
-            return regionToRange(regionPointer, utf8View: u8)
+            return regionToRange(regionPointer, string: string)
         }
         
         return ranges
     }
-
-    static func regionToRange(_ region: UnsafePointer<OnigRegion>,
-                              utf8View u8: String.UTF8View) -> [Range<String.Index>?]
+    
+    static func regionToRange<S>(_ region: UnsafePointer<OnigRegion>,
+                                 string: S)
+        -> [Range<String.Index>?]
+        where S : StringProtocol,
+        S.Index == String.Index,
+        S.UTF8View.Index == String.Index
     {
+        let u8 = string.utf8
+        
         var ranges: [Range<String.Index>?] = []
         
         let num = Int(region.pointee.num_regs)
@@ -173,8 +182,8 @@ internal enum Onigmo {
             if startOffset != ONIG_REGION_NOTPOS &&
                 endOffset != ONIG_REGION_NOTPOS
             {
-                let start = u8.index(u8.startIndex, offsetBy: startOffset)
-                let end = u8.index(u8.startIndex, offsetBy: endOffset)
+                let start = u8.index(string.startIndex, offsetBy: startOffset)
+                let end = u8.index(string.startIndex, offsetBy: endOffset)
                 
                 ranges.append(start..<end)
             } else {
@@ -197,11 +206,13 @@ internal enum Onigmo {
     }
 }
 
-internal extension String {
+internal extension StringProtocol {
     func withOnigUCharString<R>(_ f: (UnsafeBufferPointer<OnigUChar>) throws -> R) rethrows -> R {
-        return try self.utf8CString.withUnsafeBufferPointer { (buf: UnsafeBufferPointer<CChar>) -> R in
-            return try buf.withMemoryRebound(to: OnigUChar.self) { (buf: UnsafeBufferPointer<OnigUChar>) -> R in
-                return try f(buf)
+        let count = self.utf8.count + 1 // null
+        return try self.withCString{ (pointer: UnsafePointer<CChar>) -> R in
+            return try pointer.withMemoryRebound(to: OnigUChar.self, capacity: count) {
+                (pointer: UnsafePointer<OnigUChar>) -> R in
+                return try f(UnsafeBufferPointer(start: pointer, count: count))
             }
         }
     }

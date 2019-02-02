@@ -88,7 +88,7 @@ class FirstMateTests: XCTestCase {
     func test48() throws { try test(id: 48) }
     func test49() throws { try test(id: 49) }
     func test50() throws { try test(id: 50) }
-    func _test51() throws { try test(id: 51) }
+    func test51() throws { try test(id: 51) }
     func _test53() throws { try test(id: 53) }
     func _test54() throws { try test(id: 54) }
     func _test55() throws { try test(id: 55) }

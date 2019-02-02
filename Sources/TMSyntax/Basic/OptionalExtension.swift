@@ -25,24 +25,25 @@ internal extension Optional {
         let u = try f(t)
         return [u]
     }
-}
-
-internal func minFromOptionals<T>(_ a: T?, _ b: T?, cmp: (T, T) -> Bool) -> T? {
-    if let a = a {
-        if let b = b {
-            if cmp(b, a) {
-                return b
+    
+    func squashed(_ b: Wrapped?, f: (Wrapped, Wrapped) throws -> Wrapped) rethrows -> Wrapped? {
+        let a = self
+        if let a = a {
+            if let b = b {
+                return try f(a, b)
+            } else {
+                return a
             }
-            // prefer a
-            return a
         } else {
-            return a
+            if let b = b {
+                return b
+            } else {
+                return nil
+            }
         }
-    } else {
-        if let b = b {
-            return b
-        } else {
-            return nil
-        }
+    }
+    
+    mutating func squash(_ b: Wrapped?, f: (Wrapped, Wrapped) throws -> Wrapped) rethrows {
+        self = try squashed(b, f: f)
     }
 }

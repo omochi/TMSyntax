@@ -2,11 +2,65 @@ import Foundation
 
 public struct ParserState {
     public enum Phase {
-        case match
-        case scopeBegin
-        case scopeContent
-        case scopeEnd
+        case rootContent
+        case match(Match)
+        case beginEndBegin(BeginEndBegin)
+        case beginEndContent(BeginEndBegin)
+        case beginEndEnd(BeginEndBegin, BeginEndEnd)
+        case beginWhileBegin(BeginWhileState)
         case captureAnchor
+    }
+    
+    public struct Match {
+        public var matchResult: Regex.MatchResult
+        
+        public init(matchResult: Regex.MatchResult) {
+            self.matchResult = matchResult
+        }
+    }
+    
+    public struct BeginEndBegin {
+        public var matchResult: Regex.MatchResult
+        public var lineIndex: Int
+        public var endPattern: RegexPattern
+        public var contentName: ScopeName?
+        
+        public init(matchResult: Regex.MatchResult,
+                    lineIndex: Int,
+                    endPattern: RegexPattern,
+                    contentName: ScopeName?)
+        {
+            self.matchResult = matchResult
+            self.lineIndex = lineIndex
+            self.endPattern = endPattern
+            self.contentName = contentName
+        }
+    }
+    
+    public struct BeginEndEnd {
+        public var matchResult: Regex.MatchResult
+        
+        public init(matchResult: Regex.MatchResult) {
+            self.matchResult = matchResult
+        }
+    }
+    
+    public struct BeginWhileState {
+        public var matchResult: Regex.MatchResult
+        public var lineIndex: Int
+        public var whilePattern: RegexPattern
+        public var contentName: ScopeName?
+        
+        public init(matchResult: Regex.MatchResult,
+                    lineIndex: Int,
+                    whilePattern: RegexPattern,
+                    contentName: ScopeName?)
+        {
+            self.matchResult = matchResult
+            self.lineIndex = lineIndex
+            self.whilePattern = whilePattern
+            self.contentName = contentName
+        }
     }
     
     public struct WhileCondition {
@@ -26,36 +80,24 @@ public struct ParserState {
     public var patterns: [Rule]
     public var captureAnchors: [CaptureAnchor]
     public var scopePath: ScopePath
-    public var contentName: ScopeName?
     public var whileConditions: [WhileCondition]
-    public var beginMatchResult: Regex.MatchResult?
-    public var beginLineIndex: Int?
-    public var endPattern: RegexPattern?
-    public var endPosition: String.Index?
+    public var captureEndPosition: String.Index?
     
     public init(rule: Rule?,
                 phase: Phase,
                 patterns: [Rule],
                 captureAnchors: [CaptureAnchor],
                 scopePath: ScopePath,
-                contentName: ScopeName?,
                 whileConditions: [WhileCondition],
-                beginMatchResult: Regex.MatchResult?,
-                beginLineIndex: Int?,
-                endPattern: RegexPattern?,
-                endPosition: String.Index?)
+                captureEndPosition: String.Index?)
     {
         self.rule = rule
         self.phase = phase
         self.patterns = patterns
         self.captureAnchors = captureAnchors
         self.scopePath = scopePath
-        self.contentName = contentName
         self.whileConditions = whileConditions
-        self.beginMatchResult = beginMatchResult
-        self.beginLineIndex = beginLineIndex
-        self.endPattern = endPattern
-        self.endPosition = endPosition
+        self.captureEndPosition = captureEndPosition
     }
     
     public var scopeRule: BeginEndRule? {

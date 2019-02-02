@@ -58,16 +58,12 @@ public final class Parser {
         let rule = grammar.rule
         
         stateStack.stack.append(ParserState(rule: rule,
-                                            phase: .scopeContent,
+                                            phase: .rootContent,
                                             patterns: rule.patterns,
                                             captureAnchors: [],
                                             scopePath: ScopePath([grammar.scopeName]),
-                                            contentName: nil,
                                             whileConditions: [],
-                                            beginMatchResult: nil,
-                                            beginLineIndex: nil,
-                                            endPattern: nil,
-                                            endPosition: nil))
+                                            captureEndPosition: nil))
     }
     
     public let lines: [String]

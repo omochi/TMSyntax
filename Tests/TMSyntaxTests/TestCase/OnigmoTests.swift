@@ -135,4 +135,15 @@ clone|set_state|sleep|wakeup|autoload|invoke|callStatic))
         XCTAssertNotNil(m)
     }
     
+    func testEndAnchor() throws {
+        let regex = try Regex(pattern: "a$", options: [])
+        var string = "xab"
+        var m = regex.search(string: string, range: string.index(at: 0)..<string.index(at: 2))
+        XCTAssertNil(m)
+        
+        string = "xa"
+        m = regex.search(string: string, range: string.index(at: 0)..<string.index(at: 2))
+        XCTAssertNotNil(m)
+    }
+    
 }

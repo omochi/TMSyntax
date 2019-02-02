@@ -78,9 +78,14 @@ public struct Regex {
     
     private let object: Object
     
-    public func search(string: String,
-                       range: Range<String.Index>,
-                       globalPosition: String.Index? = nil) -> MatchResult? {
+    public func search<S>(string: S,
+                          range: Range<S.Index>,
+                          globalPosition: S.Index? = nil)
+        -> MatchResult?
+        where S : StringProtocol,
+        S.Index == String.Index,
+        S.UTF8View.Index == String.Index
+    {
         guard let ranges = Onigmo.search(regex: object.onig,
                                          string: string,
                                          range: range,
@@ -92,7 +97,13 @@ public struct Regex {
         return MatchResult(ranges: ranges)
     }
     
-    public func replace(string: String, replacer: (Regex.MatchResult) throws -> String) rethrows -> String {
+    public func replace<S>(string: S,
+                           replacer: (Regex.MatchResult) throws -> String)
+        rethrows -> String
+        where S : StringProtocol,
+        S.Index == String.Index,
+        S.UTF8View.Index == String.Index
+    {
         var result = ""
         var pos = string.startIndex
         var globalPosition: String.Index? = nil
