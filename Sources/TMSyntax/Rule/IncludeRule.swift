@@ -19,12 +19,14 @@ public final class IncludeRule : Rule {
         return .include(self)
     }
     
-    public func resolve() -> Rule? {
+    public func resolve(base: Grammar) -> Rule? {
         switch target {
         case .repository(let name):
             return self.rule(with: name)
         case .self:
             return self.grammar?.rule
+        case .base:
+            return base.rule
         case .language(let scope, let name):
             guard let grammar = self.grammarRepository?[scope] else {
                 return nil

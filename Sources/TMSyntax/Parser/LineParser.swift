@@ -191,7 +191,8 @@ internal final class LineParser {
         
         for rule in state.patterns {
             plans += collectEnterMatchPlans(rulePosition: .none,
-                                            rule: rule)
+                                            rule: rule,
+                                            base: grammar)
         }
         
         if case .beginEndContent(let begin) = state.phase {
@@ -214,14 +215,18 @@ internal final class LineParser {
     }
     
     private func collectEnterMatchPlans(rulePosition: MatchRulePosition,
-                                        rule: Rule) -> [MatchPlan] {
+                                        rule: Rule,
+                                        base: Grammar)
+        -> [MatchPlan]
+    {
         switch rule.switcher {
         case .include(let rule):
-            guard let target = rule.resolve() else {
+            guard let target = rule.resolve(base: base) else {
                 return []
             }
             return collectEnterMatchPlans(rulePosition: rulePosition,
-                                          rule: target)
+                                          rule: target,
+                                          base: base)
         case .match(let rule):
             return [MatchPlan.createMatchRule(rulePosition: rulePosition,
                                               rule: rule)]
@@ -229,7 +234,8 @@ internal final class LineParser {
             var plans: [MatchPlan] = []
             for rule in rule.patterns {
                 plans += collectEnterMatchPlans(rulePosition: rulePosition,
-                                                rule: rule)
+                                                rule: rule,
+                                                base: base)
             }
             return plans
         case .beginEnd(let rule):
@@ -256,7 +262,8 @@ internal final class LineParser {
             }
             
             plans += collectEnterMatchPlans(rulePosition: result.position,
-                                            rule: injection.rule)
+                                            rule: injection.rule,
+                                            base: grammar)
         }
         
         return plans

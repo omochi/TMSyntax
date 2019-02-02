@@ -6,6 +6,7 @@ import enum FineJSON.DecodingError
 public enum IncludeTarget : CustomStringConvertible, Decodable, CopyInitializable {
     case repository(String)
     case `self`
+    case base
     case language(ScopeName, String?)
     
     public var stringValue: String {
@@ -13,6 +14,7 @@ public enum IncludeTarget : CustomStringConvertible, Decodable, CopyInitializabl
             switch self {
             case .repository(let name): return "#\(name)"
             case .self: return "$self"
+            case .base: return "$base"
             case .language(let lang, let name):
                 var s: String = "\(lang)"
                 if let name = name {
@@ -47,8 +49,10 @@ public enum IncludeTarget : CustomStringConvertible, Decodable, CopyInitializabl
             let start = string.index(after: string.startIndex)
             let str = String(string[start...])
             
-            if str == "self" || str == "base" {
+            if str == "self" {
                 self = .self
+            } else if str == "base" {
+                self = .base
             } else {
                 return nil
             }
