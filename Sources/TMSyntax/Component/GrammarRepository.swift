@@ -11,10 +11,12 @@ public final class GrammarRepository {
 
     public var injectionScopes: [ScopeName]
     
-    public func loadGrammar(path: URL) throws {
+    @discardableResult
+    public func loadGrammar(path: URL) throws -> Grammar {
         let grammar = try Grammar(contentsOf: path)
         self.dictionary[grammar.scopeName] = grammar
         grammar.repository = self
+        return grammar
     }
     
     public var entries: [(ScopeName, Grammar)] {

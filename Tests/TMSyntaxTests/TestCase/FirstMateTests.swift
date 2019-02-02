@@ -91,8 +91,8 @@ class FirstMateTests: XCTestCase {
     func test51() throws { try test(id: 51) }
     func test53() throws { try test(id: 53) }
     func test54() throws { try test(id: 54) }
-    func _test55() throws { try test(id: 55) }
-    func _test56() throws { try test(id: 56) }
+    func test55() throws { try test(id: 55) }
+    func test56() throws { try test(id: 56) }
     func _test57() throws { try test(id: 57) }
     func _test58() throws { try test(id: 58) }
     func _test61() throws { try test(id: 61) }
@@ -131,7 +131,8 @@ class FirstMateTests: XCTestCase {
                 return grammarRepository[ScopeName(name)]!
             }
             if let path = def.grammarPath {
-                return try Grammar(contentsOf: dir.appendingPathComponent(path))
+                return try grammarRepository
+                    .loadGrammar(path: dir.appendingPathComponent(path))
             }
             fatalError("unsupported")
         }
