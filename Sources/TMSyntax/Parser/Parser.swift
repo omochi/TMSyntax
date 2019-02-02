@@ -92,6 +92,7 @@ public final class Parser {
     public func parseLine() throws -> [Token] {
         let parser = LineParser(line: currentLine!,
                                 lineIndex: currentLineIndex,
+                                lineCount: lines.count,
                                 stateStack: stateStack,
                                 grammar: grammar,
                                 isTraceEnabled: isTraceEnabled)

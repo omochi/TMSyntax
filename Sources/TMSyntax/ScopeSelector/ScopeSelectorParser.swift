@@ -147,7 +147,8 @@ public final class ScopeSelectorParser {
     
     private func _readToken() -> Token {
         guard let match = tokenRegex.search(string: source,
-                                            range: position..<source.endIndex) else
+                                            range: position..<source.endIndex,
+                                            options: []) else
         {
             return .end
         }

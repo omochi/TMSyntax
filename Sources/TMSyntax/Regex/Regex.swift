@@ -50,6 +50,30 @@ public struct Regex {
         }
     }
     
+    public struct SearchOptions : OptionSet {
+        public var rawValue: UInt32
+        
+        public init(rawValue: UInt32) {
+            self.rawValue = rawValue
+        }
+        
+        public static var notBeginOfLine: SearchOptions {
+            return SearchOptions(rawValue: ONIG_OPTION_NOTBOL)
+        }
+        
+        public static var notEndOfLine: SearchOptions {
+            return SearchOptions(rawValue: ONIG_OPTION_NOTEOL)
+        }
+        
+        public static var notBeginOfString: SearchOptions {
+            return SearchOptions(rawValue: ONIG_OPTION_NOTBOS)
+        }
+        
+        public static var notEndOfString: SearchOptions {
+            return SearchOptions(rawValue: ONIG_OPTION_NOTEOS)
+        }
+    }
+    
     public struct MatchResult {
         public var ranges: [Range<String.Index>?]
         
@@ -79,21 +103,19 @@ public struct Regex {
     private let object: Object
     
     public func search<S>(string: S,
-                          stringRange: Range<S.Index>? = nil,
                           range: Range<S.Index>,
-                          globalPosition: S.Index? = nil)
+                          globalPosition: S.Index? = nil,
+                          options: SearchOptions)
         -> MatchResult?
         where S : StringProtocol,
         S.Index == String.Index,
         S.UTF8View.Index == S.Index
     {
-        let stringRange = stringRange ?? (string.startIndex..<string.endIndex)
-        
         guard let ranges = Onigmo.search(regex: object.onig,
                                          string: string,
-                                         stringRange: stringRange,
                                          searchRange: range,
-                                         globalPosition: globalPosition) else
+                                         globalPosition: globalPosition,
+                                         options: options.rawValue) else
         {
             return nil
         }
@@ -113,9 +135,9 @@ public struct Regex {
         var globalPosition: String.Index? = nil
         while true {
             guard let match = search(string: string,
-                                     stringRange: string.startIndex..<string.endIndex,
                                      range: pos..<string.endIndex,
-                                     globalPosition: globalPosition) else {
+                                     globalPosition: globalPosition,
+                                     options: []) else {
                 break
             }
             

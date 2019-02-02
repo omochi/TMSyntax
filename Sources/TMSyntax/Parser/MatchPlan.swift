@@ -22,20 +22,20 @@ public struct MatchPlan : CustomStringConvertible {
         }
     }
 
-    public var position: MatchRulePosition
+    public var rulePosition: MatchRulePosition
     public var pattern: Pattern
     
-    public init(position: MatchRulePosition,
+    public init(rulePosition: MatchRulePosition,
                 pattern: Pattern)
     {
         self.pattern = pattern
-        self.position = position
+        self.rulePosition = rulePosition
     }
     
     public var description: String {
         var d = pattern.description
         
-        switch position {
+        switch rulePosition {
         case .none: break
         case .left: d = "L:" + d
         case .right: d = "R:" + d
@@ -44,32 +44,32 @@ public struct MatchPlan : CustomStringConvertible {
         return d
     }
     
-    public static func createMatchRule(position: MatchRulePosition,
+    public static func createMatchRule(rulePosition: MatchRulePosition,
                                        rule: MatchRule) -> MatchPlan
     {
-        return MatchPlan(position: position, pattern: .match(rule))
+        return MatchPlan(rulePosition: rulePosition, pattern: .match(rule))
     }
     
-    public static func createBeginRule(position: MatchRulePosition,
+    public static func createBeginRule(rulePosition: MatchRulePosition,
                                        rule: BeginEndRule) -> MatchPlan
     {
-        return MatchPlan(position: position, pattern: .beginEnd(rule))
+        return MatchPlan(rulePosition: rulePosition, pattern: .beginEnd(rule))
     }
     
-    public static func createBeginRule(position: MatchRulePosition,
+    public static func createBeginRule(rulePosition: MatchRulePosition,
                                        rule: BeginWhileRule) -> MatchPlan
     {
-        return MatchPlan(position: position, pattern: .beginWhile(rule))
+        return MatchPlan(rulePosition: rulePosition, pattern: .beginWhile(rule))
     }
     
     public static func createEndPattern(pattern: RegexPattern,
                                         beginMatchResult: Regex.MatchResult?,
                                         beginLineIndex: Int?) -> MatchPlan
     {
-        return MatchPlan(position: .none,
-                          pattern: .endPattern(pattern: pattern,
-                                               beginMatchResult: beginMatchResult,
-                                               beginLineIndex: beginLineIndex))
+        return MatchPlan(rulePosition: .none,
+                         pattern: .endPattern(pattern: pattern,
+                                              beginMatchResult: beginMatchResult,
+                                              beginLineIndex: beginLineIndex))
     }
 }
 
