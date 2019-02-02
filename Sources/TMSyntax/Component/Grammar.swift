@@ -5,22 +5,22 @@ import OrderedDictionary
 
 public final class Grammar {
     public enum Error : LocalizedError, CustomStringConvertible {
-        case noName
+        case noName(SourceLocation?)
         
         public var errorDescription: String? { return description }
         
         public var description: String {
             switch self {
-            case .noName: return "no name"
+            case .noName(let loc):
+                return ["no name", loc.map { "at \($0)" }]
+                    .compact().joined(separator: " ")
             }
         }
     }
     
     public let name: String
-    public let rule: ScopeRule
-    public var scopeName: ScopeName {
-        return rule.scopeName!
-    }
+    public let rule: HubRule
+    public let scopeName: ScopeName
     public let injections: [RuleInjection]
     public let exportedInjection: RuleInjection?
     public weak var repository: GrammarRepository?
@@ -51,7 +51,7 @@ public final class Grammar {
         try self.init(from: json, path: path)
     }
  
-    private init(from json: JSON, path: URL?) throws {
+    private convenience init(from json: JSON, path: URL?) throws {
         func _name() throws -> String {
             if let name = json.name {
                 return name
@@ -63,10 +63,10 @@ public final class Grammar {
                     return name
                 }
             }
-            throw Error.noName
+            throw Error.noName(json.sourceLocation)
         }
         
-        self.name = try _name()
+        let name = try _name()
 
         var injections: [RuleInjection] = []
         
@@ -77,19 +77,10 @@ public final class Grammar {
             }
         }
         
-        self.injections = injections
-        
-        let rule = ScopeRule(sourceLocation: json.sourceLocation,
-                             begin: nil,
-                             beginCaptures: nil,
-                             end: nil,
-                             endCaptures: nil,
-                             contentName: nil,
-                             applyEndPatternLast: false,
-                             patterns: json.patterns ?? [],
-                             repository: json.repository,
-                             scopeName: json.scopeName)
-        self.rule = rule
+        let scopeName = json.scopeName
+        let rule = HubRule(sourceLocation: json.sourceLocation,
+                           patterns: json.patterns ?? [],
+                           repository: json.repository)
         
         func _exportedInjection() throws -> RuleInjection? {
             guard let source = json.injectionSelector else {
@@ -103,7 +94,26 @@ public final class Grammar {
                                  rule: rule)
         }
         
-        self.exportedInjection = try _exportedInjection()
+        let exportedInjection = try _exportedInjection()
+        
+        self.init(name: name,
+                  rule: rule,
+                  scopeName: scopeName,
+                  injections: injections,
+                  exportedInjection: exportedInjection)
+    }
+    
+    private init(name: String,
+                 rule: HubRule,
+                 scopeName: ScopeName,
+                 injections: [RuleInjection],
+                 exportedInjection: RuleInjection?)
+    {
+        self.name = name
+        self.rule = rule
+        self.scopeName = scopeName
+        self.injections = injections
+        self.exportedInjection = exportedInjection
         
         rule.name = "root"
         rule.setUpRootRule(grammar: self)

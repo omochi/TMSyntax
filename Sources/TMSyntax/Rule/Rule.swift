@@ -12,25 +12,22 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
     internal static let invalidString: String = String(String.UnicodeScalarView([invalidUnicode]))
     
     public enum Switcher {
-        case scope(ScopeRule)
+        case hub(HubRule)
+        case beginEnd(BeginEndRule)
+        case beginWhile(BeginWhileRule)
         case match(MatchRule)
         case include(IncludeRule)
     }
     
     public var switcher: Switcher {
-        switch self {
-        case let r as ScopeRule: return .scope(r)
-        case let r as MatchRule: return .match(r)
-        case let r as IncludeRule: return .include(r)
-        default: fatalError("invalid subtype")
-        }
+        fatalError("unimplemented")
     }
-    
-    public var scopeRule: ScopeRule? { return self as? ScopeRule }
-    
+        
     public var name: String?
     public weak var parent: Rule?
-    
+    private weak var _grammar: Grammar?
+    public let sourceLocation: SourceLocation?
+
     public var grammar: Grammar? {
         var ruleOrNone: Rule? = self
         while let rule = ruleOrNone {
@@ -41,16 +38,12 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
         }
         return nil
     }
-    private weak var _grammar: Grammar?
     
     public var grammarRepository: GrammarRepository? {
         return grammar?.repository
     }
-    
+
     public var repository: RuleRepository? { return nil }
-    public var scopeName: ScopeName? { return nil }
-    
-    public let sourceLocation: SourceLocation?
     
     public init(sourceLocation: SourceLocation?) {
         self.sourceLocation = sourceLocation
@@ -61,32 +54,30 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
     }
     
     public var description: String {
-        var d = ""
+        var parts: [String?] = []
         
         if let name = name {
-            d += "[\(name)] "
+            parts.append("[\(name)]")
         } else {
-            d += "[--] "
+            parts.append("[--]")
         }
         
         switch switcher {
+        case .hub(_):
+            parts.append("hub rule")
         case .include(let rule):
-            d += "include rule (\(rule.target))"
+            parts.append("include rule (\(rule.target))")
         case .match(let rule):
-            d += "match rule \(rule.pattern)"
-        case .scope(let rule):
-            if let begin = rule.begin {
-                d += "begin end rule \(begin)"
-            } else {
-                d += "scope rule"
-            }
+            parts.append("match rule \(rule.pattern)")
+        case .beginEnd(let rule):
+            parts.append("begin end rule \(rule.begin)")
+        case .beginWhile(let rule):
+            parts.append("begin while rule \(rule.begin)")
         }
         
-        if let loc = sourceLocation {
-            d += " at \(loc)"
-        }
+        parts.append(sourceLocation.map { "at \($0)" })
         
-        return d
+        return parts.compact().joined(separator: " ")
     }
 
     public required convenience init(from decoder: Decoder) throws {
@@ -105,54 +96,5 @@ public class Rule : CopyInitializable, Decodable, CustomStringConvertible {
         return nil
     }
     
-    public func resolveScopeName(line: String,
-                                 matchResult: Regex.MatchResult)
-        throws -> ScopeName?
-    {
-        guard let name = self.scopeName else {
-            return nil
-        }
-        return try _resolveName(name: name,
-                                line: line, matchResult: matchResult)
-    }
-
-    internal func _resolveName(name: ScopeName,
-                               line: String,
-                               matchResult: Regex.MatchResult) throws -> ScopeName
-    {
-        func replacer(part: String, matchResult m: Regex.MatchResult) throws -> String {
-            guard let captureIndexRange = m[1] ?? m[2],
-                let captureIndex = Int(part[captureIndexRange]),
-                let captureRange = matchResult[captureIndex] else
-            {
-                throw Parser.Error.invalidScopeName(name)
-            }
-            
-            var str = String(line[captureRange])
-            
-            if let modifierRange = m[3] {
-                let modifier = part[modifierRange]
-                
-                switch modifier {
-                case "upcase":
-                    str = str.uppercased()
-                case "downcase":
-                    str = str.lowercased()
-                default:
-                    throw Parser.Error.invalidScopeName(name)
-                }
-            }
-            
-            return str
-        }
-        
-        let resolvedParts: [String] = try name.parts.map { (part) in
-            try Rule.scopeNameBackReferenceRegex.replace(string: part) { (matchResult) in
-                try replacer(part: part, matchResult: matchResult)
-            }
-        }
-        
-        return ScopeName(parts: resolvedParts)
-    }
 }
 

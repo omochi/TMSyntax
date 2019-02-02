@@ -9,12 +9,25 @@ public struct ParserState {
         case captureAnchor
     }
     
+    public struct WhileCondition {
+        public var rule: BeginWhileRule
+        public var condition: RegexPattern
+        
+        public init(rule: BeginWhileRule,
+                    condition: RegexPattern)
+        {
+            self.rule = rule
+            self.condition = condition
+        }
+    }
+    
     public var rule: Rule?
     public var phase: Phase
     public var patterns: [Rule]
     public var captureAnchors: [CaptureAnchor]
     public var scopePath: ScopePath
     public var contentName: ScopeName?
+    public var whileConditions: [WhileCondition]
     public var beginMatchResult: Regex.MatchResult?
     public var beginLineIndex: Int?
     public var endPattern: RegexPattern?
@@ -26,6 +39,7 @@ public struct ParserState {
                 captureAnchors: [CaptureAnchor],
                 scopePath: ScopePath,
                 contentName: ScopeName?,
+                whileConditions: [WhileCondition],
                 beginMatchResult: Regex.MatchResult?,
                 beginLineIndex: Int?,
                 endPattern: RegexPattern?,
@@ -37,13 +51,14 @@ public struct ParserState {
         self.captureAnchors = captureAnchors
         self.scopePath = scopePath
         self.contentName = contentName
+        self.whileConditions = whileConditions
         self.beginMatchResult = beginMatchResult
         self.beginLineIndex = beginLineIndex
         self.endPattern = endPattern
         self.endPosition = endPosition
     }
     
-    public var scopeRule: ScopeRule? {
-        return rule as? ScopeRule
+    public var scopeRule: BeginEndRule? {
+        return rule as? BeginEndRule
     }
 }

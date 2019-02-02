@@ -1,28 +1,31 @@
 public struct MatchPlan : CustomStringConvertible {
     public enum Pattern {
         case match(MatchRule)
-        case begin(ScopeRule)
+        case beginEnd(BeginEndRule)
         case endPattern(
             pattern: RegexPattern,
             beginMatchResult: Regex.MatchResult?,
             beginLineIndex: Int?)
+        case beginWhile(BeginWhileRule)
         
         public var description: String {
             switch self {
             case .match(let rule):
-                return "test: \(rule)" as String
-            case .begin(let rule):
-                return "begin test: \(rule)" as String
+                return "test: \(rule)"
+            case .beginEnd(let rule):
+                return "begin test: \(rule)"
             case .endPattern(let pattern, _, _):
-                return "end test: \(pattern)" as String
+                return "end test: \(pattern)"
+            case .beginWhile(let rule):
+                return "begin test: \(rule)"
             }
         }
     }
 
-    public var position: ScopeMatchPosition
+    public var position: MatchRulePosition
     public var pattern: Pattern
     
-    public init(position: ScopeMatchPosition,
+    public init(position: MatchRulePosition,
                 pattern: Pattern)
     {
         self.pattern = pattern
@@ -41,17 +44,22 @@ public struct MatchPlan : CustomStringConvertible {
         return d
     }
     
-    public static func createMatchRule(position: ScopeMatchPosition,
+    public static func createMatchRule(position: MatchRulePosition,
                                        rule: MatchRule) -> MatchPlan
     {
         return MatchPlan(position: position, pattern: .match(rule))
     }
     
-    public static func createBeginRule(position: ScopeMatchPosition,
-                                       rule: ScopeRule) -> MatchPlan
+    public static func createBeginRule(position: MatchRulePosition,
+                                       rule: BeginEndRule) -> MatchPlan
     {
-        precondition(rule.begin != nil)
-        return MatchPlan(position: position, pattern: .begin(rule))
+        return MatchPlan(position: position, pattern: .beginEnd(rule))
+    }
+    
+    public static func createBeginRule(position: MatchRulePosition,
+                                       rule: BeginWhileRule) -> MatchPlan
+    {
+        return MatchPlan(position: position, pattern: .beginWhile(rule))
     }
     
     public static func createEndPattern(pattern: RegexPattern,

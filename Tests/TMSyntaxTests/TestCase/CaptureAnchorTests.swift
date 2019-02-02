@@ -25,7 +25,7 @@ class CaptureAnchorTests: XCTestCase {
         }
     }
     
-    func test1() {
+    func test1() throws {
         let s = "abcdefghijk"
         
         // ((ab)c(de(f(g)))(h(ij)k))
@@ -40,15 +40,16 @@ class CaptureAnchorTests: XCTestCase {
         ]
         
         let attr = CaptureAttribute(sourceLocation: nil, name: ScopeName("a"), patterns: [])
-        let anchors = CaptureAnchor.build(matchResult: Regex.MatchResult(ranges: ranges),
-                                          captures: CaptureAttributes(dictionary: OrderedDictionary([
-                                            "1": attr,
-                                            "2": attr,
-                                            "3": attr,
-                                            "4": attr,
-                                            "5": attr,
-                                            "6": attr,
-                                            ])))
+        let anchors = try CaptureAnchor.build(matchResult: Regex.MatchResult(ranges: ranges),
+                                              captures: CaptureAttributes(dictionary: OrderedDictionary([
+                                                "1": attr,
+                                                "2": attr,
+                                                "3": attr,
+                                                "4": attr,
+                                                "5": attr,
+                                                "6": attr,
+                                                ])),
+                                              line: "")
         func map(_ anchor: CaptureAnchor) -> StringTree {
             return StringTree(String(s[anchor.range]),
                               anchor.children.map { map($0) })

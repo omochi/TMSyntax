@@ -1,11 +1,11 @@
 import Foundation
 
 public struct RegexMatchPlan {
-    public var position: ScopeMatchPosition
+    public var position: MatchRulePosition
     public var pattern: RegexPattern
     public var globalPosition: String.Index?
     
-    public init(position: ScopeMatchPosition,
+    public init(position: MatchRulePosition,
                 pattern: RegexPattern,
                 globalPosition: String.Index?)
     {

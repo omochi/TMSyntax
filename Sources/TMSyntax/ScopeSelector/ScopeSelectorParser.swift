@@ -52,7 +52,7 @@ public final class ScopeSelectorParser {
                 break
             }
             
-            var position: ScopeMatchPosition = .none
+            var position: MatchRulePosition = .none
             if token == .leftPosition {
                 position = .left
                 readToken()

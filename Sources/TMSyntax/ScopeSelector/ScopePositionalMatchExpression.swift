@@ -1,10 +1,10 @@
 import Foundation
 
 public final class ScopePositionalMatchExpression : CustomStringConvertible {
-    public let position: ScopeMatchPosition
+    public let position: MatchRulePosition
     public let expression: ScopeMatchExpression
     
-    public init(position: ScopeMatchPosition,
+    public init(position: MatchRulePosition,
                 expression: ScopeMatchExpression)
     {
         self.position = position

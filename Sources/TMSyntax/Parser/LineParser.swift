@@ -193,7 +193,7 @@ internal final class LineParser {
         return plans
     }
     
-    private func collectEnterMatchPlans(position: ScopeMatchPosition,
+    private func collectEnterMatchPlans(position: MatchRulePosition,
                                         rule: Rule) -> [MatchPlan] {
         switch rule.switcher {
         case .include(let rule):
@@ -205,18 +205,19 @@ internal final class LineParser {
         case .match(let rule):
             return [MatchPlan.createMatchRule(position: position,
                                               rule: rule)]
-        case .scope(let rule):
-            if let _ = rule.begin {
-                return [MatchPlan.createBeginRule(position: position,
-                                                  rule: rule)]
-            } else {
-                var plans: [MatchPlan] = []
-                for rule in rule.patterns {
-                    plans += collectEnterMatchPlans(position: position,
-                                                    rule: rule)
-                }
-                return plans
+        case .hub(let rule):
+            var plans: [MatchPlan] = []
+            for rule in rule.patterns {
+                plans += collectEnterMatchPlans(position: position,
+                                                rule: rule)
             }
+            return plans
+        case .beginEnd(let rule):
+            return [MatchPlan.createBeginRule(position: position,
+                                              rule: rule)]
+        case .beginWhile(let rule):
+            return [MatchPlan.createBeginRule(position: position,
+                                              rule: rule)]
         }
     }
     
@@ -247,10 +248,13 @@ internal final class LineParser {
             return RegexMatchPlan(position: plan.position,
                                   pattern: rule.pattern,
                                   globalPosition: nil)
-        case .begin(let rule):
-            let begin = rule.begin!
+        case .beginEnd(let rule):
             return RegexMatchPlan(position: plan.position,
-                                  pattern: begin,
+                                  pattern: rule.begin,
+                                  globalPosition: nil)
+        case .beginWhile(let rule):
+            return RegexMatchPlan(position: plan.position,
+                                  pattern: rule.begin,
                                   globalPosition: nil)
         case .endPattern(pattern: let pattern,
                          beginMatchResult: let beginMatchResult,
@@ -283,7 +287,7 @@ internal final class LineParser {
             }
         }
         
-        public var position: ScopeMatchPosition {
+        public var position: MatchRulePosition {
             switch self {
             case .regex(plan: let plan, matchResult: _): return plan.position
             case .anchor: return .none
@@ -354,7 +358,7 @@ internal final class LineParser {
         
         typealias Record = (
             index: Int,
-            position: ScopeMatchPosition,
+            position: MatchRulePosition,
             result: Regex.MatchResult)
         
         func cmpRecordStrPos(a: Record, b: Record) -> Bool {
@@ -417,14 +421,16 @@ internal final class LineParser {
                 scopePath.push(scope)
             }
             
-            let anchor = buildCaptureAnchor(matchResult: matchResult,
-                                            captures: rule.captures)
+            let anchor = try buildCaptureAnchor(matchResult: matchResult,
+                                                captures: rule.captures,
+                                                line: line)
             let newState = ParserState(rule: rule,
                                        phase: .match,
                                        patterns: [],
                                        captureAnchors: anchor.mapToArray { $0 },
                                        scopePath: scopePath,
                                        contentName: nil,
+                                       whileConditions: state.whileConditions,
                                        beginMatchResult: nil,
                                        beginLineIndex: nil,
                                        endPattern: nil,
@@ -433,10 +439,9 @@ internal final class LineParser {
             pushState(newState)
             
             advance(to: matchResult[].lowerBound)
-        case .begin(let rule):
+        case .beginEnd(let rule):
             if position == matchResult[].upperBound,
-                case .scope(let prevRule)? = state.rule?.switcher,
-                rule === prevRule
+                state.rule === rule
             {
                 trace("infinite loop detected. no advance recursive begin rule.")
                 
@@ -446,7 +451,6 @@ internal final class LineParser {
                 return
             }
             
-            
             var scopePath = state.scopePath
             if let scopeName = try rule.resolveScopeName(line: line, matchResult: matchResult) {
                 scopePath.push(scopeName)
@@ -454,8 +458,9 @@ internal final class LineParser {
             
             let contentName = try rule.resolveContentName(line: line, matchResult: matchResult)
             
-            let anchor = buildCaptureAnchor(matchResult: matchResult,
-                                             captures: rule.beginCaptures)
+            let anchor = try buildCaptureAnchor(matchResult: matchResult,
+                                                captures: rule.beginCaptures,
+                                                line: line)
             
             let endPattern = try rule.resolveEnd(line: line, matchResult: matchResult)
             
@@ -465,6 +470,7 @@ internal final class LineParser {
                                        captureAnchors: anchor.mapToArray { $0 },
                                        scopePath: scopePath,
                                        contentName: contentName,
+                                       whileConditions: state.whileConditions,
                                        beginMatchResult: matchResult,
                                        beginLineIndex: lineIndex,
                                        endPattern: endPattern,
@@ -484,12 +490,59 @@ internal final class LineParser {
                 state.scopePath.pop()
             }
             
-            let anchors = buildCaptureAnchor(matchResult: matchResult,
-                                             captures: rule.endCaptures)
+            let anchors = try buildCaptureAnchor(matchResult: matchResult,
+                                                 captures: rule.endCaptures,
+                                                 line: line)
             
             state.phase = ParserState.Phase.scopeEnd
             state.endPosition = matchResult[].upperBound
             state.captureAnchors = anchors.mapToArray { $0 }
+            
+            advance(to: matchResult[].lowerBound)
+        case .beginWhile(let rule):
+            if position == matchResult[].upperBound,
+                state.rule === rule
+            {
+                trace("infinite loop detected. no advance recursive begin rule.")
+                
+                advance(to: line.endIndex)
+                buildToken(to: position)
+                popState()
+                return
+            }
+            
+            var scopePath = state.scopePath
+            if let scopeName = try rule.resolveScopeName(line: line, matchResult: matchResult) {
+                scopePath.push(scopeName)
+            }
+            
+            let contentName = try rule.resolveContentName(line: line, matchResult: matchResult)
+            
+            let anchor = try buildCaptureAnchor(matchResult: matchResult,
+                                                captures: rule.beginCaptures,
+                                                line: line)
+            
+            let whilePattern = try rule.resolveWhile(line: line, matchResult: matchResult)
+            
+            var whileConditions = state.whileConditions
+            
+            let cond = ParserState.WhileCondition(rule: rule,
+                                                  condition: whilePattern)
+            whileConditions.append(cond)
+            
+            let newState = ParserState(rule: rule,
+                                       phase: .scopeBegin,
+                                       patterns: rule.patterns,
+                                       captureAnchors: anchor.mapToArray { $0 },
+                                       scopePath: scopePath,
+                                       contentName: contentName,
+                                       whileConditions: whileConditions,
+                                       beginMatchResult: matchResult,
+                                       beginLineIndex: lineIndex,
+                                       endPattern: nil,
+                                       endPosition: matchResult[].upperBound)
+            trace("push state: scopeBegin \(positionToIntForDebug(position))")
+            pushState(newState)
             
             advance(to: matchResult[].lowerBound)
         }
@@ -507,6 +560,7 @@ internal final class LineParser {
                                    captureAnchors: anchor.children,
                                    scopePath: scopePath,
                                    contentName: nil,
+                                   whileConditions: state.whileConditions,
                                    beginMatchResult: nil,
                                    beginLineIndex: nil,
                                    endPattern: nil,
@@ -537,10 +591,13 @@ internal final class LineParser {
     }
     
     private func buildCaptureAnchor(matchResult: Regex.MatchResult,
-                                    captures: CaptureAttributes?) -> CaptureAnchor?
+                                    captures: CaptureAttributes?,
+                                    line: String)
+        throws -> CaptureAnchor?
     {
-        let anchors = CaptureAnchor.build(matchResult: matchResult,
-                                          captures: captures)
+        let anchors = try CaptureAnchor.build(matchResult: matchResult,
+                                              captures: captures,
+                                              line: line)
         return anchors.first
     }
     

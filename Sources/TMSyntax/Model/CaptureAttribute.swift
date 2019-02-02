@@ -27,4 +27,12 @@ public struct CaptureAttribute : Decodable {
         self.name = name
         self.patterns = patterns
     }
+    
+    public func resolveName(line: String,
+                            matchResult: Regex.MatchResult) throws -> ScopeName?
+    {
+        return try BeginEndRule.resolveNameOptional(name: name,
+                                                    line: line,
+                                                    matchResult: matchResult)
+    }
 }

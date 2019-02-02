@@ -15,6 +15,10 @@ public final class IncludeRule : Rule {
         fatalError()
     }
     
+    public override var switcher: Rule.Switcher {
+        return .include(self)
+    }
+    
     public func resolve() -> Rule? {
         switch target {
         case .repository(let name):

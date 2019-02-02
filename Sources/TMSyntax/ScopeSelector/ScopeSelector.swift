@@ -1,8 +1,8 @@
 public final class ScopeSelector : CustomStringConvertible {
     public struct MatchResult : Equatable {
-        public var position: ScopeMatchPosition
+        public var position: MatchRulePosition
         
-        public init(position: ScopeMatchPosition) {
+        public init(position: MatchRulePosition) {
             self.position = position
         }
     }

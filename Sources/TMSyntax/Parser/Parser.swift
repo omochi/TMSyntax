@@ -1,4 +1,5 @@
 import Foundation
+import FineJSON
 
 internal extension Unicode.Scalar {
     static let cr = Unicode.Scalar(UInt8(0x0D))
@@ -21,13 +22,16 @@ public final class Parser {
     public enum Error : LocalizedError, CustomStringConvertible {
         case invalidScopeName(ScopeName)
         case invalidRegexPattern(RegexPattern)
-        case noEndPattern(ScopeRule)
+        case noEndKindPattern(SourceLocation?)
         
         public var description: String {
             switch self {
             case .invalidScopeName(let name): return "invalid scope name: \(name)"
             case .invalidRegexPattern(let pattern): return "invalid regex pattern: \(pattern)"
-            case .noEndPattern(let rule): return "no end pattern: \(rule)"
+            case .noEndKindPattern(let loc):
+                var d = "no end kind (end, while) pattern"
+                d.appendIfPresent(loc.map { " at \($0)" })
+                return d
             }
         }
         
@@ -58,7 +62,8 @@ public final class Parser {
                                             patterns: rule.patterns,
                                             captureAnchors: [],
                                             scopePath: ScopePath([grammar.scopeName]),
-                                            contentName: rule.contentName,
+                                            contentName: nil,
+                                            whileConditions: [],
                                             beginMatchResult: nil,
                                             beginLineIndex: nil,
                                             endPattern: nil,

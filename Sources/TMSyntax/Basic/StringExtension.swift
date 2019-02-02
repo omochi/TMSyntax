@@ -73,4 +73,11 @@ extension String {
         }
         return index
     }
+    
+    internal mutating func appendIfPresent(_ str: String?) {
+        guard let str = str else {
+            return
+        }
+        self.append(str)
+    }
 }

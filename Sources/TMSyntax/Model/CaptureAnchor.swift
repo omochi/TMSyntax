@@ -7,9 +7,19 @@ public final class CaptureAnchor {
     
     public init(attribute: CaptureAttribute?,
                 range: Range<String.Index>,
-                children: [CaptureAnchor])
+                children: [CaptureAnchor],
+                line: String,
+                matchResult: Regex.MatchResult) throws
     {
-        self.attribute = attribute
+        func resolve(attribute: CaptureAttribute) throws -> CaptureAttribute {
+            var attribute = attribute
+            attribute.name = try attribute.resolveName(line: line,
+                                                       matchResult: matchResult)
+            return attribute
+        }
+        
+        self.attribute = try attribute
+            .map { try resolve(attribute: $0) }
         self.range = range
         self.children = children
     }
@@ -39,7 +49,9 @@ public final class CaptureAnchor {
     }
     
     public static func build(matchResult: Regex.MatchResult,
-                             captures: CaptureAttributes?) -> [CaptureAnchor]
+                             captures: CaptureAttributes?,
+                             line: String)
+        throws -> [CaptureAnchor]
     {
         func _attr(_ index: Int) -> CaptureAttribute? {
             guard let captures = captures,
@@ -66,9 +78,11 @@ public final class CaptureAnchor {
             }
             
             guard let top = top else {
-                let anchor = CaptureAnchor(attribute: _attr(index),
-                                           range: range,
-                                           children: [])
+                let anchor = try CaptureAnchor(attribute: _attr(index),
+                                               range: range,
+                                               children: [],
+                                               line: line,
+                                               matchResult: matchResult)
                 roots.append(anchor)
                 stack.append(anchor)
                 index += 1
@@ -76,9 +90,11 @@ public final class CaptureAnchor {
             }
             
             if range.upperBound <= top.range.upperBound {
-                let anchor = CaptureAnchor(attribute: _attr(index),
-                                           range: range,
-                                           children: [])
+                let anchor = try CaptureAnchor(attribute: _attr(index),
+                                               range: range,
+                                               children: [],
+                                               line: line,
+                                               matchResult: matchResult)
                 top.children.append(anchor)
                 stack.append(anchor)
                 index += 1
