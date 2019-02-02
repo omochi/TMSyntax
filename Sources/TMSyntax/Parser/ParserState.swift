@@ -81,7 +81,7 @@ public struct ParserState {
     public var captureAnchors: [CaptureAnchor]
     public var scopePath: ScopePath
     public var whileConditions: [WhileCondition]
-    public var captureEndPosition: String.Index?
+    public var captureRange: Range<String.Index>?
     
     public init(rule: Rule?,
                 phase: Phase,
@@ -89,7 +89,7 @@ public struct ParserState {
                 captureAnchors: [CaptureAnchor],
                 scopePath: ScopePath,
                 whileConditions: [WhileCondition],
-                captureEndPosition: String.Index?)
+                captureRange: Range<String.Index>?)
     {
         self.rule = rule
         self.phase = phase
@@ -97,7 +97,7 @@ public struct ParserState {
         self.captureAnchors = captureAnchors
         self.scopePath = scopePath
         self.whileConditions = whileConditions
-        self.captureEndPosition = captureEndPosition
+        self.captureRange = captureRange
     }
     
     public var scopeRule: BeginEndRule? {

@@ -13,11 +13,4 @@ public struct RegexMatchPlan {
         self.pattern = pattern
         self.globalPosition = globalPosition
     }
-    
-    public func search(string: String, range: Range<String.Index>) throws -> Regex.MatchResult? {
-        let regex = try pattern.compile()
-        return regex.search(string: string,
-                            range: range,
-                            globalPosition: globalPosition)
-    }
 }

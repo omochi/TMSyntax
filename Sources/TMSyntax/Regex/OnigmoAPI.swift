@@ -100,18 +100,23 @@ internal enum Onigmo {
     
     static func search<S>(regex: OnigRegex,
                           string: S,
-                          range: Range<String.Index>,
-                          globalPosition: String.Index?)
-        -> [Range<String.Index>?]?
+                          stringRange: Range<S.Index>,
+                          searchRange: Range<S.Index>,
+                          globalPosition: S.Index?)
+        -> [Range<S.Index>?]?
         where S : StringProtocol,
-        S.Index == String.Index,
-        S.UTF8View.Index == String.Index
+        S.UTF8View.Index == S.Index
     {
         let u8 = string.utf8
         
-        let rangeStartOffset = u8.distance(from: string.startIndex, to: range.lowerBound)
-        let rangeEndOffset = u8.distance(from: string.startIndex, to: range.upperBound)
-        
+        let stringRangeStartOffset = u8.distance(from: string.startIndex, to: stringRange.lowerBound)
+        let stringRangeEndOffset = u8.distance(from: string.startIndex, to: stringRange.upperBound)
+        let searchRangeStartOffset = u8.distance(from: string.startIndex, to: searchRange.lowerBound)
+        let searchRangeEndOffset = u8.distance(from: string.startIndex, to: searchRange.upperBound)
+        let globalPositionOffset = globalPosition.map {
+            u8.distance(from: string.startIndex, to: $0)
+        }
+            
         var regionPointer = onig_region_new()!
         defer {
             onig_region_free(regionPointer, 1)
@@ -119,25 +124,25 @@ internal enum Onigmo {
         
         let options: OnigOptionType = ONIG_OPTION_NONE
         
-        let ranges: [Range<String.Index>?]? = string.withOnigUCharString {
+        let ranges: [Range<S.Index>?]? = string.withOnigUCharString {
             (stringBuffer: UnsafeBufferPointer<OnigUChar>) in
-            let stringStartPointer = stringBuffer.baseAddress!
-            let stringEndPointer = stringStartPointer.advanced(by: stringBuffer.count - 1)
-            let rangeStartPointer = stringStartPointer.advanced(by: rangeStartOffset)
-            let rangeEndPointer = stringStartPointer.advanced(by: rangeEndOffset)
-            
+            let stringBasePointer = stringBuffer.baseAddress!
+            let stringStartPointer = stringBasePointer.advanced(by: stringRangeStartOffset)
+            let stringEndPointer = stringBasePointer.advanced(by: stringRangeEndOffset)
+            let searchRangeStartPointer = stringBasePointer.advanced(by: searchRangeStartOffset)
+            let searchRangeEndPointer = stringBasePointer.advanced(by: searchRangeEndOffset)
+        
             let pos: OnigPosition
             
-            if let globalPosition = globalPosition {
-                let globalPositionOffset = u8.distance(from: string.startIndex, to: globalPosition)
-                let globalPositionPointer = stringStartPointer.advanced(by: globalPositionOffset)
+            if let globalPositionOffset = globalPositionOffset {
+                let globalPositionPointer = stringBasePointer.advanced(by: globalPositionOffset)
                 
                 pos = onig_search_gpos(regex,
                                        stringStartPointer,
                                        stringEndPointer,
                                        globalPositionPointer,
-                                       rangeStartPointer,
-                                       rangeEndPointer,
+                                       searchRangeStartPointer,
+                                       searchRangeEndPointer,
                                        regionPointer,
                                        options)
                 
@@ -145,8 +150,8 @@ internal enum Onigmo {
                 pos = onig_search(regex,
                                   stringStartPointer,
                                   stringEndPointer,
-                                  rangeStartPointer,
-                                  rangeEndPointer,
+                                  searchRangeStartPointer,
+                                  searchRangeEndPointer,
                                   regionPointer,
                                   options)
             }
@@ -155,22 +160,24 @@ internal enum Onigmo {
                 return nil
             }
             
-            return regionToRange(regionPointer, string: string)
+            return regionToRange(regionPointer,
+                                 string: string,
+                                 stringRange: stringRange)
         }
         
         return ranges
     }
     
     static func regionToRange<S>(_ region: UnsafePointer<OnigRegion>,
-                                 string: S)
-        -> [Range<String.Index>?]
+                                 string: S,
+                                 stringRange: Range<S.Index>)
+        -> [Range<S.Index>?]
         where S : StringProtocol,
-        S.Index == String.Index,
-        S.UTF8View.Index == String.Index
+        S.UTF8View.Index == S.Index
     {
         let u8 = string.utf8
         
-        var ranges: [Range<String.Index>?] = []
+        var ranges: [Range<S.Index>?] = []
         
         let num = Int(region.pointee.num_regs)
         var startOffsetPointer = region.pointee.beg!
@@ -182,8 +189,9 @@ internal enum Onigmo {
             if startOffset != ONIG_REGION_NOTPOS &&
                 endOffset != ONIG_REGION_NOTPOS
             {
-                let start = u8.index(string.startIndex, offsetBy: startOffset)
-                let end = u8.index(string.startIndex, offsetBy: endOffset)
+                // resolve string range offset
+                let start = u8.index(stringRange.lowerBound, offsetBy: startOffset)
+                let end = u8.index(stringRange.lowerBound, offsetBy: endOffset)
                 
                 ranges.append(start..<end)
             } else {

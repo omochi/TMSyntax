@@ -63,7 +63,7 @@ public final class Parser {
                                             captureAnchors: [],
                                             scopePath: ScopePath([grammar.scopeName]),
                                             whileConditions: [],
-                                            captureEndPosition: nil))
+                                            captureRange: nil))
     }
     
     public let lines: [String]

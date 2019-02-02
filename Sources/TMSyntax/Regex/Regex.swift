@@ -79,16 +79,20 @@ public struct Regex {
     private let object: Object
     
     public func search<S>(string: S,
+                          stringRange: Range<S.Index>? = nil,
                           range: Range<S.Index>,
                           globalPosition: S.Index? = nil)
         -> MatchResult?
         where S : StringProtocol,
         S.Index == String.Index,
-        S.UTF8View.Index == String.Index
+        S.UTF8View.Index == S.Index
     {
+        let stringRange = stringRange ?? (string.startIndex..<string.endIndex)
+        
         guard let ranges = Onigmo.search(regex: object.onig,
                                          string: string,
-                                         range: range,
+                                         stringRange: stringRange,
+                                         searchRange: range,
                                          globalPosition: globalPosition) else
         {
             return nil
@@ -102,13 +106,14 @@ public struct Regex {
         rethrows -> String
         where S : StringProtocol,
         S.Index == String.Index,
-        S.UTF8View.Index == String.Index
+        S.UTF8View.Index == S.Index
     {
         var result = ""
         var pos = string.startIndex
         var globalPosition: String.Index? = nil
         while true {
             guard let match = search(string: string,
+                                     stringRange: string.startIndex..<string.endIndex,
                                      range: pos..<string.endIndex,
                                      globalPosition: globalPosition) else {
                 break
