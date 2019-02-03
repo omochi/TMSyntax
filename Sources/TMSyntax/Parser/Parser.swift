@@ -57,8 +57,7 @@ public final class Parser {
         
         let rule = grammar.rule
         
-        stateStack.stack.append(ParserState(rule: rule,
-                                            phase: .rootContent,
+        stateStack.stack.append(ParserState(phase: .rootContent,
                                             patterns: rule.patterns,
                                             captureAnchors: [],
                                             scopePath: ScopePath([grammar.scopeName]),

@@ -59,18 +59,21 @@ internal final class LineParser {
         removePastAnchor()
         let searchEnd = self.searchEnd()
         let plans = collectMatchPlans()
-        
-        if isTraceEnabled {
-            trace("--- match plans, position \(positionToIntForDebug(position)) ---")
-            for (index, plan) in plans.enumerated() {
-                trace("[\(index + 1)/\(plans.count)]\(plan)")
-            }
-            trace("------")
-        }
-        
+
         let searchRange = position..<max(searchEnd.position, position)
         
         let mostLeftAnchor = self.mostLeftAnchor()
+        
+        if isTraceEnabled {
+            trace("--- match plans, position \(positionStringForDebug(position)) ---")
+            for (index, plan) in plans.enumerated() {
+                trace("[\(index + 1)/\(plans.count)]\(plan)")
+            }
+            if let anchor = mostLeftAnchor {
+                trace("[anchor] capture[\(anchor.captureIndex)] \(rangeStringForDebug(anchor.range))")
+            }
+            trace("------")
+        }
         
         guard let result = try search(line: line,
                                       lineIndex: lineIndex,
@@ -81,15 +84,15 @@ internal final class LineParser {
         {
             switch searchEnd {
             case .endPosition(let position):
-                buildToken(to: searchRange.upperBound)
                 trace("hit end position")
+                buildToken(to: searchRange.upperBound)
                 processEndPosition(position)
             case .line(let position):
+                trace("hit end of line")
                 let lineNewLinePosition = line.lastNewLineIndex
                 if self.position <= lineNewLinePosition {
                     buildToken(to: lineNewLinePosition, allowEmpty: true)
                 }
-                trace("hit end of line")
                 precondition(state.captureAnchors.isEmpty)
                 advance(to: position)
                 isLineEnd = true
@@ -104,7 +107,7 @@ internal final class LineParser {
             buildToken(to: matchResult[].lowerBound)
             try processMatch(plan: plan, matchResult: matchResult)
         case .anchor(let anchor):
-            trace("hit anchor")
+            trace("hit anchor: capture[\(anchor.captureIndex)] \(rangeStringForDebug(anchor.range))")
             buildToken(to: anchor.range.lowerBound)
             processHitAnchor(anchor)
         }
@@ -195,11 +198,9 @@ internal final class LineParser {
                                             base: grammar)
         }
         
-        if case .beginEndContent(let begin) = state.phase {
-            let endPlan = MatchPlan.createEndPattern(pattern: begin.endPattern,
-                                                     beginMatchResult: begin.matchResult,
-                                                     beginLineIndex: begin.lineIndex)
-            if let yes = state.scopeRule?.applyEndPatternLast, yes {
+        if case .beginEndContent(let beginState) = state.phase {
+            let endPlan = MatchPlan.createEndPattern(state: beginState)
+            if beginState.rule.applyEndPatternLast {
                 plans.append(endPlan)
             } else {
                 plans.insert(endPlan, at: 0)
@@ -282,7 +283,7 @@ internal final class LineParser {
             return RegexMatchPlan(rulePosition: plan.rulePosition,
                                   pattern: rule.pattern,
                                   globalPosition: position)
-        case .beginEnd(let rule):
+        case .beginEndBegin(let rule):
             return RegexMatchPlan(rulePosition: plan.rulePosition,
                                   pattern: rule.begin,
                                   globalPosition: position)
@@ -290,21 +291,17 @@ internal final class LineParser {
             return RegexMatchPlan(rulePosition: plan.rulePosition,
                                   pattern: rule.begin,
                                   globalPosition: position)
-        case .endPattern(pattern: let pattern,
-                         beginMatchResult: let beginMatchResult,
-                         beginLineIndex: let beginLineIndex):
+        case .beginEndEnd(let beginState):
             let globalPosition: String.Index?
             
-            if let beginMatchResult = beginMatchResult,
-                let beginLineIndex = beginLineIndex,
-                lineIndex == beginLineIndex
-            {
-                globalPosition = beginMatchResult[].upperBound
+            if lineIndex == beginState.lineIndex {
+                globalPosition = beginState.matchResult[].upperBound
             } else {
                 globalPosition = nil
             }
+            
             return RegexMatchPlan(rulePosition: plan.rulePosition,
-                                  pattern: pattern,
+                                  pattern: beginState.endPattern,
                                   globalPosition: globalPosition)
         }
     }
@@ -492,6 +489,7 @@ internal final class LineParser {
                 trace("infinite loop detected. no advance match rule.")
                 
                 popStateIfWillNotBeEmpty()
+                
                 advance(to: line.endIndex)
                 buildToken(to: position)
                 return
@@ -504,8 +502,10 @@ internal final class LineParser {
                                                 captures: rule.captures,
                                                 line: line)
             
-            let newState = ParserState(rule: rule,
-                                       phase: .match(ParserState.Match(matchResult: matchResult)),
+            let matchState = ParserState.Match(rule: rule,
+                                               matchResult: matchResult)
+            
+            let newState = ParserState(phase: .match(matchState),
                                        patterns: [],
                                        captureAnchors: anchor.mapToArray { $0 },
                                        scopePath: scopePath,
@@ -515,14 +515,15 @@ internal final class LineParser {
             pushState(newState)
             
             advance(to: matchResult[].lowerBound)
-        case .beginEnd(let rule):
+        case .beginEndBegin(let rule):
             if position == matchResult[].upperBound,
-                state.rule === rule
+                state.phase.rule === rule
             {
                 trace("infinite loop detected. no advance recursive begin rule.")
                 
                 advance(to: line.endIndex)
                 buildToken(to: position)
+                
                 popState()
                 return
             }
@@ -537,31 +538,36 @@ internal final class LineParser {
             
             let endPattern = try rule.resolveEnd(line: line, matchResult: matchResult)
             
-            let beginState = ParserState.BeginEndBegin(matchResult: matchResult,
+            let beginState = ParserState.BeginEndBegin(rule: rule,
+                                                       matchResult: matchResult,
                                                        lineIndex: lineIndex,
                                                        endPattern: endPattern,
                                                        contentName: contentName)
             
-            let newState = ParserState(rule: rule,
-                                       phase: .beginEndBegin(beginState),
+            let newState = ParserState(phase: .beginEndBegin(beginState),
                                        patterns: rule.patterns,
                                        captureAnchors: anchor.mapToArray { $0 },
                                        scopePath: scopePath,
                                        whileConditions: state.whileConditions,
                                        captureRange: state.captureRange)
-            trace("push state: beginEndBegin \(positionToIntForDebug(position))")
+            trace("push state: beginEndBegin \(positionStringForDebug(position))")
             pushState(newState)
             
             advance(to: matchResult[].lowerBound)
-        case .endPattern:
-            guard case .beginEndContent(let beginState) = state.phase else {
-                fatalError()
-            }
-            guard let rule = state.scopeRule else {
-                fatalError()
+        case .beginEndEnd(let beginState):
+            if lineIndex == beginState.lineIndex,
+                beginState.matchResult[].lowerBound == matchResult[].upperBound
+            {
+                trace("infinite loop detected. no advance after end rule.")
+                
+                advance(to: line.endIndex)
+                buildToken(to: position)
+                
+                popState()
+                return
             }
             
-            trace("move state: beginEndContent -> beginEndEnd \(positionToIntForDebug(position))")
+            trace("move state: beginEndContent -> beginEndEnd \(positionStringForDebug(position))")
             
             // end of contentName
             if let contentName = beginState.contentName {
@@ -570,7 +576,7 @@ internal final class LineParser {
             }
             
             let anchors = try buildCaptureAnchor(matchResult: matchResult,
-                                                 captures: rule.endCaptures,
+                                                 captures: beginState.rule.endCaptures,
                                                  line: line)
             
             let endState = ParserState.BeginEndEnd(matchResult: matchResult)
@@ -581,12 +587,13 @@ internal final class LineParser {
             advance(to: matchResult[].lowerBound)
         case .beginWhile(let rule):
             if position == matchResult[].upperBound,
-                state.rule === rule
+                state.phase.rule === rule
             {
                 trace("infinite loop detected. no advance recursive begin rule.")
                 
                 advance(to: line.endIndex)
                 buildToken(to: position)
+                
                 popState()
                 return
             }
@@ -607,19 +614,19 @@ internal final class LineParser {
                                                   condition: whilePattern)
             whileConditions.append(cond)
             
-            let bwState = ParserState.BeginWhileState(matchResult: matchResult,
-                                                      lineIndex: lineIndex,
-                                                      whilePattern: whilePattern,
-                                                      contentName: contentName)
+            let whileState = ParserState.BeginWhileState(rule: rule,
+                                                         matchResult: matchResult,
+                                                         lineIndex: lineIndex,
+                                                         whilePattern: whilePattern,
+                                                         contentName: contentName)
             
-            let newState = ParserState(rule: rule,
-                                       phase: .beginWhileBegin(bwState),
+            let newState = ParserState(phase: .beginWhileBegin(whileState),
                                        patterns: rule.patterns,
                                        captureAnchors: anchor.mapToArray { $0 },
                                        scopePath: scopePath,
                                        whileConditions: whileConditions,
                                        captureRange: state.captureRange)
-            trace("push state: beginWhileBegin \(positionToIntForDebug(position))")
+            trace("push state: beginWhileBegin \(positionStringForDebug(position))")
             pushState(newState)
             
             advance(to: matchResult[].lowerBound)
@@ -629,8 +636,7 @@ internal final class LineParser {
     private func processHitAnchor(_ anchor: CaptureAnchor) {
         let scopePath = newScopePath(anchor.attribute?.name)
         
-        let newState = ParserState(rule: nil,
-                                   phase: .captureAnchor,
+        let newState = ParserState(phase: .captureAnchor,
                                    patterns: anchor.attribute?.patterns ?? [],
                                    captureAnchors: anchor.children,
                                    scopePath: scopePath,
@@ -645,7 +651,7 @@ internal final class LineParser {
     private func processEndPosition(_ position: String.Index) {
         switch state.phase {
         case .beginEndBegin(let beginState):
-            trace("move state: beginEndBegin -> beginEndContent \(positionToIntForDebug(position))")
+            trace("move state: beginEndBegin -> beginEndContent \(positionStringForDebug(position))")
             
             state.scopePath = newScopePath(beginState.contentName)            
             state.phase = ParserState.Phase.beginEndContent(beginState)
@@ -679,6 +685,10 @@ internal final class LineParser {
         let token = Token(range: start..<end,
                           scopePath: state.scopePath)
         _addToken(token)
+        
+        trace("token " +
+            " \(rangeStringForDebug(token.range))" +
+            " \(token.scopePath)")
     }
     
     private func newScopePath(_ scope: ScopeName?) -> ScopePath {
@@ -715,17 +725,24 @@ internal final class LineParser {
     }
     
     private func advance(to position: String.Index) {
-        trace("advance \(positionToIntForDebug(position))")
+        trace("advance \(positionStringForDebug(position))")
         self.position = position
     }
     
-    private func positionToIntForDebug(_ position: String.Index) -> Int {
-        return line.distance(from: line.startIndex, to: position)
+    private func positionStringForDebug(_ position: String.Index) -> String {
+        let pos = line.distance(from: line.startIndex, to: position)
+        return "\(pos)"
     }
     
-    private func trace(_ string: String) {
+    private func rangeStringForDebug(_ range: Range<String.Index>) -> String {
+        let low = line.distance(from: line.startIndex, to: range.lowerBound)
+        let up = line.distance(from: line.startIndex, to: range.upperBound)
+        return "\(low)..<\(up)"
+    }
+    
+    private func trace(_ string: @autoclosure () -> String) {
         if isTraceEnabled {
-            print("[Parser trace] \(string)")
+            print("[Parser trace] \(string())")
         }
     }
     

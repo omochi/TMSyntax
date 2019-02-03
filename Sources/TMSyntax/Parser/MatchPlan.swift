@@ -1,21 +1,18 @@
 public struct MatchPlan : CustomStringConvertible {
     public enum Pattern {
         case match(MatchRule)
-        case beginEnd(BeginEndRule)
-        case endPattern(
-            pattern: RegexPattern,
-            beginMatchResult: Regex.MatchResult?,
-            beginLineIndex: Int?)
+        case beginEndBegin(BeginEndRule)
+        case beginEndEnd(ParserState.BeginEndBegin)
         case beginWhile(BeginWhileRule)
         
         public var description: String {
             switch self {
             case .match(let rule):
                 return "test: \(rule)"
-            case .beginEnd(let rule):
+            case .beginEndBegin(let rule):
                 return "begin test: \(rule)"
-            case .endPattern(let pattern, _, _):
-                return "end test: \(pattern)"
+            case .beginEndEnd(let state):
+                return "end test: \(state.endPattern)"
             case .beginWhile(let rule):
                 return "begin test: \(rule)"
             }
@@ -53,7 +50,7 @@ public struct MatchPlan : CustomStringConvertible {
     public static func createBeginRule(rulePosition: MatchRulePosition,
                                        rule: BeginEndRule) -> MatchPlan
     {
-        return MatchPlan(rulePosition: rulePosition, pattern: .beginEnd(rule))
+        return MatchPlan(rulePosition: rulePosition, pattern: .beginEndBegin(rule))
     }
     
     public static func createBeginRule(rulePosition: MatchRulePosition,
@@ -62,14 +59,10 @@ public struct MatchPlan : CustomStringConvertible {
         return MatchPlan(rulePosition: rulePosition, pattern: .beginWhile(rule))
     }
     
-    public static func createEndPattern(pattern: RegexPattern,
-                                        beginMatchResult: Regex.MatchResult?,
-                                        beginLineIndex: Int?) -> MatchPlan
+    public static func createEndPattern(state: ParserState.BeginEndBegin) -> MatchPlan
     {
         return MatchPlan(rulePosition: .none,
-                         pattern: .endPattern(pattern: pattern,
-                                              beginMatchResult: beginMatchResult,
-                                              beginLineIndex: beginLineIndex))
+                         pattern: .beginEndEnd(state))
     }
 }
 

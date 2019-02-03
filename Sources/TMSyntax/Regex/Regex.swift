@@ -48,6 +48,14 @@ public struct Regex {
         public static var extend: CompileOptions {
             return CompileOptions(rawValue: ONIG_OPTION_EXTEND)
         }
+        
+        public static var dontCaptureGroup: CompileOptions {
+            return CompileOptions(rawValue: ONIG_OPTION_DONT_CAPTURE_GROUP)
+        }
+        
+        public static var captureGroup: CompileOptions {
+            return CompileOptions(rawValue: ONIG_OPTION_CAPTURE_GROUP)
+        }
     }
     
     public struct SearchOptions : OptionSet {

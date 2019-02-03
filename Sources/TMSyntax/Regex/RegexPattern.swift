@@ -2,6 +2,7 @@ import RichJSONParser
 import Onigmo
 
 private let maxCodeRegex = try! Regex(pattern: "\\\\x{7fffffff}", options: .ignoreCase)
+private let compileOptions: Regex.CompileOptions = [.captureGroup]
 
 public final class RegexPattern : Decodable, CustomStringConvertible {
     public let value: String
@@ -16,7 +17,7 @@ public final class RegexPattern : Decodable, CustomStringConvertible {
     
     private func _compile() throws -> Regex {
         do {
-            return try Regex(pattern: value, options: [])
+            return try Regex(pattern: value, options: compileOptions)
         } catch {
             if let error = error as? OnigmoError {
                 if error.status == ONIGERR_TOO_BIG_WIDE_CHAR_VALUE {
@@ -34,7 +35,7 @@ public final class RegexPattern : Decodable, CustomStringConvertible {
             return "\\x{10ffff}"
         }
         do {
-            return try Regex(pattern: value, options: [])
+            return try Regex(pattern: value, options: compileOptions)
         } catch {
             throw RegexCompileError(location: location, error: error)
         }

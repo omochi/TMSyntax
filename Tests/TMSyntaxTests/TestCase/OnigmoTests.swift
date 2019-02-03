@@ -109,6 +109,26 @@ clone|set_state|sleep|wakeup|autoload|invoke|callStatic))
         XCTAssertNotNil(m)
     }
     
+    func testNamedCapture() throws {
+        let regex = try Regex(pattern: """
+(?x)
+  (?<ft>
+    [a-zA-Z_][\\w.]*
+  )
+  [ \\t]*
+  (?:([a-zA-Z_][\\w.]*)[ \\t]*)?
+"""
+            , options: [.captureGroup])
+        let string = "  1: string message"
+        let m = regex.search(string: string,
+                             range: string.startIndex..<string.endIndex,
+                             globalPosition: nil,
+                             options: [])
+        XCTAssertEqual(m!.count, 3)
+        XCTAssertEqual(String(string[m![1]!]), "string")
+        XCTAssertEqual(String(string[m![2]!]), "message")
+    }
+    
     func _testBigChar() throws {
         do {
             _ = try Regex(pattern: "\\x{7FFFFFFF}", options: [])

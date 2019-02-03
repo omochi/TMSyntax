@@ -1,11 +1,13 @@
 import Foundation
 
 public final class CaptureAnchor {
+    public var captureIndex: Int
     public var attribute: CaptureAttribute?
     public var range: Range<String.Index>
     public var children: [CaptureAnchor]
     
-    public init(attribute: CaptureAttribute?,
+    public init(captureIndex: Int,
+                attribute: CaptureAttribute?,
                 range: Range<String.Index>,
                 children: [CaptureAnchor],
                 line: String,
@@ -18,6 +20,7 @@ public final class CaptureAnchor {
             return attribute
         }
         
+        self.captureIndex = captureIndex
         self.attribute = try attribute
             .map { try resolve(attribute: $0) }
         self.range = range
@@ -78,7 +81,8 @@ public final class CaptureAnchor {
             }
             
             guard let top = top else {
-                let anchor = try CaptureAnchor(attribute: _attr(index),
+                let anchor = try CaptureAnchor(captureIndex: index,
+                                               attribute: _attr(index),
                                                range: range,
                                                children: [],
                                                line: line,
@@ -90,7 +94,8 @@ public final class CaptureAnchor {
             }
             
             if range.upperBound <= top.range.upperBound {
-                let anchor = try CaptureAnchor(attribute: _attr(index),
+                let anchor = try CaptureAnchor(captureIndex: index,
+                                               attribute: _attr(index),
                                                range: range,
                                                children: [],
                                                line: line,
