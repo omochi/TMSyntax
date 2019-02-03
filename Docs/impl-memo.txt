@@ -42,6 +42,10 @@ matchルールの前後で位置が変わっていない場合、またマッチ
 
 first-mate test47で進まないbeginループに対応
 
+first-mate test73でend直後の検出に対応
+
+begin-whileが残ってる
+
 ---
 
 状態遷移
