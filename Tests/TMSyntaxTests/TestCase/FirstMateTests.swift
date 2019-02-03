@@ -106,7 +106,7 @@ class FirstMateTests: XCTestCase {
     func test71() throws { try test(id: 71) }
     func test72() throws { try test(id: 72) }
     func test73() throws { try test(id: 73) }
-    func _test74() throws { try test(id: 74) }
+    func test74() throws { try test(id: 74) }
     
     private func test(id: Int, file: StaticString = #file, line: UInt = #line) throws {
         let desc = "TEST #\(id)"
