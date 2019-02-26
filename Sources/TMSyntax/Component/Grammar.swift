@@ -1,7 +1,7 @@
 import Foundation
 import FineJSON
 import enum FineJSON.DecodingError
-import OrderedDictionary
+import RichJSONParser
 
 public final class Grammar {
     public enum Error : LocalizedError, CustomStringConvertible {
@@ -35,7 +35,7 @@ public final class Grammar {
         public var scopeName: ScopeName
         public var patterns: [Rule]?
         public var repository: RuleRepository?
-        public var injections: OrderedDictionary<String, RuleInjection.JSON>?
+        public var injections: JSONDictionary<RuleInjection.JSON>?
         public var injectionSelector: String?
     }
     

@@ -1,6 +1,5 @@
 import XCTest
 import TMSyntax
-import OrderedDictionary
 
 let jsonSyntaxPath = Resources.shared.path("Syntaxes/JSON.tmLanguage.json")
 let xmlSyntaxPath = Resources.shared.path("Syntaxes/xml.tmLanguage.json")

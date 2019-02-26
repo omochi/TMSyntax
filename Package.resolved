@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/omochi/FineJSON",
         "state": {
           "branch": null,
-          "revision": "001040f9f11555c9cf321b1b37eaf2fe2facf71e",
-          "version": "1.5.0"
+          "revision": "86899a557a8aa2733e4ce7798cccc6f55ae84305",
+          "version": "1.8.0"
         }
       },
       {
@@ -20,21 +20,12 @@
         }
       },
       {
-        "package": "OrderedDictionary",
-        "repositoryURL": "https://github.com/omochi/OrderedDictionary.git",
-        "state": {
-          "branch": null,
-          "revision": "db6b28da46ad3c8508fe5ef014821201d0fe35d5",
-          "version": "1.7.0"
-        }
-      },
-      {
         "package": "RichJSONParser",
         "repositoryURL": "https://github.com/omochi/RichJSONParser.git",
         "state": {
           "branch": null,
-          "revision": "99bd823a6f0005642fb2099857b1996498f1cdbc",
-          "version": "1.4.0"
+          "revision": "ee8af8522002ea106a5071d44d22300dc7e39822",
+          "version": "2.2.0"
         }
       }
     ]

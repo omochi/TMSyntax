@@ -142,7 +142,7 @@ class FirstMateTests: XCTestCase {
         let lines = def.lines.map { $0.line }
         
         let parser = Parser(lines: lines, grammar: grammar)
-        parser.isTraceEnabled = true
+//        parser.isTraceEnabled = true
         
         for lineDef in def.lines {
             let lineString = parser.currentLine!

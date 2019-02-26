@@ -1,6 +1,5 @@
 import XCTest
 import TMSyntax
-import OrderedDictionary
 
 class CaptureAnchorTests: XCTestCase {
     class StringTree : Equatable, CustomStringConvertible {
@@ -41,14 +40,14 @@ class CaptureAnchorTests: XCTestCase {
         
         let attr = CaptureAttribute(sourceLocation: nil, name: ScopeName("a"), patterns: [])
         let anchors = try CaptureAnchor.build(matchResult: Regex.MatchResult(ranges: ranges),
-                                              captures: CaptureAttributes(dictionary: OrderedDictionary([
+                                              captures: CaptureAttributes(dictionary: [
                                                 "1": attr,
                                                 "2": attr,
                                                 "3": attr,
                                                 "4": attr,
                                                 "5": attr,
                                                 "6": attr,
-                                                ])),
+                                                ]),
                                               line: "")
         func map(_ anchor: CaptureAnchor) -> StringTree {
             return StringTree(String(s[anchor.range]),

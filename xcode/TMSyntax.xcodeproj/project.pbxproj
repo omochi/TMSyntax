@@ -35,7 +35,6 @@
 		D64F5DAF21F2001900CA06B7 /* TMSyntax.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5D9821F1FF7A00CA06B7 /* TMSyntax.framework */; };
 		D64F5DB821F2003500CA06B7 /* ParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DB621F2003500CA06B7 /* ParserTests.swift */; };
 		D64F5DBE21F2036200CA06B7 /* FineJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5DBD21F2036200CA06B7 /* FineJSON.framework */; };
-		D64F5DC021F2036200CA06B7 /* OrderedDictionary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5DBF21F2036200CA06B7 /* OrderedDictionary.framework */; };
 		D64F5DC221F2036200CA06B7 /* RichJSONParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D64F5DC121F2036200CA06B7 /* RichJSONParser.framework */; };
 		D64F5DD521F211D700CA06B7 /* Resources in Resources */ = {isa = PBXBuildFile; fileRef = D64F5DD421F211D700CA06B7 /* Resources */; };
 		D64F5DD721F212D400CA06B7 /* Resources.swift in Sources */ = {isa = PBXBuildFile; fileRef = D64F5DD621F212D400CA06B7 /* Resources.swift */; };
@@ -156,7 +155,6 @@
 			files = (
 				D64F5DE521F239FC00CA06B7 /* Onigmo.framework in Frameworks */,
 				D64F5DBE21F2036200CA06B7 /* FineJSON.framework in Frameworks */,
-				D64F5DC021F2036200CA06B7 /* OrderedDictionary.framework in Frameworks */,
 				D64F5DC221F2036200CA06B7 /* RichJSONParser.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

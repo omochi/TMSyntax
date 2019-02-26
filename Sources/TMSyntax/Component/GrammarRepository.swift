@@ -1,13 +1,12 @@
 import Foundation
-import OrderedDictionary
 
 public final class GrammarRepository {
     public init() {
-        self.dictionary = OrderedDictionary()
+        self.dictionary = [ScopeName: Grammar]()
         self.injectionScopes = []
     }
     
-    private var dictionary: OrderedDictionary<ScopeName, Grammar>
+    private var dictionary: [ScopeName: Grammar]
 
     public var injectionScopes: [ScopeName]
     
